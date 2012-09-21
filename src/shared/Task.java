@@ -86,7 +86,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	/**
-	 * To instantiate a deadline task.                     
+	 * To instantiate an undone deadline task.                     
 	 *
 	 * @param name the task description
 	 * @param deadline the deadline in Joda DateTime form
@@ -135,7 +135,7 @@ public class Task implements Comparable<Task> {
 	}
 	
 	/**
-	 * To instantiate a timed task.                     
+	 * To instantiate an undone timed task.                     
 	 *
 	 * @param name the task description
 	 * @param startTime the start time and date in Joda DateTime form
