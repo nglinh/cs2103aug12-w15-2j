@@ -37,11 +37,24 @@ public class Database {
 	protected Status fileAttributes;
 	
 	protected int undoStepsLeft = 0;
+	
+	/**
+	 * To instantiate a database                       
+	 * Also instantiates the fileManagement class
+	 * 
+	 */
 
 	public Database() {
 		diskFile = new FileManagement(taskStore);
 		fileAttributes = parseFileAttributes(diskFile);
 	}
+	
+	/**
+	 * To given the results of a search term                           
+	 *
+	 * @param terms Input in the form of a search term class
+	 * @return an ArrayList<Task> containing all the matched tasks    
+	 */
 
 	public ArrayList<Task> search(SearchTerms terms) {
 		ArrayList<Task> searchResults = new ArrayList<Task>();
@@ -147,10 +160,22 @@ public class Database {
 		
 		return match;
 	}
+	
+	/**
+	 * To return all the tasks in database                           
+	 *
+	 * @return an ArrayList<Task> containing all the tasks in database   
+	 */
 
 	public ArrayList<Task> readAll() {
 		return taskStore;
 	}
+	
+	/**
+	 * To return only floating tasks in database                           
+	 *
+	 * @return an ArrayList<Task> containing all the floating tasks in database   
+	 */
 
 	public ArrayList<Task> readFloatingOnly() {
 		ArrayList<Task> floatingOnly = new ArrayList<Task>();
@@ -162,7 +187,12 @@ public class Database {
 
 		return floatingOnly;
 	}
-
+	
+	/**
+	 * To return all tasks except floating database                           
+	 *
+	 * @return an ArrayList<Task> containing all the floating tasks except floating in database   
+	 */
 
 	public ArrayList<Task> readAllExceptFloating() {
 		ArrayList<Task> allExceptFloating = new ArrayList<Task>();
@@ -175,6 +205,12 @@ public class Database {
 		return allExceptFloating;
 	}
 
+	/**
+	 * To add a new task to database   
+	 *                         
+	 * @param newTask Task to be added
+	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 */
 
 	public void add(Task newTask) throws IOException {
 
@@ -195,6 +231,16 @@ public class Database {
 
 
 	}
+	
+	/**
+	 * To update existing task in database   
+	 *                         
+	 * @param originalSerial Serial number of task to be updated
+	 * @param updated The new task to replace the old
+	 * 
+	 * @throws NoSuchElementException if existing Task by serial number cannot be found
+	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 */
 
 	public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException{
 		if(updated == null) {
@@ -228,8 +274,17 @@ public class Database {
 		}
 
 	}
+	
+	/**
+	 * To delete existing task in database   
+	 *                         
+	 * @param originalSerial Serial number of task to be deleted
+	 * 
+	 * @throws NoSuchElementException if existing Task by serial number cannot be found
+	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 */
 
-	public void delete(int serial) throws IOException {
+	public void delete(int serial) throws NoSuchElementException, IOException {
 
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
@@ -266,7 +321,7 @@ public class Database {
 
 
 
-	public void cloneDatabase() {
+	private void cloneDatabase() {
 		ArrayList<Task> newCopy = new ArrayList<Task>();
 		for(Task currentTask : taskStore) {
 			newCopy.add(new Task(currentTask));
@@ -276,6 +331,13 @@ public class Database {
 		undoStepsLeft++;
 
 	}
+	
+	/**
+	 * To undo the last write operation in database   
+	 *                        
+	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 * @throws NoMoreUndoStepsException if no more steps left to undo since program start
+	 */
 
 	public void undo() throws IOException, NoMoreUndoStepsException {
 
@@ -296,10 +358,29 @@ public class Database {
 
 	}
 
+	/**
+	 * To get file permissions of database like read-only or full access. Should run this method on startup.
+	 * <p>
+	 * Statuses available
+	 * Database.Status.FILE_CAN_READ_AND_WRITE
+	 * Database.Status.FILE_READ_ONLY
+	 * <p>
+	 * Also supports but may not be necessary FILE_WRITE_ONLY, FILE_CANNOT_CREATE, FILE_CANNOT_WRITE,
+	 * 
+	 * @return return Status in this format Database.Status.FILE_CAN_READ_AND_WRITE;
 
+	 */
+	
 	public Status getFileAttributes() {
 		return fileAttributes;
 	}
+	
+	/**
+	 * Get the number of undo operations remaining
+	 * 
+	 * @return number of undo steps left
+
+	 */
 	
 	public int getUndoStepsLeft() {
 		return undoStepsLeft;
