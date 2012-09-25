@@ -21,11 +21,11 @@ public class UiResult {
 		this.display = display;
 	}
 	
-	public boolean isStatusMessage() {
-		if(output == null) {
-			return true;
-		} else {
+	public boolean isReturnValueAString() {
+		if (this.output == null) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 	
