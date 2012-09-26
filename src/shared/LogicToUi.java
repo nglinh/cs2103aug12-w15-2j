@@ -8,17 +8,17 @@ package shared;
 import java.util.ArrayList;
 
 
-public class LogicToUI {
+public class LogicToUi {
 
 	String output = null;
 	ArrayList<Task> display = null;
 
 	
-	public LogicToUI(String output)	{
+	public LogicToUi(String output)	{
 		this.output = output;
 	}
 	
-	public LogicToUI(ArrayList<Task> display) {
+	public LogicToUi(ArrayList<Task> display) {
 		this.display = display;
 	}
 	

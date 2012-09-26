@@ -5,7 +5,7 @@
  * @author  Yeo Kheng Meng
  */ 
 
-import ui.CLI;
+import ui.Cli;
 import ui.UI;
 
 
@@ -15,7 +15,7 @@ public class DoITstart {
 	public static void main(String[] args){
 		
 		if (args.length == 1 && args[0].equals("-cli")) {
-			UI doITUi = new CLI();
+			UI doITUi = new Cli();
 			doITUi.runUI();	
 		} 
 		//else {
