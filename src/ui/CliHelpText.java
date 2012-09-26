@@ -1,9 +1,9 @@
 package ui;
 
-public class CliHelpText {
+public class CLIHelpText {
 
 	private static final String MESSAGE_NO_SUCH_COMMAND_AVAILABLE = "This command \"%1%s\" is not supported by DoIT.";
-	CliHelpText() {
+	CLIHelpText() {
 
 	}
 

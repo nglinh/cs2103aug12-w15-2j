@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 import Logic.LineParser;
 
 import shared.Task;
-import shared.LogicToUi;
+import shared.LogicToUI;
 
 /**  
  * Cli.java 
@@ -18,7 +18,7 @@ import shared.LogicToUi;
  */ 
 
 
-public class Cli extends UI{
+public class CLI extends UI{
 
 	private static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT! ";
 	private static final String MESSAGE_PROGRAM_READY = "Type \"help\" for a list of commands.";
@@ -54,19 +54,19 @@ public class Cli extends UI{
 	private static ArrayList<Task> lastShownList = null;
 
 	LineParser toLogic;
-	CliHelpText cliHelp;
+	CLIHelpText cliHelp;
 
-	public Cli(){
+	public CLI(){
 
-		toLogic = new LineParser(this);
-		cliHelp = new CliHelpText();
-		runCli();
+		cliHelp = new CLIHelpText();
 	}
 
-	private void runCli(){
+	public void runUI(){
+		
+		toLogic = new LineParser(this);
 		System.out.print(MESSAGE_WELCOME_TO_DO_IT);
 
-		LogicToUi filePermissions = toLogic.executeCommand("Read File Permissions");
+		LogicToUI filePermissions = toLogic.executeCommand("Read File Permissions");
 
 		System.out.println(filePermissions.getString());
 
@@ -126,7 +126,7 @@ public class Cli extends UI{
 	}
 
 	private String passMessageToLogic(String lineFromInput) {
-		LogicToUi logicReturn = toLogic.executeCommand(lineFromInput);
+		LogicToUI logicReturn = toLogic.executeCommand(lineFromInput);
 
 		String result;
 		if(logicReturn.isReturnValueAString()) {
@@ -141,7 +141,7 @@ public class Cli extends UI{
 
 
 
-	private String formatTaskListToString(LogicToUi logicReturn) {
+	private String formatTaskListToString(LogicToUI logicReturn) {
 		ArrayList<Task> listResults = logicReturn.getList();
 
 		StringBuffer screenTable = new StringBuffer();
