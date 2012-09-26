@@ -50,7 +50,10 @@ public class Database {
 	}
 	
 	/**
-	 * To given the results of a search term                           
+	 * To given the results of a search term.
+	 * <p>
+	 * Returned result is a clone of the tasks in database,
+	 *  operations done on the result will not affect the database
 	 *
 	 * @param terms Input in the form of a search term class
 	 * @return an ArrayList<Task> containing all the matched tasks    
@@ -61,7 +64,7 @@ public class Database {
 		
 		for(Task currentEntry : taskStore)	{
 			if(taskMeetsSearchTerms(currentEntry, terms)) {
-				searchResults.add(currentEntry);
+				searchResults.add(new Task(currentEntry));
 			}
 		}
 
@@ -163,16 +166,29 @@ public class Database {
 	
 	/**
 	 * To return all the tasks in database                           
-	 *
+	 * <p>
+	 * Returned result is a clone of the tasks in database,
+	 *  operations done on the result will not affect the database
+	 *  
 	 * @return an ArrayList<Task> containing all the tasks in database   
 	 */
 
 	public ArrayList<Task> readAll() {
-		return taskStore;
+		ArrayList<Task> result = new ArrayList<Task>();
+		
+		for(Task currentEntry : taskStore)	{
+				result.add(new Task(currentEntry));
+		}
+		
+		return result;
 	}
 	
 	/**
-	 * To return only floating tasks in database                           
+	 * To return only floating tasks in database
+	 * 
+	 * <p>
+	 * Returned result is a clone of the tasks in database,
+	 *  operations done on the result will not affect the database
 	 *
 	 * @return an ArrayList<Task> containing all the floating tasks in database   
 	 */
@@ -181,7 +197,7 @@ public class Database {
 		ArrayList<Task> floatingOnly = new ArrayList<Task>();
 		for(Task temp : taskStore) {
 			if(temp.isFloatingTask()) {
-				floatingOnly.add(temp);
+				floatingOnly.add(new Task(temp));
 			}
 		}
 
@@ -189,7 +205,11 @@ public class Database {
 	}
 	
 	/**
-	 * To return all tasks except floating database                           
+	 * To return all tasks except floating database
+	 * 
+	 * <p>
+	 * Returned result is a clone of the tasks in database,
+	 *  operations done on the result will not affect the database
 	 *
 	 * @return an ArrayList<Task> containing all the floating tasks except floating in database   
 	 */
@@ -198,7 +218,7 @@ public class Database {
 		ArrayList<Task> allExceptFloating = new ArrayList<Task>();
 		for(Task temp : taskStore) {
 			if(!temp.isFloatingTask())	{
-				allExceptFloating.add(temp);
+				allExceptFloating.add(new Task(temp));
 			}
 		}
 
