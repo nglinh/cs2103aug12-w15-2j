@@ -58,7 +58,7 @@ public class Cli extends UI{
 
 	public Cli(){
 
-		toLogic = new LineParser();
+		toLogic = new LineParser(this);
 		cliHelp = new CliHelpText();
 		runCli();
 	}
