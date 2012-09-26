@@ -31,17 +31,17 @@ public class Task implements Comparable<Task> {
 	public static int nextSerial = 0; 
 
 
-	protected int serial; //A unique identifier for each task. Will reset on each new program launch
+	private int serial; //A unique identifier for each task. Will reset on each new program launch
 
-	protected String type = null;
-	protected String taskName = null;
+	private String type = null;
+	private String taskName = null;
 
-	protected DateTime startTime = null;
-	protected DateTime endTime = null;
-	protected DateTime deadline = null;
+	private DateTime startTime = null;
+	private DateTime endTime = null;
+	private DateTime deadline = null;
 
 
-	protected String done = UNDONE;
+	private String done = UNDONE;
 
 	/**
 	 * To instantiate an undone floating task                        
