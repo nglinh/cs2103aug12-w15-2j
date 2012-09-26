@@ -23,6 +23,49 @@ public class SearchTerms {
 	//Have to make sure startDate is always before endDate
 	private DateTime startRange = null;
 	private DateTime endRange = null;
+	
+	public SearchTerms(String[] keywords) {
+		this.completedTasks = true;
+		this.incompleteTasks = true;
+		this.timedTasks = true;
+		this.deadlineTasks = true;
+		this.floatingTasks = true;
+		
+		this.keywords = keywords;
+		
+	}
+	
+	public SearchTerms(DateTime startDate, DateTime endDate) {
+		this.completedTasks = true;
+		this.incompleteTasks = true;
+		this.timedTasks = true;
+		this.deadlineTasks = true;
+		this.floatingTasks = true;
+		
+		this.startRange = startDate;
+		this.endRange = endDate;
+		
+
+		
+	}
+	
+	public SearchTerms(String[] keywords, DateTime startDate, DateTime endDate) {
+		this.completedTasks = true;
+		this.incompleteTasks = true;
+		this.timedTasks = true;
+		this.deadlineTasks = true;
+		this.floatingTasks = true;
+		
+		this.startRange = startDate;
+		this.endRange = endDate;
+		
+		this.keywords = keywords;
+		
+	}
+	
+	
+	
+	
 
 	public SearchTerms(boolean completedTasks,boolean incompleteTasks, 
 			boolean timedTasks, boolean deadlineTasks, boolean floatingTasks) {
