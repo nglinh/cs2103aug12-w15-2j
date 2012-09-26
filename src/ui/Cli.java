@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-import Logic.LineParser;
+import logic.LineParser; //Linh: change this
 
 import shared.Task;
 import shared.LogicToUI;
@@ -53,7 +53,7 @@ public class CLI extends UI{
 
 	private static ArrayList<Task> lastShownList = null;
 
-	LineParser toLogic;
+	LineParser toLogic;     //Linh: change this
 	CLIHelpText cliHelp;
 
 	public CLI(){
@@ -63,7 +63,7 @@ public class CLI extends UI{
 
 	public void runUI(){
 		
-		toLogic = new LineParser(this);
+		toLogic = new LineParser(this);    //Linh: change this
 		System.out.print(MESSAGE_WELCOME_TO_DO_IT);
 
 		LogicToUI filePermissions = toLogic.executeCommand("Read File Permissions");
