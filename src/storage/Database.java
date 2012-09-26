@@ -28,15 +28,14 @@ public class Database {
 	};
 
 
-	protected ArrayList<Task> taskStore = new ArrayList<Task>();
-	protected ArrayList<Task> latestSearchList = new ArrayList<Task>();
+	private ArrayList<Task> taskStore = new ArrayList<Task>();
 
-	protected Stack<ArrayList<Task>> undoOperations = new Stack<ArrayList<Task>>();
+	private Stack<ArrayList<Task>> undoOperations = new Stack<ArrayList<Task>>();
 
-	protected FileManagement diskFile;
-	protected Status fileAttributes;
+	private FileManagement diskFile;
+	private Status fileAttributes;
 	
-	protected int undoStepsLeft = 0;
+	private int undoStepsLeft = 0;
 	
 	/**
 	 * To instantiate a database                       
@@ -67,8 +66,6 @@ public class Database {
 				searchResults.add(new Task(currentEntry));
 			}
 		}
-
-		latestSearchList = searchResults; 
 
 		return searchResults;
 	}
