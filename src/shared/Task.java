@@ -220,15 +220,15 @@ public class Task implements Comparable<Task> {
 
 		this.serial = updated.getSerial();
 
-		if(updated.getStartTime() != INVALID_DATE_FIELD) {
+		if(!updated.getStartTime().equals(INVALID_DATE_FIELD)) {
 			this.startTime = new DateTime(updated.getStartTime());
 		}
 
-		if(updated.getEndTime() != INVALID_DATE_FIELD)	{
+		if(!updated.getEndTime().equals(INVALID_DATE_FIELD))	{
 			this.endTime = new DateTime(updated.getEndTime());
 		}
 
-		if(updated.getDeadline() != INVALID_DATE_FIELD)	{
+		if(!updated.getDeadline().equals(INVALID_DATE_FIELD))	{
 			this.deadline = new DateTime(updated.getDeadline());
 		}
 	}
