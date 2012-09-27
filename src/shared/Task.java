@@ -36,9 +36,9 @@ public class Task implements Comparable<Task> {
 	private String type = null;
 	private String taskName = null;
 
-	private DateTime startTime = null;
-	private DateTime endTime = null;
-	private DateTime deadline = null;
+	private DateTime startTime = INVALID_DATE_FIELD;
+	private DateTime endTime = INVALID_DATE_FIELD;
+	private DateTime deadline = INVALID_DATE_FIELD;
 
 
 	private String done = UNDONE;
@@ -298,11 +298,6 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public DateTime getStartTime()	{
-
-		if(startTime == null) {
-			return INVALID_DATE_FIELD;
-		}
-
 		return startTime;
 	}
 	
@@ -315,11 +310,6 @@ public class Task implements Comparable<Task> {
 
 
 	public DateTime getEndTime(){
-
-		if(endTime == null) {
-			return INVALID_DATE_FIELD;
-		}
-
 		return endTime;
 	}
 	
@@ -331,10 +321,6 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public DateTime getDeadline(){
-		if(deadline == null) {
-			return INVALID_DATE_FIELD;
-		}
-
 		return deadline;
 	}
 
@@ -351,9 +337,9 @@ public class Task implements Comparable<Task> {
 	public void changetoFloating() {
 		this.type = TYPE_FLOATING;
 
-		this.deadline = null;
-		this.startTime = null;
-		this.endTime = null;
+		this.deadline = INVALID_DATE_FIELD;
+		this.startTime = INVALID_DATE_FIELD;
+		this.endTime = INVALID_DATE_FIELD;
 	}
 
 	public void changetoDeadline(DateTime newDeadline)	{
@@ -366,8 +352,8 @@ public class Task implements Comparable<Task> {
 
 		this.deadline = newDeadline;
 
-		this.startTime = null;
-		this.endTime = null;
+		this.startTime = INVALID_DATE_FIELD;
+		this.endTime = INVALID_DATE_FIELD;
 
 	}
 
@@ -382,7 +368,7 @@ public class Task implements Comparable<Task> {
 		this.startTime = newStartTime;
 		this.endTime = newEndTime;
 
-		this.deadline = null;
+		this.deadline = INVALID_DATE_FIELD;
 
 	}
 
@@ -530,7 +516,7 @@ public class Task implements Comparable<Task> {
 		String end;
 
 
-		if(startTime == null) {
+		if(startTime.equals(INVALID_DATE_FIELD)) {
 			start = FILE_EMPTY_DATE;
 		}
 
@@ -538,7 +524,7 @@ public class Task implements Comparable<Task> {
 
 
 
-		if(endTime == null)	{
+		if(endTime.equals(INVALID_DATE_FIELD))	{
 			end = FILE_EMPTY_DATE;
 		}
 
@@ -546,7 +532,7 @@ public class Task implements Comparable<Task> {
 
 
 
-		if(deadline == null) {
+		if(deadline.equals(INVALID_DATE_FIELD)) {
 			dead = FILE_EMPTY_DATE;
 		}
 
