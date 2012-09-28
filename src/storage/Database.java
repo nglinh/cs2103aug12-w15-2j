@@ -34,9 +34,9 @@ public class Database {
 
 	private FileManagement diskFile;
 	private Status fileAttributes;
-	
+
 	private int undoStepsLeft = 0;
-	
+
 	/**
 	 * To instantiate a database                       
 	 * Also instantiates the fileManagement class
@@ -47,9 +47,9 @@ public class Database {
 		diskFile = new FileManagement(taskStore);
 		fileAttributes = parseFileAttributes(diskFile);
 	}
-	
+
 	/**
-	 * To given the results of a search term.
+	 * To give the results based on a search term.
 	 * <p>
 	 * Returned result is a clone of the tasks in database,
 	 *  operations done on the result will not affect the database
@@ -60,7 +60,7 @@ public class Database {
 
 	public ArrayList<Task> search(SearchTerms terms) {
 		ArrayList<Task> searchResults = new ArrayList<Task>();
-		
+
 		for(Task currentEntry : taskStore)	{
 			if(taskMeetsSearchTerms(currentEntry, terms)) {
 				searchResults.add(new Task(currentEntry));
@@ -73,94 +73,94 @@ public class Database {
 
 
 	private boolean taskMeetsSearchTerms(Task currentEntry, SearchTerms terms)	{
-		
+
 		boolean taskCompleteness = false;
 		boolean taskType = false;
 		boolean keywordMatched = false;
 		boolean dateRangeMatched = false;
-		
-		
+
+
 		if(terms.completeFlag() && currentEntry.isDone()) {
 			taskCompleteness = true;
 		}
-		
+
 		if(terms.incompleteFlag() && !currentEntry.isDone()) {
 			taskCompleteness = true;
 		}
-		
+
 		if(terms.floatingFlag() && currentEntry.isFloatingTask()) {
 			taskType = true;
 		}
-		
+
 		if(terms.deadlineFlag() && currentEntry.isDeadlineTask()) {
 			taskType = true;
 		}
-		
+
 		if(terms.timedFlag() && currentEntry.isTimedTask()) {
 			taskType = true;
 		}
-		
+
 		if(terms.getKeywords() == null || keywordMatching(currentEntry, terms)) {
 			keywordMatched = true;
 		}
-		
-		
+
+
 		if(terms.getStartRange() == null) {
 			dateRangeMatched = true;
 		} else {
 			dateRangeMatched = dateMatching(currentEntry, terms);
 		}
-		
-		
+
+
 		boolean areAllConditionsSatisfied = taskCompleteness && taskType && keywordMatched && dateRangeMatched;
-		
+
 		return areAllConditionsSatisfied;
 	}
-	
+
 	private boolean dateMatching(Task currentEntry, SearchTerms terms) {
 		if(currentEntry.isFloatingTask()) {
 			return false;
 		}
-		
+
 		DateTime timeToCompare;
-		
+
 		if(currentEntry.isDeadlineTask()) {
 			timeToCompare = currentEntry.getDeadline();
 		} else {
 			timeToCompare = currentEntry.getStartTime();
 		}
-		
+
 		if(terms.getStartRange().isEqual(timeToCompare) || 
 				terms.getEndRange().isEqual(timeToCompare)) {
 			return true;
 		}
-		
+
 		if(terms.getStartRange().isBefore(timeToCompare) && 
 				timeToCompare.isBefore(terms.getEndRange())) {
 			return true;
 		}
-		
-		
-		
+
+
+
 		return false;
-		
+
 	}
-	
+
 	private boolean keywordMatching(Task currentEntry, SearchTerms terms) {
 		boolean match = false;
-		
+
 		String[] keywordList = terms.getKeywords();
-		
+
 		for(String word : keywordList)	{
 
 			if(currentEntry.searchName(word))	{
 				match = true;
 			}
 		}
-		
+
 		return match;
 	}
-	
+
 	/**
 	 * To return all the tasks in database                           
 	 * <p>
@@ -172,14 +172,14 @@ public class Database {
 
 	public ArrayList<Task> readAll() {
 		ArrayList<Task> result = new ArrayList<Task>();
-		
+
 		for(Task currentEntry : taskStore)	{
-				result.add(new Task(currentEntry));
+			result.add(new Task(currentEntry));
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * To return only floating tasks in database
 	 * 
@@ -200,7 +200,7 @@ public class Database {
 
 		return floatingOnly;
 	}
-	
+
 	/**
 	 * To return all tasks except floating database
 	 * 
@@ -234,13 +234,13 @@ public class Database {
 		if(newTask == null) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
 		}
-		
+
 		cloneDatabase();
-		
+
 		taskStore.add(newTask);
 		Collections.sort(taskStore);
 
@@ -248,7 +248,7 @@ public class Database {
 
 
 	}
-	
+
 	/**
 	 * To update existing task in database   
 	 *                         
@@ -263,8 +263,8 @@ public class Database {
 		if(updated == null) {
 			throw new IllegalArgumentException();
 		}
-		
-		
+
+
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
 		}
@@ -291,7 +291,7 @@ public class Database {
 		}
 
 	}
-	
+
 	/**
 	 * To delete existing task in database   
 	 *                         
@@ -336,6 +336,87 @@ public class Database {
 
 	}
 
+	/**
+	 * To delete ALL tasks in database   
+	 *                         
+	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 */
+
+
+	public void deleteAll() throws IOException {
+		if(diskFile.canWriteFile() == false) {
+			throw new IOException();
+		}
+
+		cloneDatabase();
+		taskStore.clear();
+	}
+
+	/**
+	 * To delete all done tasks in database   
+	 *                         
+	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 */
+
+	public void deleteDone() throws IOException {
+		if(diskFile.canWriteFile() == false) {
+			throw new IOException();
+		}
+
+		cloneDatabase();
+
+		ArrayList<Task> onlyUndoneTasks = new ArrayList<Task>();
+
+		for(Task currentTask : taskStore) {
+			if(!currentTask.isDone()) {
+				onlyUndoneTasks.add(currentTask);
+			}
+		}
+
+		taskStore = onlyUndoneTasks;
+	}
+
+	/**
+	 * To delete all tasks that are past their deadlines or endtimes in database
+	 * <p>
+	 * Timing will be based on end time for timed tasks.
+	 *  Floating tasks will not be touched   
+	 *                         
+	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 */
+
+	public void deleteOver() throws IOException {
+		if(diskFile.canWriteFile() == false) {
+			throw new IOException();
+		}
+
+		cloneDatabase();
+
+		DateTime currentTime = DateTime.now();
+
+		ArrayList<Task> onlyPendingTasks = new ArrayList<Task>();
+		for(Task currentTask : taskStore) {
+
+			DateTime timeToCompare;
+			if(currentTask.isDeadlineTask()) {
+				timeToCompare = currentTask.getDeadline();
+			} else if (currentTask.isTimedTask()) {
+				timeToCompare = currentTask.getEndTime();
+			} else { //Floating tasks
+				onlyPendingTasks.add(currentTask);
+				continue;
+			}
+			
+			if(timeToCompare.isAfter(currentTime)) {
+				onlyPendingTasks.add(currentTask);
+			}
+					
+		}
+		
+		taskStore = onlyPendingTasks;
+
+	}
+
 
 
 	private void cloneDatabase() {
@@ -348,7 +429,7 @@ public class Database {
 		undoStepsLeft++;
 
 	}
-	
+
 	/**
 	 * To undo the last write operation in database   
 	 *                        
@@ -387,18 +468,18 @@ public class Database {
 	 * @return return Status in this format Database.Status.FILE_CAN_READ_AND_WRITE;
 
 	 */
-	
+
 	public Status getFileAttributes() {
 		return fileAttributes;
 	}
-	
+
 	/**
 	 * Get the number of undo operations remaining
 	 * 
 	 * @return number of undo steps left
 
 	 */
-	
+
 	public int getUndoStepsLeft() {
 		return undoStepsLeft;
 	}
@@ -428,9 +509,9 @@ public class Database {
 		return fileAttributes;
 
 	}
-	
-	
-	
+
+
+
 
 
 
