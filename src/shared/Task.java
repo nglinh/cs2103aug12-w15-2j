@@ -13,7 +13,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 
 public class Task implements Comparable<Task> {
-
+	public static enum TaskType{FLOATING,DEADLINE,TIMED};
 	public static final DateTime INVALID_DATE_FIELD = new DateTime(Long.MAX_VALUE);
 
 	public static final String TYPE_FLOATING = "F";
