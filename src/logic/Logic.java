@@ -16,6 +16,7 @@ public class Logic {
 	public LogicToUi uiCommunicator(String command) {
 		LogicToUi feedback;
 		try{
+			command = new String(command);
 			CommandType commandType = parseCommand(command); 
 			feedback = executeCommand(commandType,command);
 		}
@@ -28,7 +29,7 @@ public class Logic {
 	private static CommandType parseCommand(String command) throws NoSuchCommandException{
 		String commandSyntax = command.trim().split(" ")[0];
 		command = command.replaceFirst(commandSyntax, "").trim();
-		CommandType typeOfCommand = determineCommandType("command");
+		CommandType typeOfCommand = determineCommandType(commandSyntax);
 		return typeOfCommand;
 	}
 	private static CommandType determineCommandType(String string) throws NoSuchCommandException{
