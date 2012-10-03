@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-import logic.LineParser; //Linh: change this
+//import logic.LineParser; //Linh: change this
 
 import shared.Task;
 import shared.LogicToUi;
@@ -17,7 +17,18 @@ import shared.LogicToUi;
  * @author  Yeo Kheng Meng
  */ 
 
-
+class LineParser {// Stub
+	
+	public LineParser (UI ui){
+		
+	}
+	
+	public LogicToUi executeCommand(String s){
+		return null;
+	}
+	
+}
+	
 public class Cli extends UI{
 
 	private static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT! ";
