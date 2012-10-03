@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-//import logic.LineParser; //Linh: change this
+import logic.Logic; //Linh: change this
 
 import shared.Task;
 import shared.LogicToUi;
@@ -17,18 +17,7 @@ import shared.LogicToUi;
  * @author  Yeo Kheng Meng
  */ 
 
-class LineParser {// Stub
-	
-	public LineParser (UI ui){
-		
-	}
-	
-	public LogicToUi executeCommand(String s){
-		return null;
-	}
-	
-}
-	
+
 public class Cli extends UI{
 
 	private static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT! ";
@@ -64,7 +53,7 @@ public class Cli extends UI{
 
 	private static ArrayList<Task> lastShownList = null;
 
-	LineParser toLogic;     //Linh: change this
+	Logic toLogic;     //Linh: change this
 	CliHelpText cliHelp;
 
 	public Cli(){
@@ -74,10 +63,10 @@ public class Cli extends UI{
 
 	public void runUI(){
 		
-		toLogic = new LineParser(this);    //Linh: change this
+		toLogic = new Logic(this);    //Linh: change this
 		System.out.print(MESSAGE_WELCOME_TO_DO_IT);
 
-		LogicToUi filePermissions = toLogic.executeCommand("Read File Permissions");
+		LogicToUi filePermissions = toLogic.uiCommunicator("Read File Permissions");
 
 		System.out.println(filePermissions.getString());
 
@@ -137,7 +126,7 @@ public class Cli extends UI{
 	}
 
 	private String passMessageToLogic(String lineFromInput) {
-		LogicToUi logicReturn = toLogic.executeCommand(lineFromInput);
+		LogicToUi logicReturn = toLogic.uiCommunicator(lineFromInput);
 
 		String result;
 		if(logicReturn.isReturnValueAString()) {
