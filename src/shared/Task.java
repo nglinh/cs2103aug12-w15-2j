@@ -85,7 +85,7 @@ public class Task implements Comparable<Task> {
 		assert(name != null);
 		
 		assert(deadline != null);
-		assert(deadline != INVALID_DATE_FIELD);
+		assert(!deadline.equals(INVALID_DATE_FIELD));
 		
 		this.type = TaskType.DEADLINE;
 		this.taskName = name;
@@ -109,7 +109,7 @@ public class Task implements Comparable<Task> {
 		assert(name != null);
 		
 		assert(deadline != null);
-		assert(deadline != INVALID_DATE_FIELD);
+		assert(!deadline.isEqual(INVALID_DATE_FIELD));
 		
 		
 		this.type = TaskType.DEADLINE;
@@ -137,10 +137,10 @@ public class Task implements Comparable<Task> {
 		assert(name != null);
 		
 		assert(startTime != null);
-		assert(startTime != INVALID_DATE_FIELD);
+		assert(!startTime.equals(INVALID_DATE_FIELD));
 		
 		assert(endTime != null);
-		assert(endTime != INVALID_DATE_FIELD);
+		assert(!endTime.equals(INVALID_DATE_FIELD));
 		
 		assert(startTime.isBefore(endTime) || startTime.isEqual(endTime));
 		
@@ -168,10 +168,10 @@ public class Task implements Comparable<Task> {
 		assert(name != null);
 		
 		assert(startTime != null);
-		assert(startTime != INVALID_DATE_FIELD);
+		assert(!startTime.equals(INVALID_DATE_FIELD));
 		
 		assert(endTime != null);
-		assert(endTime != INVALID_DATE_FIELD);
+		assert(!endTime.equals(INVALID_DATE_FIELD));
 		
 		assert(startTime.isBefore(endTime) || startTime.isEqual(endTime));
 		
@@ -334,7 +334,7 @@ public class Task implements Comparable<Task> {
 	public void changetoDeadline(DateTime newDeadline)	{
 		
 		assert(deadline != null);
-		assert(deadline != INVALID_DATE_FIELD);
+		assert(!deadline.equals(INVALID_DATE_FIELD));
 		
 		this.type = TaskType.DEADLINE;
 
@@ -347,10 +347,10 @@ public class Task implements Comparable<Task> {
 
 	public void changetoTimed(DateTime newStartTime, DateTime newEndTime)	{
 		assert(newStartTime != null);
-		assert(newStartTime != INVALID_DATE_FIELD);
+		assert(!newStartTime.equals(INVALID_DATE_FIELD));
 		
 		assert(newEndTime != null);
-		assert(newEndTime != INVALID_DATE_FIELD);
+		assert(!newEndTime.equals(INVALID_DATE_FIELD));
 		
 		
 		this.type = TaskType.TIMED;
@@ -373,10 +373,10 @@ public class Task implements Comparable<Task> {
 
 	public void changeStartAndEndTime(DateTime newStartTime, DateTime newEndTime)	{
 		assert(newStartTime != null);
-		assert(newStartTime != INVALID_DATE_FIELD);
+		assert(!newStartTime.equals(INVALID_DATE_FIELD));
 		
 		assert(newEndTime != null);
-		assert(newEndTime != INVALID_DATE_FIELD);
+		assert(!newEndTime.equals(INVALID_DATE_FIELD));
 		
 		assert(startTime.isBefore(newEndTime) || startTime.isEqual(newEndTime));
 		
@@ -387,7 +387,7 @@ public class Task implements Comparable<Task> {
 
 	public void changeDeadline(DateTime newDeadline) {
 		assert(deadline != null);
-		assert(deadline != INVALID_DATE_FIELD);
+		assert(!deadline.equals(INVALID_DATE_FIELD));
 		
 		this.deadline = newDeadline;
 	}
