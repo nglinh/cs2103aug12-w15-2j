@@ -22,7 +22,7 @@ public class Task implements Comparable<Task> {
 	private static final int COMPARETO_BIGGER = 1;
 
 
-	public static int nextSerial = 0; 
+	private static int nextSerial = 0; 
 
 
 	private int serial; //A unique identifier for each task. Will reset on each new program launch
