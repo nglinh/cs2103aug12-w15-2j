@@ -14,7 +14,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class Task implements Comparable<Task> {
 	public static enum TaskType{FLOATING,DEADLINE,TIMED};
-	public static enum DoneStatus{ DONE, UNDONE};
 	
 	public static final DateTime INVALID_DATE_FIELD = new DateTime(Long.MAX_VALUE);
 
@@ -102,7 +101,7 @@ public class Task implements Comparable<Task> {
 	 *
 	 * @param name the task description
 	 * @param deadline the deadline in Joda DateTime form
-	 * @param done the done value. Use only DoneStatus.DONE or DoneStatus.UNDONE
+	 * @param done the done value.
 	 */
 
 	public Task(String name, DateTime deadline, boolean done) {
@@ -162,7 +161,7 @@ public class Task implements Comparable<Task> {
 	 * @param name the task description
 	 * @param startTime the start time and date in Joda DateTime form
 	 * @param endTime the end time and date in Joda DateTime form
-	 * @param done the done value. DoneStatus.DONE or DoneStatus.UNDONE
+	 * @param done the done value.
 	 */
 
 	public Task(String name, DateTime startTime, DateTime endTime, boolean done) {
