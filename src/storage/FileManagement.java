@@ -22,8 +22,6 @@ import shared.Task;
 import shared.Task.TaskType;
 
 
-
-
 public class FileManagement {
 
 	public static enum FileStatus {	FILE_CAN_READ_AND_WRITE, FILE_READ_ONLY, FILE_WRITE_ONLY, 
@@ -73,6 +71,8 @@ public class FileManagement {
 
 
 		public FileManagement(ArrayList<Task> storeInHere)	{
+			assert(storeInHere != null);
+			
 			fileAttributes = createAndCheckFileAttributes();
 
 			if((fileAttributes.equals(FileStatus.FILE_CAN_READ_AND_WRITE)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
@@ -92,6 +92,7 @@ public class FileManagement {
 
 
 		private void readFiletoDataBase(ArrayList<Task> storeInHere) throws IOException, DataFormatException {
+			
 			String lineFromInput;
 			String parsed[] = null;
 
@@ -243,7 +244,7 @@ public class FileManagement {
 		}
 
 		public void writeDataBaseToFile(ArrayList<Task> toBeWritten) throws IOException	{
-
+			assert(toBeWritten != null);
 
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 
