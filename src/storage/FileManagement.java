@@ -19,6 +19,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import shared.Task;
+import shared.Task.TaskType;
 
 
 
@@ -61,6 +62,13 @@ public class FileManagement {
 			"#F | D | ---------------- | ---------------- | ---------------- | This is a done floating task.                                          #" ,
 			"##########################################################################################################################################"	
 		};
+		
+		private static final String LINE_FLOATING = "F";
+		private static final String LINE_DEADLINE = "D";
+		private static final String LINE_TIMED = "T";
+	
+		private static final String LINE_DONE = "D";
+		private static final String LINE_UNDONE = "U";
 
 
 
@@ -104,11 +112,11 @@ public class FileManagement {
 			Task parsedTask;
 
 			switch(parsed[LINE_POSITION_TASKTYPE])	{
-			case Task.TYPE_FLOATING : parsedTask = parseInFloatingTask(parsed);
+			case LINE_FLOATING : parsedTask = parseInFloatingTask(parsed);
 			break;
-			case Task.TYPE_DEADLINE : parsedTask = parseInDeadlineTask(parsed);
+			case LINE_DEADLINE : parsedTask = parseInDeadlineTask(parsed);
 			break;
-			case Task.TYPE_TIMED : parsedTask = parseInTimedTask(parsed);
+			case LINE_TIMED : parsedTask = parseInTimedTask(parsed);
 			break;
 			default: throw new DataFormatException();
 
@@ -119,26 +127,54 @@ public class FileManagement {
 		}
 
 		private Task parseInTimedTask(String[] parsed) {
-			String done = parsed[LINE_POSITION_DONE];
+			
 			DateTime startDate = parseDate(parsed[LINE_POSITION_START_DATE]); 
 			DateTime endDate = parseDate(parsed[LINE_POSITION_END_DATE]); 
 
 			String taskname = parsed[LINE_POSITION_TASKNAME];
+			
+			boolean done;
+			
+			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+				done = true;
+			} else {
+				done = false;
+			}
+			
+			
 
 			return new Task(taskname, startDate, endDate, done);
 		}
 
 
 		private Task parseInDeadlineTask(String[] parsed) {
-			String done = parsed[LINE_POSITION_DONE];
+
 			DateTime deadline = parseDate(parsed[LINE_POSITION_DEADLINE_DATE]);
 			String taskname = parsed[LINE_POSITION_TASKNAME];
+			
+			boolean done;
+			
+			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+				done = true;
+			} else {
+				done = false;
+			}
 
 			return new Task(taskname, deadline, done);
 		}
 
 		private Task parseInFloatingTask(String[] parsed) {
-			return new Task(parsed[LINE_POSITION_TASKNAME], parsed[LINE_POSITION_DONE]);
+			
+			boolean done;
+			
+			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+				done = true;
+			} else {
+				done = false;
+			}
+			
+			
+			return new Task(parsed[LINE_POSITION_TASKNAME], done);
 		}
 
 
@@ -148,8 +184,31 @@ public class FileManagement {
 
 
 		private String TaskToDatabaseString(Task toBeConverted) {	
-			String type = toBeConverted.getType();
-			String done = toBeConverted.getDone();
+			
+			
+			
+			String typeString;
+			
+			TaskType typeOfIncomingTask = toBeConverted.getType();
+			
+			
+			if(typeOfIncomingTask.equals(TaskType.TIMED)) {
+				typeString = LINE_TIMED;
+			} else if(typeOfIncomingTask.equals(TaskType.DEADLINE)) {
+				typeString = LINE_DEADLINE;
+			} else {
+				typeString = LINE_FLOATING;
+			}
+			
+			
+			String doneString;
+			boolean isIncomingTaskComplete = toBeConverted.isDone();
+			
+			if(isIncomingTaskComplete) {
+				doneString = LINE_DONE;
+			} else {
+				doneString = LINE_UNDONE;
+			}
 
 			String deadline = getTimeFileFormat(toBeConverted.getDeadline());
 			String start = getTimeFileFormat(toBeConverted.getStartTime());
@@ -157,7 +216,7 @@ public class FileManagement {
 
 			String task = toBeConverted.getTaskName();
 
-			return String.format(FileManagement.FILE_LINE_FORMAT, type, done, deadline, start, end, task);
+			return String.format(FileManagement.FILE_LINE_FORMAT, typeString, doneString, deadline, start, end, task);
 		}
 
 
