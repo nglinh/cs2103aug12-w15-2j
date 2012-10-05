@@ -192,6 +192,8 @@ public class Task implements Comparable<Task> {
 	 * @param toBeCloned the new task to be cloned
 	 */
 	public Task(Task toBeCloned) {
+		assert(toBeCloned != null);
+		
 		this.updateOrClone(toBeCloned);
 	}
 
@@ -206,6 +208,8 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public void updateOrClone(Task updated) {
+		
+		assert(updated != null);
 
 		this.type = updated.getType();
 		this.taskName = updated.getTaskName();
@@ -399,6 +403,8 @@ public class Task implements Comparable<Task> {
 	@Override
 	public int compareTo(Task input) {
 
+		assert(input != null);
+		
 		if(this.isFloatingTask() && input.isFloatingTask()) {
 			return COMPARETO_EQUAL;
 		}
@@ -437,6 +443,8 @@ public class Task implements Comparable<Task> {
 	}
 
 	public boolean searchName(String term)	{
+		assert(term != null);
+		
 		String taskNameLowerCase = taskName.toLowerCase();
 		String termLowerCase = term.toLowerCase();
 		
@@ -450,6 +458,15 @@ public class Task implements Comparable<Task> {
 
 	public boolean searchDateRange(DateTime startRange, DateTime endRange) {
 
+		assert(startRange != null);
+		assert(!startRange.equals(INVALID_DATE_FIELD));
+		
+		assert(endRange != null);
+		assert(!endRange.equals(INVALID_DATE_FIELD));
+		
+		assert(startRange.isBefore(endRange) || startRange.isEqual(endRange));
+		
+		
 		DateTime currentTaskDate;
 
 		if(this.isDeadlineTask()) {
