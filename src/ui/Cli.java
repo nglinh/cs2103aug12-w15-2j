@@ -4,11 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
-
-import logic.Logic; //Linh: change this
 
 import shared.Task;
+import shared.Task.TaskType;
 import shared.LogicToUi;
 
 /**  
@@ -19,13 +17,13 @@ import shared.LogicToUi;
 
 
 public class Cli extends UI{
-
+	
 	private static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT! ";
 	private static final String MESSAGE_PROGRAM_READY = "Type \"help\" for a list of commands.";
 	private static final String MESSAGE_NEXT_COMMAND = "Command: ";
 
 
-
+	private static final String COMMAND_CHECK_FILE_PERMISSIONS = "Read File Permissions";
 	private static final String COMMAND_HELP = "help";
 	private static final String COMMAND_EXIT = "exit";
 	private static final String COMMAND_QUIT = "quit";
@@ -51,9 +49,7 @@ public class Cli extends UI{
 
 	private static final BufferedReader consoleIn =  new BufferedReader(new InputStreamReader(System.in));
 
-	private static ArrayList<Task> lastShownList = null;
 
-	Logic toLogic;     //Linh: change this
 	CliHelpText cliHelp;
 
 	public Cli(){
@@ -63,10 +59,10 @@ public class Cli extends UI{
 
 	public void runUI(){
 		
-		toLogic = new Logic(this);    //Linh: change this
+
 		System.out.print(MESSAGE_WELCOME_TO_DO_IT);
 
-		LogicToUi filePermissions = toLogic.uiCommunicator("Read File Permissions");
+		LogicToUi filePermissions = sendCommandToLogic(COMMAND_CHECK_FILE_PERMISSIONS);
 
 		System.out.println(filePermissions.getString());
 
@@ -126,13 +122,12 @@ public class Cli extends UI{
 	}
 
 	private String passMessageToLogic(String lineFromInput) {
-		LogicToUi logicReturn = toLogic.uiCommunicator(lineFromInput);
+		LogicToUi logicReturn = sendCommandToLogic(lineFromInput);
 
 		String result;
 		if(logicReturn.isReturnValueAString()) {
 			result =  logicReturn.getString();
 		} else {
-			lastShownList = logicReturn.getList();
 			result = formatTaskListToString(logicReturn);
 		}
 
@@ -188,15 +183,15 @@ public class Cli extends UI{
 		}
 
 
-		if(entry.getType().equals(Task.TYPE_TIMED)) {
+		if(entry.getType().equals(TaskType.TIMED)) {
 			start = dateTimeToString(entry.getStartTime());
-		} else if(entry.getType().equals(Task.TYPE_DEADLINE)) {
+		} else if(entry.getType().equals(TaskType.DEADLINE)) {
 			start = dateTimeToString(entry.getDeadline());
 		} else {
 			start = TABLE_EMPTY_DATE_FIELD;
 		}
 
-		if(entry.getType().equals(Task.TYPE_TIMED)) {
+		if(entry.getType().equals(TaskType.TIMED)) {
 			end = dateTimeToString(entry.getEndTime());
 		} else {
 			end = TABLE_EMPTY_DATE_FIELD;
@@ -251,28 +246,6 @@ public class Cli extends UI{
 
 		return text;
 	}
-
-	@Override
-	public int indexToSerial(int index) throws NoSuchElementException{
-		if(lastShownList == null){
-			throw new NoSuchElementException();
-		}
-
-		//To account for array index starting from 0
-		index--;
-		
-		int serial;
-		try {
-			Task matched = lastShownList.get(index);
-			serial = matched.getSerial();
-		} catch(IndexOutOfBoundsException e) {
-			throw new NoSuchElementException();
-		}
-		
-		return serial;
-	}
-
-
 
 }
 
