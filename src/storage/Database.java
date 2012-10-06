@@ -24,7 +24,7 @@ import shared.Task;
 
 public class Database {
 
-	public static enum DB_FILE_Status {	FILE_ALL_OK, FILE_READ_ONLY, FILE_UNUSABLE, 
+	public static enum DB_File_Status {	FILE_ALL_OK, FILE_READ_ONLY, FILE_UNUSABLE, 
 		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT};
 
 
@@ -33,7 +33,7 @@ public class Database {
 	private Stack<ArrayList<Task>> undoOperations = new Stack<ArrayList<Task>>();
 
 	private FileManagement diskFile;
-	private DB_FILE_Status fileAttributes;
+	private DB_File_Status fileAttributes;
 
 	private int undoStepsLeft = 0;
 
@@ -466,17 +466,19 @@ public class Database {
 	/**
 	 * To get file permissions of database like read-only or full access. Should run this method on startup.
 	 * <p>
-	 * Statuses available
-	 * Database.Status.FILE_CAN_READ_AND_WRITE
-	 * Database.Status.FILE_READ_ONLY
+	 * Most Common Status
 	 * <p>
-	 * Also supports but may not be necessary FILE_WRITE_ONLY, FILE_CANNOT_CREATE, FILE_CANNOT_WRITE,
+	 * DB_File_Status.FILE_ALL_OK
+	 * DB_File_Status.FILE_READ_ONLY
+	 * DB_File_Status.FILE_UNUSABLE
+	 * DB_File_Status.FILE_PERMISSIONS_UNKNOWN
+	 * DB_File_Status.FILE_IS_CORRUPT
 	 * 
-	 * @return return Status in this format Database.Status.FILE_CAN_READ_AND_WRITE;
+	 * @return return Status in this format Database.DB_File_Status.FILE_ALL_OK
 
 	 */
 
-	public DB_FILE_Status getFileAttributes() {
+	public DB_File_Status getFileAttributes() {
 		return fileAttributes;
 	}
 
@@ -492,25 +494,26 @@ public class Database {
 	}
 
 
-	private DB_FILE_Status parseFileAttributes(FileManagement diskFile) {
+	private DB_File_Status parseFileAttributes(FileManagement diskFile) {
+		
 		if(diskFile.getFileAttributes().equals(FileStatus.FILE_ALL_OK)) {
-			fileAttributes = DB_FILE_Status.FILE_ALL_OK;
+			fileAttributes = DB_File_Status.FILE_ALL_OK;
 		}
 
 		if(diskFile.getFileAttributes().equals(FileStatus.FILE_READ_ONLY))	{
-			fileAttributes = DB_FILE_Status.FILE_READ_ONLY;
+			fileAttributes = DB_File_Status.FILE_READ_ONLY;
 		}
 
 		if(diskFile.getFileAttributes().equals(FileStatus.FILE_UNUSABLE))	{
-			fileAttributes = DB_FILE_Status.FILE_UNUSABLE;
+			fileAttributes = DB_File_Status.FILE_UNUSABLE;
 		}
 
 		if(diskFile.getFileAttributes().equals(FileStatus.FILE_PERMISSIONS_UNKNOWN)) {
-			fileAttributes = DB_FILE_Status.FILE_PERMISSIONS_UNKNOWN;
+			fileAttributes = DB_File_Status.FILE_PERMISSIONS_UNKNOWN;
 		}
 		
 		if(diskFile.getFileAttributes().equals(FileStatus.FILE_IS_CORRUPT)) {
-			fileAttributes = DB_FILE_Status.FILE_IS_CORRUPT;
+			fileAttributes = DB_File_Status.FILE_IS_CORRUPT;
 		}
 
 
