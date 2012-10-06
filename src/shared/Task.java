@@ -17,12 +17,14 @@ public class Task implements Comparable<Task> {
 	
 	public static final DateTime INVALID_DATE_FIELD = new DateTime(Long.MAX_VALUE);
 
+	public static final int SERIAL_NUMBER_START = 0;
+	
 	private static final int COMPARETO_SMALLER = -1;
 	private static final int COMPARETO_EQUAL = 0;
 	private static final int COMPARETO_BIGGER = 1;
 
 
-	private static int nextSerial = 0; 
+	private static int nextSerial = SERIAL_NUMBER_START; 
 
 
 	private int serial; //A unique identifier for each task. Will reset on each new program launch
