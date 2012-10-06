@@ -7,6 +7,8 @@ package shared;
 
 
 
+import java.util.Comparator;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -495,6 +497,131 @@ public class Task implements Comparable<Task> {
 
 		return false;
 	}
+	
+	
+	
+	static class SortByType implements Comparator<Task> {
+		//Order of priority to be shown is Deadline, Timed and Floating.
+		
+		public int compare(Task o1, Task o2) {
+			
+			TaskType o1Type = o1.getType();
+			TaskType o2Type = o2.getType();
+			
+			if(o1Type.equals(o2Type)) {
+				return COMPARETO_EQUAL;
+			}
+			
+			if(o1Type.equals(TaskType.FLOATING)) {
+				return COMPARETO_BIGGER;
+			}
+			
+			if(o2Type.equals(TaskType.FLOATING)) {
+				return COMPARETO_SMALLER;
+			}
+			
+			if(o1Type.equals(TaskType.DEADLINE) && o2Type.equals(TaskType.TIMED)){
+				return COMPARETO_SMALLER;
+			} else {
+				return COMPARETO_BIGGER;
+			}
+			
+		}
+	}
+	
+	static class SortByDone implements Comparator<Task> {
+
+		public int compare(Task o1, Task o2) {
+			
+			boolean o1Done = o1.isDone();
+			boolean o2Done = o2.isDone();
+			
+			if(o1Done == o2Done) {
+				return COMPARETO_EQUAL;
+			}
+			
+			if((o1Done == true) && (o2Done == false)) {
+				return COMPARETO_BIGGER;
+			} else {
+				return COMPARETO_SMALLER;
+			}
+		}
+	}
+	
+	static class SortByStartDate implements Comparator<Task> {
+
+		public int compare(Task o1, Task o2) {
+			
+			if(o1.isFloatingTask()) {
+				return COMPARETO_BIGGER;
+			}
+			
+			if(o1.isFloatingTask()) {
+				return COMPARETO_SMALLER;
+			}
+			
+			DateTime o1Start;
+			DateTime o2Start;
+			
+			if(o1.isTimedTask()) {
+				o1Start = o1.getStartTime();
+			} else {
+				o1Start = o1.getDeadline();
+			}
+			
+			if(o2.isTimedTask()) {
+				o2Start = o2.getStartTime();
+			} else {
+				o2Start = o2.getDeadline();
+			}
+			
+			
+			return o1Start.compareTo(o2Start);
+		}
+	}
+	
+	static class SortByEndDate implements Comparator<Task> {
+
+		public int compare(Task o1, Task o2) {
+			
+			if(o1.isFloatingTask()) {
+				return COMPARETO_BIGGER;
+			}
+			
+			if(o1.isFloatingTask()) {
+				return COMPARETO_SMALLER;
+			}
+			
+			DateTime o1End;
+			DateTime o2End;
+			
+			if(o1.isTimedTask()) {
+				o1End = o1.getEndTime();
+			} else {
+				o1End = o1.getDeadline();
+			}
+			
+			if(o2.isTimedTask()) {
+				o2End = o2.getEndTime();
+			} else {
+				o2End = o2.getDeadline();
+			}
+			
+			return o1End.compareTo(o2End);
+		}
+	}
+	
+	static class SortByDescription implements Comparator<Task> {
+
+		public int compare(Task o1, Task o2) {
+			String o1Name = o1.getTaskName();
+			String o2Name = o2.getTaskName();
+			
+			return o1Name.compareToIgnoreCase(o2Name);
+		}
+	}
+	
+	
 
 	/**
 	 * DO NOT USE for production. Debugging and testing only. Show Task info in file format
@@ -570,6 +697,8 @@ public class Task implements Comparable<Task> {
 
 		return String.format(FILE_LINE_FORMAT, typeString, doneString, dead, start, end, task);
 	}
+
+
 
 
 
