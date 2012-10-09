@@ -1,9 +1,6 @@
 package logic;
 import java.io.IOException;
-import com.mdimension.jchronic.tags.Pointer;
-import com.mdimension.jchronic.utils.Span;
-import com.mdimension.jchronic.utils.Time;
-import java.util.Calendar;
+
 import ui.UI;
 import shared.LogicToUi;
 import shared.Task.TaskType;
