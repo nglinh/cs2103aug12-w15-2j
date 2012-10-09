@@ -8,6 +8,7 @@ import ui.UI;
 import shared.LogicToUi;
 import shared.Task.TaskType;
 import storage.Database;
+import storage.WillNotWriteToCorruptFileException;
 import shared.Task;
 import shared.SearchTerms;
 
@@ -75,7 +76,7 @@ public class Logic {
 				break;
 			}
 		}
-		catch(IOException e){
+		catch(IOException | WillNotWriteToCorruptFileException e){
 			return new LogicToUi("Something is wrong with the file. I cannot write to it. Please check the permission" +
 					"for the file");
 		}
@@ -89,8 +90,8 @@ public class Logic {
 		return null;
 	}
 
-	public Logic(UI userInterface){
-		doItUi = userInterface;
+	public Logic(){
+		//doItUi = userInterface;
 		dataBase = new Database();
 
 	}
