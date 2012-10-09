@@ -15,6 +15,7 @@ import java.util.Stack;
 
 import org.joda.time.DateTime;
 
+import storage.FileManagement.FileStatus;
 import shared.SearchTerms;
 import shared.Task;
 
@@ -23,9 +24,8 @@ import shared.Task;
 
 public class Database {
 
-	public static enum Status { 
-		FILE_CAN_READ_AND_WRITE, FILE_READ_ONLY, FILE_WRITE_ONLY, FILE_CANNOT_CREATE, FILE_CANNOT_WRITE,
-	};
+	public static enum DB_File_Status {	FILE_ALL_OK, FILE_READ_ONLY, FILE_UNUSABLE, 
+		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT};
 
 
 	private ArrayList<Task> taskStore = new ArrayList<Task>();
@@ -33,7 +33,7 @@ public class Database {
 	private Stack<ArrayList<Task>> undoOperations = new Stack<ArrayList<Task>>();
 
 	private FileManagement diskFile;
-	private Status fileAttributes;
+	private DB_File_Status fileAttributes;
 
 	private int undoStepsLeft = 0;
 
@@ -227,13 +227,12 @@ public class Database {
 	 *                         
 	 * @param newTask Task to be added
 	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 * @throws WillNotWriteToCorruptFileException 
 	 */
 
-	public void add(Task newTask) throws IOException {
+	public void add(Task newTask) throws IOException, WillNotWriteToCorruptFileException {
 
-		if(newTask == null) {
-			throw new IllegalArgumentException();
-		}
+		assert(newTask != null);
 
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
@@ -257,12 +256,11 @@ public class Database {
 	 * 
 	 * @throws NoSuchElementException if existing Task by serial number cannot be found
 	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 * @throws WillNotWriteToCorruptFileException 
 	 */
 
-	public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException{
-		if(updated == null) {
-			throw new IllegalArgumentException();
-		}
+	public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException{
+		assert(updated != null);
 
 
 		if(diskFile.canWriteFile() == false) {
@@ -299,9 +297,10 @@ public class Database {
 	 * 
 	 * @throws NoSuchElementException if existing Task by serial number cannot be found
 	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 * @throws WillNotWriteToCorruptFileException 
 	 */
 
-	public void delete(int serial) throws NoSuchElementException, IOException {
+	public void delete(int serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
 
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
@@ -340,25 +339,28 @@ public class Database {
 	 * To delete ALL tasks in database   
 	 *                         
 	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 * @throws WillNotWriteToCorruptFileException 
 	 */
 
 
-	public void deleteAll() throws IOException {
+	public void deleteAll() throws IOException, WillNotWriteToCorruptFileException {
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
 		}
 
 		cloneDatabase();
 		taskStore.clear();
+		diskFile.writeDataBaseToFile(taskStore);
 	}
 
 	/**
 	 * To delete all done tasks in database   
 	 *                         
 	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 * @throws WillNotWriteToCorruptFileException 
 	 */
 
-	public void deleteDone() throws IOException {
+	public void deleteDone() throws IOException, WillNotWriteToCorruptFileException {
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
 		}
@@ -374,6 +376,7 @@ public class Database {
 		}
 
 		taskStore = onlyUndoneTasks;
+		diskFile.writeDataBaseToFile(taskStore);
 	}
 
 	/**
@@ -383,9 +386,10 @@ public class Database {
 	 *  Floating tasks will not be touched   
 	 *                         
 	 * @throws IOException if cannot commit changes to file, database will not be modified
+	 * @throws WillNotWriteToCorruptFileException 
 	 */
 
-	public void deleteOver() throws IOException {
+	public void deleteOver() throws IOException, WillNotWriteToCorruptFileException {
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
 		}
@@ -414,6 +418,8 @@ public class Database {
 		}
 		
 		taskStore = onlyPendingTasks;
+		
+		diskFile.writeDataBaseToFile(taskStore);
 
 	}
 
@@ -435,9 +441,10 @@ public class Database {
 	 *                        
 	 * @throws IOException if cannot commit changes to file, database will not be modified
 	 * @throws NoMoreUndoStepsException if no more steps left to undo since program start
+	 * @throws WillNotWriteToCorruptFileException 
 	 */
 
-	public void undo() throws IOException, NoMoreUndoStepsException {
+	public void undo() throws IOException, NoMoreUndoStepsException, WillNotWriteToCorruptFileException {
 
 		if(diskFile.canWriteFile() == false) {
 			throw new IOException();
@@ -459,17 +466,19 @@ public class Database {
 	/**
 	 * To get file permissions of database like read-only or full access. Should run this method on startup.
 	 * <p>
-	 * Statuses available
-	 * Database.Status.FILE_CAN_READ_AND_WRITE
-	 * Database.Status.FILE_READ_ONLY
+	 * Most Common Status
 	 * <p>
-	 * Also supports but may not be necessary FILE_WRITE_ONLY, FILE_CANNOT_CREATE, FILE_CANNOT_WRITE,
+	 * DB_File_Status.FILE_ALL_OK
+	 * DB_File_Status.FILE_READ_ONLY
+	 * DB_File_Status.FILE_UNUSABLE
+	 * DB_File_Status.FILE_PERMISSIONS_UNKNOWN
+	 * DB_File_Status.FILE_IS_CORRUPT
 	 * 
-	 * @return return Status in this format Database.Status.FILE_CAN_READ_AND_WRITE;
+	 * @return return Status in this format Database.DB_File_Status.FILE_ALL_OK
 
 	 */
 
-	public Status getFileAttributes() {
+	public DB_File_Status getFileAttributes() {
 		return fileAttributes;
 	}
 
@@ -485,26 +494,28 @@ public class Database {
 	}
 
 
-	private Status parseFileAttributes(FileManagement diskFile) {
-		if(diskFile.getFileAttributes().equals(FileManagement.FileStatus.FILE_CAN_READ_AND_WRITE)) {
-			fileAttributes = Status.FILE_CAN_READ_AND_WRITE;
+	private DB_File_Status parseFileAttributes(FileManagement diskFile) {
+		
+		if(diskFile.getFileAttributes().equals(FileStatus.FILE_ALL_OK)) {
+			fileAttributes = DB_File_Status.FILE_ALL_OK;
 		}
 
-		if(diskFile.getFileAttributes().equals(FileManagement.FileStatus. FILE_READ_ONLY))	{
-			fileAttributes = Status. FILE_READ_ONLY;
+		if(diskFile.getFileAttributes().equals(FileStatus.FILE_READ_ONLY))	{
+			fileAttributes = DB_File_Status.FILE_READ_ONLY;
 		}
 
-		if(diskFile.getFileAttributes().equals(FileManagement.FileStatus.FILE_WRITE_ONLY))	{
-			fileAttributes = Status.FILE_WRITE_ONLY;
+		if(diskFile.getFileAttributes().equals(FileStatus.FILE_UNUSABLE))	{
+			fileAttributes = DB_File_Status.FILE_UNUSABLE;
 		}
 
-		if(diskFile.getFileAttributes().equals(FileManagement.FileStatus.FILE_CANNOT_CREATE)) {
-			fileAttributes = Status.FILE_CANNOT_CREATE;
+		if(diskFile.getFileAttributes().equals(FileStatus.FILE_PERMISSIONS_UNKNOWN)) {
+			fileAttributes = DB_File_Status.FILE_PERMISSIONS_UNKNOWN;
+		}
+		
+		if(diskFile.getFileAttributes().equals(FileStatus.FILE_IS_CORRUPT)) {
+			fileAttributes = DB_File_Status.FILE_IS_CORRUPT;
 		}
 
-		if(diskFile.getFileAttributes().equals(FileManagement.FileStatus.FILE_CANNOT_WRITE)) {
-			fileAttributes = Status.FILE_CANNOT_WRITE;
-		}
 
 		return fileAttributes;
 

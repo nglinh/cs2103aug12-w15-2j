@@ -19,37 +19,36 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import shared.Task;
-
-
+import shared.Task.TaskType;
 
 
 public class FileManagement {
 
-	public static enum FileStatus {	FILE_CAN_READ_AND_WRITE, FILE_READ_ONLY, FILE_WRITE_ONLY, 
-		FILE_CANNOT_CREATE, FILE_CANNOT_WRITE, FILE_IS_CORRUPT};
+	public static enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, FILE_UNUSABLE, 
+		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT};
 
 
 
 		public static String filename = "database.txt";
 
-		public static final String LINE_IGNORE_CHARACTER = "#";
-		public static final String LINE_PARAM_DELIMITER_READ = " \\| ";
-		public static final String LINE_PARAM_DELIMITER_WRITE = " | ";
-		public static final String LINE_EMPTY_DATE = "----------------";
+		private static final String LINE_IGNORE_CHARACTER = "#";
+		private static final String LINE_PARAM_DELIMITER_READ = " \\| ";
+		private static final String LINE_PARAM_DELIMITER_WRITE = " | ";
+		private static final String LINE_EMPTY_DATE = "----------------";
 
-		public static final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm";
-		public static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern(LINE_DATE_TIME_FORMAT);
+		private static final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm";
+		private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern(LINE_DATE_TIME_FORMAT);
 
-		public static final String FILE_LINE_FORMAT = "%1$s" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s";
+		private static final String FILE_LINE_FORMAT = "%1$s" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s";
 
-		public static final int LINE_POSITION_TASKTYPE = 0;
-		public static final int LINE_POSITION_DONE = 1;
-		public static final int LINE_POSITION_DEADLINE_DATE = 2;
-		public static final int LINE_POSITION_START_DATE = 3;
-		public static final int LINE_POSITION_END_DATE = 4;
-		public static final int LINE_POSITION_TASKNAME = 5;
+		private static final int LINE_POSITION_TASKTYPE = 0;
+		private static final int LINE_POSITION_DONE = 1;
+		private static final int LINE_POSITION_DEADLINE_DATE = 2;
+		private static final int LINE_POSITION_START_DATE = 3;
+		private static final int LINE_POSITION_END_DATE = 4;
+		private static final int LINE_POSITION_TASKNAME = 5;
 
-		public static final int LINE_NUM_FIELDS = 6;
+		private static final int LINE_NUM_FIELDS = 6;
 
 		private FileStatus fileAttributes;
 
@@ -62,19 +61,25 @@ public class FileManagement {
 			"##########################################################################################################################################"	
 		};
 
+		private static final String LINE_FLOATING = "F";
+		private static final String LINE_DEADLINE = "D";
+		private static final String LINE_TIMED = "T";
+
+		private static final String LINE_DONE = "D";
+		private static final String LINE_UNDONE = "U";
+
 
 
 		public FileManagement(ArrayList<Task> storeInHere)	{
+			assert(storeInHere != null);
+
 			fileAttributes = createAndCheckFileAttributes();
 
-			if((fileAttributes.equals(FileStatus.FILE_CAN_READ_AND_WRITE)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
+			if((fileAttributes.equals(FileStatus.FILE_ALL_OK)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
 				try {
 					readFiletoDataBase(storeInHere);
 				} catch (Exception e) {
 					fileAttributes = FileStatus.FILE_IS_CORRUPT;
-
-					//	If file is corrupt do we clear whatever has been written in, or keep the data written so far??					
-					//	storeInHere.clear();
 				}
 			}
 		}
@@ -84,6 +89,7 @@ public class FileManagement {
 
 
 		private void readFiletoDataBase(ArrayList<Task> storeInHere) throws IOException, DataFormatException {
+
 			String lineFromInput;
 			String parsed[] = null;
 
@@ -104,11 +110,11 @@ public class FileManagement {
 			Task parsedTask;
 
 			switch(parsed[LINE_POSITION_TASKTYPE])	{
-			case Task.TYPE_FLOATING : parsedTask = parseInFloatingTask(parsed);
+			case LINE_FLOATING : parsedTask = parseInFloatingTask(parsed);
 			break;
-			case Task.TYPE_DEADLINE : parsedTask = parseInDeadlineTask(parsed);
+			case LINE_DEADLINE : parsedTask = parseInDeadlineTask(parsed);
 			break;
-			case Task.TYPE_TIMED : parsedTask = parseInTimedTask(parsed);
+			case LINE_TIMED : parsedTask = parseInTimedTask(parsed);
 			break;
 			default: throw new DataFormatException();
 
@@ -118,38 +124,109 @@ public class FileManagement {
 
 		}
 
-		private Task parseInTimedTask(String[] parsed) {
-			String done = parsed[LINE_POSITION_DONE];
+		private Task parseInTimedTask(String[] parsed) throws DataFormatException {
+
+			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
+				throw new DataFormatException();
+			}
+			
 			DateTime startDate = parseDate(parsed[LINE_POSITION_START_DATE]); 
 			DateTime endDate = parseDate(parsed[LINE_POSITION_END_DATE]); 
 
 			String taskname = parsed[LINE_POSITION_TASKNAME];
 
+			boolean done;
+
+			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+				done = true;
+			} else {
+				done = false;
+			}
+
+
+
 			return new Task(taskname, startDate, endDate, done);
 		}
 
 
-		private Task parseInDeadlineTask(String[] parsed) {
-			String done = parsed[LINE_POSITION_DONE];
+		private Task parseInDeadlineTask(String[] parsed) throws DataFormatException {
+
+			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
+				throw new DataFormatException();
+			}
+			
 			DateTime deadline = parseDate(parsed[LINE_POSITION_DEADLINE_DATE]);
 			String taskname = parsed[LINE_POSITION_TASKNAME];
+
+			boolean done;
+
+			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+				done = true;
+			} else {
+				done = false;
+			}
 
 			return new Task(taskname, deadline, done);
 		}
 
-		private Task parseInFloatingTask(String[] parsed) {
-			return new Task(parsed[LINE_POSITION_TASKNAME], parsed[LINE_POSITION_DONE]);
+		private Task parseInFloatingTask(String[] parsed) throws DataFormatException {
+
+			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
+				throw new DataFormatException();
+			}
+			
+			boolean done;
+
+			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+				done = true;
+			} else {
+				done = false;
+			}
+
+
+			return new Task(parsed[LINE_POSITION_TASKNAME], done);
 		}
 
 
-		private DateTime parseDate(String parsed) {
-			return new DateTime(FILE_DATE_FORMAT.parseDateTime(parsed));
+		private DateTime parseDate(String parsed) throws DataFormatException {
+			DateTime parsedDate = null;
+			
+			try {
+				parsedDate = new DateTime(FILE_DATE_FORMAT.parseDateTime(parsed));
+			} catch (IllegalArgumentException e) {
+				throw new DataFormatException();
+			}
+			
+			return parsedDate;
 		}
 
 
 		private String TaskToDatabaseString(Task toBeConverted) {	
-			String type = toBeConverted.getType();
-			String done = toBeConverted.getDone();
+
+
+
+			String typeString;
+
+			TaskType typeOfIncomingTask = toBeConverted.getType();
+
+
+			if(typeOfIncomingTask.equals(TaskType.TIMED)) {
+				typeString = LINE_TIMED;
+			} else if(typeOfIncomingTask.equals(TaskType.DEADLINE)) {
+				typeString = LINE_DEADLINE;
+			} else {
+				typeString = LINE_FLOATING;
+			}
+
+
+			String doneString;
+			boolean isIncomingTaskComplete = toBeConverted.isDone();
+
+			if(isIncomingTaskComplete) {
+				doneString = LINE_DONE;
+			} else {
+				doneString = LINE_UNDONE;
+			}
 
 			String deadline = getTimeFileFormat(toBeConverted.getDeadline());
 			String start = getTimeFileFormat(toBeConverted.getStartTime());
@@ -157,7 +234,7 @@ public class FileManagement {
 
 			String task = toBeConverted.getTaskName();
 
-			return String.format(FileManagement.FILE_LINE_FORMAT, type, done, deadline, start, end, task);
+			return String.format(FileManagement.FILE_LINE_FORMAT, typeString, doneString, deadline, start, end, task);
 		}
 
 
@@ -183,9 +260,13 @@ public class FileManagement {
 			return true;
 		}
 
-		public void writeDataBaseToFile(ArrayList<Task> toBeWritten) throws IOException	{
+		public void writeDataBaseToFile(ArrayList<Task> toBeWritten) throws IOException, WillNotWriteToCorruptFileException	{
+			assert(toBeWritten != null);
 
-
+			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
+				throw new WillNotWriteToCorruptFileException();
+			}
+			
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 
 			for(String helpline : filehelp)	{
@@ -206,40 +287,32 @@ public class FileManagement {
 
 		private FileStatus createAndCheckFileAttributes() {
 
-			FileStatus attributes = FileStatus.FILE_CANNOT_CREATE;
+			FileStatus attributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 
 			File databaseFile = new File(filename);
 
+
 			try {
-				if(databaseFile.createNewFile()) {
-					if(isFileReadable(databaseFile)) {
-						attributes = FileStatus.FILE_CAN_READ_AND_WRITE;
-					}
-					else {
-						attributes = FileStatus.FILE_WRITE_ONLY;
-					}
-				}
-				else { //if file already exists or unable to create due to permissions issues
-					if(isFileReadable(databaseFile) && isFileWritable(databaseFile)) {
-						attributes = FileStatus.FILE_CAN_READ_AND_WRITE;
-					}
-					else if(isFileReadable(databaseFile)) {
-						attributes = FileStatus.FILE_READ_ONLY;
-					}
-					else if(isFileWritable(databaseFile)) {
-						attributes = FileStatus.FILE_WRITE_ONLY;
-					}
-					else {
-						attributes = FileStatus.FILE_CANNOT_CREATE;
-					}
 
+				if(!databaseFile.exists()) {
+					databaseFile.createNewFile();
 				}
 
-			} 
-			catch (IOException e) {
-				attributes = FileStatus.FILE_CANNOT_CREATE;
+
+				if(isFileReadable(databaseFile) && isFileWritable(databaseFile)) {
+					attributes = FileStatus.FILE_ALL_OK;
+				} else if(isFileReadable(databaseFile)){
+					attributes = FileStatus.FILE_READ_ONLY;
+				} else {
+					attributes = FileStatus.FILE_UNUSABLE;
+				}
+
+
+			} catch (IOException e) {
+				attributes = FileStatus.FILE_UNUSABLE;
+			} catch (SecurityException e) {
+				attributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 			}
-
 
 			return attributes;
 		}
