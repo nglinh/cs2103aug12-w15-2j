@@ -271,11 +271,7 @@ public class GuiMain extends UI{
 					assert false;
 					break;
 				case COL_DONE:
-					if ((boolean)value == true){
-						task.done();
-					}else{
-						task.undone();
-					}
+						task.done((boolean) value);
 				case COL_START:
 					break;
 				case COL_END:
