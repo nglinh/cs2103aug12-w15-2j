@@ -247,6 +247,25 @@ public class Database {
 
 
 	}
+	
+	/**
+	 * To locate existing task in database   
+	 *                         
+	 * @param serial Serial number of task to be located
+	 * 
+	 * @return the located task with matching serial number 
+	 * @throws NoSuchElementException if existing Task by serial number cannot be found
+	 */
+	
+	public Task locateATask(int serial) throws NoSuchElementException{
+		for(Task toFind : taskStore) {
+			if(toFind.getSerial() == serial) {
+				return new Task(toFind);
+			}
+		}
+		
+		throw new NoSuchElementException();
+	}
 
 	/**
 	 * To update existing task in database   
