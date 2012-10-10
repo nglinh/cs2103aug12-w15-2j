@@ -20,6 +20,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
 import javax.swing.JEditorPane;
 
+import shared.LogicToUi;
 import shared.Task;
 import shared.Task.TaskType;
 
@@ -29,7 +30,6 @@ import java.util.List;
 
 public class GuiMain extends UI{
 
-	private static final String COMMAND_CHECK_FILE_PERMISSIONS = "Read File Permissions";
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
 	private JFrame frmDoit;
 	private JTextField textCmd;
@@ -65,6 +65,7 @@ public class GuiMain extends UI{
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("serial")
 	private void initialize() {
 		frmDoit = new JFrame();
 		frmDoit.setTitle("DoIt!");
@@ -124,9 +125,11 @@ public class GuiMain extends UI{
 				"Idx", "", "Start/Deadline", "End", "What to do?"
 			}
 		) {
+			@SuppressWarnings("rawtypes")
 			Class[] columnTypes = new Class[] {
 				Integer.class, Boolean.class, Object.class, Object.class, String.class
 			};
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -243,13 +246,14 @@ public class GuiMain extends UI{
 	    	return null;
 	    }
 
-	    public Class getColumnClass(int c) {
+	    @SuppressWarnings({ "unchecked", "rawtypes" })
+		public Class getColumnClass(int c) {
 	        return getValueAt(0, c).getClass();
 	    }
 
 	    public boolean isCellEditable(int row, int col) {
 	        //Note that the data/cell address is constant,
-	        //no matter where the cell appears onscreen.
+	        //no matter where the cell appears on-screen.
 	        if (col != COL_DONE) {
 	            return false;
 	        } else {
@@ -301,23 +305,36 @@ public class GuiMain extends UI{
 	}
 	
 	public void executeCommand(String text) {
-		// TODO: Change this to call the correct logic parser!!
-		String strTaskName;
 		
-		String[] words = textCmd.getText().split("\\W");
-		strTaskName = textCmd.getText().substring(words[0].length()+1);
+		// Call command parser
+		LogicToUi returnValue = sendCommandToLogic(text);
 		
-		int popupWidth = 300;
-		int popupHeight = 60;
-		
-		txtStatus.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\" height=\""+ (popupHeight-10 /*TODO:*/) +"\"><font size=\"4\">Task <b>"+strTaskName+"</b> added &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a> &nbsp;<a href=\"http://doit/close\">close</a></font></td></tr></table></html>");
-		
-		popupStatus.setPopupSize(popupWidth, popupHeight);
-		popupStatus.show(frmDoit, (frmDoit.getWidth() - popupWidth)/2, frmDoit.getHeight() - popupHeight + 5);
+		// Set command text box to empty
 		textCmd.setText("");
 		
-		// TODO: change this to the correct command!!
-		//showTasksList((new logic.LineParser()).executeCommand("somestring").getList());
+		if (returnValue.isReturnValueAString()) {
+
+			int popupWidth = 300;
+			int popupHeight = 60;
+
+			txtStatus
+					.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\" height=\""
+							+ (popupHeight - 10 /* TODO: */)
+							+ "\"><font size=\"4\">"
+							+ returnValue.getString()
+							+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a> &nbsp;<a href=\"http://doit/close\">close</a></font></td></tr></table></html>");
+
+			popupStatus.setPopupSize(popupWidth, popupHeight);
+			popupStatus.show(frmDoit, (frmDoit.getWidth() - popupWidth) / 2,
+					frmDoit.getHeight() - popupHeight + 5);
+			
+			// Call command to refresh the table
+			showTasksList(sendCommandToLogic("list").getList());
+		}
+
+		if (returnValue.isReturnValueAList()) {
+			showTasksList(returnValue.getList());
+		}
 		
 	}
 
