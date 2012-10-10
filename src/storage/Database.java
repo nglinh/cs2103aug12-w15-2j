@@ -293,7 +293,7 @@ public class Database {
 	/**
 	 * To delete existing task in database   
 	 *                         
-	 * @param originalSerial Serial number of task to be deleted
+	 * @param serial Serial number of task to be deleted
 	 * 
 	 * @throws NoSuchElementException if existing Task by serial number cannot be found
 	 * @throws IOException if cannot commit changes to file, database will not be modified
