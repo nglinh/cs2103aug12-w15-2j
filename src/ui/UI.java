@@ -20,10 +20,9 @@ public abstract class UI {
 	
 	protected static final String COMMAND_CHECK_FILE_PERMISSIONS = "FileStatus";
 
-	private Logic logic = new Logic();
 	
 	protected LogicToUi sendCommandToLogic(String command) {
-		return logic.uiCommunicator(command);
+		return Logic.uiCommunicator(command);
 	}
 	
 	
