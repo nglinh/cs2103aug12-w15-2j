@@ -25,6 +25,8 @@ public class SearchTerms {
 	private DateTime endRange = null;
 	
 	public SearchTerms(String[] keywords) {
+		assert(keywords != null);
+		
 		this.completedTasks = true;
 		this.incompleteTasks = true;
 		this.timedTasks = true;
@@ -36,6 +38,9 @@ public class SearchTerms {
 	}
 	
 	public SearchTerms(DateTime startDate, DateTime endDate) {
+		assert(startDate != null);
+		assert(endDate != null);
+		
 		this.completedTasks = true;
 		this.incompleteTasks = true;
 		this.timedTasks = true;
@@ -50,6 +55,11 @@ public class SearchTerms {
 	}
 	
 	public SearchTerms(String[] keywords, DateTime startDate, DateTime endDate) {
+		assert(keywords != null);
+		assert(startDate != null);
+		assert(endDate != null);
+		
+		
 		this.completedTasks = true;
 		this.incompleteTasks = true;
 		this.timedTasks = true;
@@ -82,6 +92,8 @@ public class SearchTerms {
 			boolean timedTasks, boolean deadlineTasks, boolean floatingTasks,
 			String[] keywords) {
 
+		assert(keywords != null);	
+		
 		this.completedTasks = completedTasks;
 		this.incompleteTasks = incompleteTasks;
 		this.timedTasks = timedTasks;
@@ -95,9 +107,10 @@ public class SearchTerms {
 			boolean timedTasks, boolean deadlineTasks, boolean floatingTasks,
 			DateTime startDate, DateTime endDate) {
 		
-		if(startDate.isAfter(endDate)) {
-			throw new IllegalArgumentException();
-		}
+		assert(startDate != null);
+		assert(endDate != null);
+		
+		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
 
 		this.completedTasks = completedTasks;
 		this.incompleteTasks = incompleteTasks;
@@ -115,9 +128,12 @@ public class SearchTerms {
 			boolean timedTasks, boolean deadlineTasks, boolean floatingTasks,
 			String[] keywords, DateTime startDate, DateTime endDate) {
 
-		if(startDate.isAfter(endDate)) {
-			throw new IllegalArgumentException();
-		}
+		
+		assert(keywords != null);
+		assert(startDate != null);
+		assert(endDate != null);
+		
+		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
 		
 		this.completedTasks = completedTasks;
 		this.incompleteTasks = incompleteTasks;
@@ -151,6 +167,22 @@ public class SearchTerms {
 
 	public boolean floatingFlag() {
 		return floatingTasks;
+	}
+	
+	public boolean doesSearchContainKeymords() {
+		if(keywords == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public boolean doesSearchContainDateRange() {
+		if(startRange == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 
