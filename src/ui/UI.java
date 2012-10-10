@@ -30,6 +30,11 @@ public abstract class UI {
 	protected String dateTimeToString(DateTime toBeConverted) {
 		return LINE_DATE_FORMATTER.print(toBeConverted);
 	}
+	
+	protected String checkFilePermissions() {
+		LogicToUi filePermissions = sendCommandToLogic(COMMAND_CHECK_FILE_PERMISSIONS);
+		return filePermissions.getString();
+	}
 
 	//This is the first method that will run the UI after it is constructed. DoITstart will run this.
 	public abstract void runUI();
