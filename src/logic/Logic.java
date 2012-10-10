@@ -102,6 +102,7 @@ public class Logic {
 				}
 			}
 		}
+		catch(IOException | WillNotWriteToCorruptFileException e){
 		catch(IOException e){
 			return new LogicToUi("Something is wrong with the file. I cannot write to it. Please check the permission" +
 					"for the file");
@@ -112,6 +113,7 @@ public class Logic {
 	}
 
 
+	public Logic(){
 	public Logic(){
 		dataBase = new Database();
 

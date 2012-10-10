@@ -23,7 +23,7 @@ public class Cli extends UI{
 	private static final String MESSAGE_NEXT_COMMAND = "Command: ";
 
 
-	private static final String COMMAND_CHECK_FILE_PERMISSIONS = "Read File Permissions";
+	
 	private static final String COMMAND_HELP = "help";
 	private static final String COMMAND_EXIT = "exit";
 	private static final String COMMAND_QUIT = "quit";
@@ -62,9 +62,7 @@ public class Cli extends UI{
 
 		System.out.print(MESSAGE_WELCOME_TO_DO_IT);
 
-		LogicToUi filePermissions = sendCommandToLogic(COMMAND_CHECK_FILE_PERMISSIONS);
-
-		System.out.println(filePermissions.getString());
+		System.out.println(checkFilePermissions());
 
 		System.out.println(MESSAGE_PROGRAM_READY);
 

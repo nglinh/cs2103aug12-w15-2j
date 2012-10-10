@@ -6,6 +6,7 @@
  */ 
 
 import ui.Cli;
+import ui.GuiMain;
 import ui.UI;
 
 
@@ -18,10 +19,10 @@ public class DoITstart {
 			UI doITUi = new Cli();
 			doITUi.runUI();	
 		} 
-		//else {
-//			UI doITUi = new Gui();
-//			doITUi.runUI();
-//		}
+		else {
+			UI doITUi = new GuiMain();
+			doITUi.runUI();
+		}
 		
 	}
 
