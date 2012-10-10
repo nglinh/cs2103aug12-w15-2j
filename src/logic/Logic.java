@@ -19,7 +19,7 @@ import storage.Database.DB_File_Status;
 
 public class Logic {
 	public static enum CommandType {
-		ADD, DELETE, LIST, SEARCH, UNDO, FILE_STATUS, REFRESH
+		ADD, DELETE, LIST, SEARCH, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE,
 	};
 
 	public static Database dataBase = new Database();
@@ -72,6 +72,10 @@ public class Logic {
 			return CommandType.FILE_STATUS;
 		case "refresh":
 			return CommandType.REFRESH;
+		case "done":
+			return CommandType.DONE;
+		case "undone" :
+			return CommandType.UNDONE;
 		default:
 			throw new NoSuchCommandException();
 		}
@@ -97,10 +101,55 @@ public class Logic {
 			return search(splitArguments);
 		case REFRESH:
 			return refresh();
+		case DONE:
+			return done(splitArguments, true);
+		case UNDONE: 
+			return done(splitArguments, false);
 		default:
 			return null;
 		}
 	}
+	private static LogicToUi done(String[] splitArguments, boolean newDoneStatus) {
+		if(splitArguments.length == 1) {
+			return new LogicToUi(
+					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
+		}
+		
+		int index;
+
+		
+		try {
+			index = Integer.parseInt(splitArguments[1]);
+			index--; //Since arraylist index starts from 0
+			
+			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {
+				throw new NoSuchElementException();
+			}
+			
+			int serial = lastShownToUI.get(index).getSerial();
+			
+			Task toBeDone = dataBase.locateATask(serial);
+			toBeDone.done(newDoneStatus);
+			dataBase.update(serial, toBeDone);
+
+			String taskDetails = taskToString(toBeDone);
+			
+			if(newDoneStatus == true) {
+				return new LogicToUi(taskDetails + " has been marked as done.");
+			} else {
+				return new LogicToUi(taskDetails + " has been marked as undone.");
+			}
+		} catch (NoSuchElementException e) {
+			return new LogicToUi(
+					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
+		} catch (IOException e) {
+			return new LogicToUi(
+					"In/Out error. Please restart the program.");
+		} catch (WillNotWriteToCorruptFileException e) {
+			return new LogicToUi("File is corrupted. Please check :(.");
+		}
+	}
+
 	private static LogicToUi refresh() {
 		return uiCommunicator(latestRefreshCommandForGUI);
 	}
