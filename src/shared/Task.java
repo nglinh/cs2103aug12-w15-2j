@@ -320,16 +320,18 @@ public class Task implements Comparable<Task> {
 	public DateTime getDeadline(){
 		return deadline;
 	}
+	
+	/**
+	 * Sets done status for the task                           
+	 *
+	 * @param newDoneStatus to set whether the task is done or undone     
+	 *  
+	 */
 
-
-
-	public void done()	{
-		this.isCompleted = true;
+	public void done(boolean newDoneStatus)	{
+		this.isCompleted = newDoneStatus;
 	}
 
-	public void undone() {
-		this.isCompleted = false;
-	}
 
 	public void changetoFloating() {
 		this.type = TaskType.FLOATING;
