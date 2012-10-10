@@ -15,10 +15,12 @@ public class LogicToUi {
 
 	
 	public LogicToUi(String output)	{
+		assert(output != null);
 		this.output = output;
 	}
 	
 	public LogicToUi(ArrayList<Task> display) {
+		assert(display != null);
 		this.display = display;
 	}
 	
