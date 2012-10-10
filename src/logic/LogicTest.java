@@ -12,26 +12,26 @@ public class LogicTest {
 		Logic l = new Logic();
 		
 		// Add normal timed task with starting and ending time and date
-		command = "add My New Task from 25/9/2012 8pm to 26/9/2012 9pm";
-		expectedResponse = "Timed task \"My New Task\" from 25/9/2012 8:00pm to 26/9/2012 9:00pm added";
+		command = "add My New Task from 25 Sep 2012 8pm to 26 Sep 2012 9pm";
+		expectedResponse = "Timed task \"My New Task\" from 25 Sep 2012 8:00pm to 26 Sep 2012 9:00pm added";
 		assertEquals(l.uiCommunicator(command).getString(), expectedResponse);
 
 		// Add normal timed task with starting and ending date but no time.
 		// Assume 12:00am for start time and 23:59pm for end time.
-		command = "add My New Task from 25/9/2012 to 26/9/2012";
-		expectedResponse = "Timed task \"My New Task\" from 25/9/2012 12:00am to 26/9/2012 11:59pm added";
+		command = "add My New Task from 25 Sep 2012 to 26 Sep 2012";
+		expectedResponse = "Timed task \"My New Task\" from 25 Sep 2012 12:00am to 26 Sep 2012 11:59pm added";
 		assertEquals(l.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add normal timed task with starting and ending time and date
 		// but with "from" inside the text
-		command = "add Pick up groceries from supermarket from 25/9/2012 8pm to 26/9/2012 9pm";
-		expectedResponse = "Timed task \"Pick up groceries from supermarket\" from 25/9/2012 8:00pm to 26/9/2012 9:00pm added";
+		command = "add Pick up groceries from supermarket from 25 Sep 2012 8pm to 26 Sep 2012 9pm";
+		expectedResponse = "Timed task \"Pick up groceries from supermarket\" from 25 Sep 2012 8:00pm to 26 Sep 2012 9:00pm added";
 		assertEquals(l.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add normal timed task with starting and ending time and date
 		// but with "to" inside the text
-		command = "add Go to supermarket from 25/9/2012 8pm to 26/9/2012 9pm";
-		expectedResponse = "Timed task \"Go to supermarket\" from 25/9/2012 8:00pm to 26/9/2012 9:00pm added";
+		command = "add Go to supermarket from 25 Sep 2012 8pm to 26 Sep 2012 9pm";
+		expectedResponse = "Timed task \"Go to supermarket\" from 25 Sep 2012 8:00pm to 26 Sep 2012 9:00pm added";
 		assertEquals(l.uiCommunicator(command).getString(), expectedResponse);
 	}
 	
@@ -41,20 +41,20 @@ public class LogicTest {
 		Logic l = new Logic();
 		
 		// Add normal deadline task with ending time and date
-		command = "add Do homework by 26/9/2012 9pm";
-		expectedResponse = "Deadline task \"Do homework\" by 26/9/2012 9:00pm added";
+		command = "add Do homework by 26 Sep 2012 9pm";
+		expectedResponse = "Deadline task \"Do homework\" by 26 Sep 2012 9:00pm added";
 		assertEquals(l.uiCommunicator(command).getString(), expectedResponse);
 
 		// Add normal deadline task with ending date but no time.
 		// Assume 11:59pm for time.
-		command = "add Do homework by 26/9/2012";
-		expectedResponse = "Deadline task \"Do homework\" by 26/9/2012 11:59pm added";
+		command = "add Do homework by 26 Sep 2012";
+		expectedResponse = "Deadline task \"Do homework\" by 26 Sep 2012 11:59pm added";
 		assertEquals(l.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add normal deadline task with starting and ending time and date
 		// but with "by" inside the text
-		command = "add Read book by Steven by 26/9/2012 9pm";
-		expectedResponse = "Deadline task \"Read book by Steven\" by 26/9/2012 9:00pm added";
+		command = "add Read book by Steven by 26 Sep 2012 9pm";
+		expectedResponse = "Deadline task \"Read book by Steven\" by 26 Sep 2012 9:00pm added";
 		assertEquals(l.uiCommunicator(command).getString(), expectedResponse);
 	}
 	
@@ -95,7 +95,7 @@ public class LogicTest {
 
 		// Delete valid task
 		command = "delete 1";
-		expectedResponse = "Timed task \"My New Task\" from 25/9/2012 8:00pm to 26/9/2012 9:00pm deleted";
+		expectedResponse = "Timed task \"My New Task\" from 25 Sep 2012 8:00pm to 26 Sep 2012 9:00pm deleted";
 		assertEquals(l.uiCommunicator(command).getString(), expectedResponse);
 
 		// Delete invalid task
