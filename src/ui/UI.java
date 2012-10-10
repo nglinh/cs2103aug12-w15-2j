@@ -18,7 +18,7 @@ public abstract class UI {
 	private final String LINE_DATE_FORMAT = "dd-MMM-yy hh:mma";
 	private final DateTimeFormatter LINE_DATE_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_FORMAT);
 	
-	protected static final String COMMAND_CHECK_FILE_PERMISSIONS = "FileStatus";
+	protected static final String COMMAND_CHECK_FILE_PERMISSIONS = "fileStatus";
 
 	
 	protected LogicToUi sendCommandToLogic(String command) {
