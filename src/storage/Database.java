@@ -100,15 +100,15 @@ public class Database {
 			taskType = true;
 		}
 
-		if(terms.getKeywords() == null || keywordMatching(currentEntry, terms)) {
+		if(!terms.doesSearchContainKeymords() || keywordMatching(currentEntry, terms)) {
 			keywordMatched = true;
 		}
 
 
-		if(terms.getStartRange() == null) {
-			dateRangeMatched = true;
-		} else {
+		if(terms.doesSearchContainDateRange()) {
 			dateRangeMatched = dateMatching(currentEntry, terms);
+		} else {
+			dateRangeMatched = true;
 		}
 
 
@@ -466,7 +466,7 @@ public class Database {
 	/**
 	 * To get file permissions of database like read-only or full access. Should run this method on startup.
 	 * <p>
-	 * Most Common Status
+	 * List of all Statuses
 	 * <p>
 	 * DB_File_Status.FILE_ALL_OK
 	 * DB_File_Status.FILE_READ_ONLY
