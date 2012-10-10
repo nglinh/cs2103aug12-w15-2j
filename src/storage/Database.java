@@ -516,27 +516,28 @@ public class Database {
 	private DB_File_Status parseFileAttributes(FileManagement diskFile) {
 		
 		if(diskFile.getFileAttributes().equals(FileStatus.FILE_ALL_OK)) {
-			fileAttributes = DB_File_Status.FILE_ALL_OK;
+			return DB_File_Status.FILE_ALL_OK;
 		}
 
 		if(diskFile.getFileAttributes().equals(FileStatus.FILE_READ_ONLY))	{
-			fileAttributes = DB_File_Status.FILE_READ_ONLY;
-		}
-
-		if(diskFile.getFileAttributes().equals(FileStatus.FILE_UNUSABLE))	{
-			fileAttributes = DB_File_Status.FILE_UNUSABLE;
-		}
-
-		if(diskFile.getFileAttributes().equals(FileStatus.FILE_PERMISSIONS_UNKNOWN)) {
-			fileAttributes = DB_File_Status.FILE_PERMISSIONS_UNKNOWN;
+			return DB_File_Status.FILE_READ_ONLY;
 		}
 		
 		if(diskFile.getFileAttributes().equals(FileStatus.FILE_IS_CORRUPT)) {
-			fileAttributes = DB_File_Status.FILE_IS_CORRUPT;
+			return DB_File_Status.FILE_IS_CORRUPT;
 		}
 
+		if(diskFile.getFileAttributes().equals(FileStatus.FILE_UNUSABLE))	{
+			return DB_File_Status.FILE_UNUSABLE;
+		}
 
-		return fileAttributes;
+		if(diskFile.getFileAttributes().equals(FileStatus.FILE_PERMISSIONS_UNKNOWN)) {
+			return DB_File_Status.FILE_PERMISSIONS_UNKNOWN;
+		}
+		
+
+
+		return DB_File_Status.FILE_PERMISSIONS_UNKNOWN;
 
 	}
 
