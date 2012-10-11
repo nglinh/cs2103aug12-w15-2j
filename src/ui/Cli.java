@@ -32,12 +32,12 @@ public class Cli extends UI{
 
 	private static final String TABLE_LINE_PARAM_DELIMITER = "|";
 
-	private static final String TABLE_TOP_AND_BOTTOM           = "+--------------------------------------------------------------------------------+";
-	private static final String TABLE_HEADER                   = "|Idx| |  Start/Deadline   |        End        |            What to Do?           |";
-	private static final String TABLE_ROW_DEMARCATION		   = "+---+-+-------------------+-------------------+----------------------------------+";
+	private static final String TABLE_TOP_AND_BOTTOM           = "+------------------------------------------------------------------------------+";
+	private static final String TABLE_HEADER                   = "|Idx| |  Start/Deadline   |        End        |           What to Do?          |";
+	private static final String TABLE_ROW_DEMARCATION		   = "+---+-+-------------------+-------------------+--------------------------------+";
 	private static final String TABLE_ENTRY_FORMAT = TABLE_LINE_PARAM_DELIMITER + "%1$3d" + TABLE_LINE_PARAM_DELIMITER + "%2$s" + TABLE_LINE_PARAM_DELIMITER +  " %3$s " + TABLE_LINE_PARAM_DELIMITER +  " %4$s " + TABLE_LINE_PARAM_DELIMITER +  " %5$s " + TABLE_LINE_PARAM_DELIMITER;
 
-	private static final int 	TABLE_DESCRIPTION_ALLOWANCE = 32;
+	private static final int 	TABLE_DESCRIPTION_ALLOWANCE = 30;
 	private static final String TABLE_ENTRY_OVERFLOW_FORMAT = TABLE_LINE_PARAM_DELIMITER + "                                             "  +   TABLE_LINE_PARAM_DELIMITER + " %1$s " + TABLE_LINE_PARAM_DELIMITER;
 	private static final String TABLE_DESCRIPTION_PAD = "%-" + TABLE_DESCRIPTION_ALLOWANCE + "s";
 
