@@ -14,7 +14,7 @@ import storage.Database;
 import storage.NoMoreUndoStepsException;
 import storage.WillNotWriteToCorruptFileException;
 import shared.Task;
-import shared.SearchTerms;
+
 import storage.Database.DB_File_Status;
 
 public class Logic {
@@ -34,21 +34,26 @@ public class Logic {
 			
 			latestCommandFromUI = new String(command);
 			CommandType commandType = parseCommand(command);
-
 			
+			command = command.replaceFirst(command.trim().split(" ")[0], "").trim();
 			feedback = executeCommand(commandType, command);
 		} catch (NoSuchCommandException e) {
 			feedback = new LogicToUi(
 					"Sorry but I could not understand you. Can you rephrase the message?");
 		} 
 
+			feedback = executeCommand(commandType,command);
+		}
+		catch(NoSuchCommandException e){
+			feedback = new LogicToUi("Sorry but I could not understand you. Can you rephrase the message?");
+		}
 		return feedback;
 	}
 
 	private static CommandType parseCommand(String command)
 			throws NoSuchCommandException {
 		String commandSyntax = command.trim().split(" ")[0];
-		command = command.replaceFirst(commandSyntax, "").trim();
+		
 		CommandType typeOfCommand = determineCommandType(commandSyntax);
 		return typeOfCommand;
 	}
@@ -326,7 +331,7 @@ public class Logic {
 				}
 				return new LogicToUi("Event " + arguments + "added");
 			case DEADLINE:
-				DateTime dt = AddParser.getEndTime(arguments);
+				DateTime dt = AddParser.getBeginTime(arguments);
 				String taskName = AddParser.getTaskName(arguments);
 				try {
 					dataBase.add(new Task(taskName, dt));
@@ -344,11 +349,16 @@ public class Logic {
 				String newTaskName = AddParser.getTaskName(arguments);
 				try {
 					dataBase.add(new Task(newTaskName, st, et));
-					return new LogicToUi("Event " + newTaskName + "added");
+					return new LogicToUi("Event " +newTaskName +" added");
 				} catch (IOException e) {
 					return new LogicToUi(
 							"In/Out error.Please restart the program.");
 				} catch (WillNotWriteToCorruptFileException e) {
+				}
+				catch(IOException e){
+					return new LogicToUi("In/Out error.Please restart the program.");
+				}
+				catch(WillNotWriteToCorruptFileException e){
 					return new LogicToUi("File is corrupted. Please check :(.");
 				}
 			}
@@ -358,6 +368,11 @@ public class Logic {
 					"Something is wrong with the file. I cannot write to it. Please check the permission"
 							+ "for the file");
 		}
+		catch(IOException e){
+		
+			return new LogicToUi("Something is wrong with the file. I cannot write to it. Please check the permission" +
+					"for the file");
+		}
 		return new LogicToUi(
 				"I could not determine the type of your event. Can you be more specific?");
 		// TODO Auto-generated method stub
@@ -365,6 +380,8 @@ public class Logic {
 	}
 
 	public Logic() {
+
+	public Logic(){
 		dataBase = new Database();
 
 	}
