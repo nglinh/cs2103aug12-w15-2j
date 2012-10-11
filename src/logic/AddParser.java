@@ -15,6 +15,9 @@ public class AddParser {
 	public static List<DateGroup> groups;
 	public static TaskType getType(String argument){
 		parser = new Parser(TimeZone.getDefault());
+		String temp = reverseString(argument);
+		temp = removeFrom(temp);	
+		argument = reverseString(temp);
 		groups = parser.parse(argument);
 		if(groups.get(0).getDates().size()==0){
 			return Task.TaskType.FLOATING;
@@ -26,9 +29,22 @@ public class AddParser {
 			return Task.TaskType.TIMED;
 		}
 	}
+	private static String removeFrom(String temp) {
+		String[] stringArray = temp.split(" ");
+		for(int i =0;i<stringArray.length;++i){
+			if(stringArray[i].trim().compareTo("from")==0
+					|| stringArray[i].trim().compareTo("by")==0){
+					stringArray[i]= "";
+					break;
+				}
+		}
+		String result = "";
+		for(int i=0;i<stringArray.length;++i)
+			result = result+stringArray[i]+" ";
+		return result;
+	}
 	public static DateTime getBeginTime(String argument){
 		Date st = groups.get(0).getDates().get(0);
-		System.out.println(st.toString());
 		DateTime result = new DateTime(st);
 		return result;
 	}
@@ -40,12 +56,6 @@ public class AddParser {
 	public static String getTaskName(String argument){
 		int start  = groups.get(0).getPosition();
 		char[] charArray = argument.toCharArray();
-		String temp = "";
-		for(int i=start-6;i<start;++i){
-			temp+=charArray[i];
-		}
-		if(temp.trim().compareTo("from")==0)
-			return formatString(charArray,start-6);
 		return formatString(charArray,start-1);
 	}
 	private static String formatString(char[] charArray, int endString){
@@ -54,5 +64,13 @@ public class AddParser {
 			result += charArray[i];
 		}
 		return result;
+	}
+	private static String reverseString(String str){
+		String[] stringArray = str.trim().split(" ");
+		String temp = "";
+		for(int i =stringArray.length-1;i>=0;--i){
+			temp = temp + stringArray[i]+" ";
+		}
+		return temp;
 	}
 }
