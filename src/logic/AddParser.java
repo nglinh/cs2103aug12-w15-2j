@@ -19,7 +19,7 @@ public class AddParser {
 		temp = removeFrom(temp);	
 		argument = reverseString(temp);
 		groups = parser.parse(argument);
-		if(groups.get(0).getDates().size()==0){
+		if(groups.size()==0){
 			return Task.TaskType.FLOATING;
 		}
 		else if(groups.get(0).getDates().size()==1){
