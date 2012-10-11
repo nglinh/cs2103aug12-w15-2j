@@ -67,7 +67,9 @@ public class FileManagement {
 
 		private static final String LINE_DONE = "D";
 		private static final String LINE_UNDONE = "U";
-
+		
+		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
+		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
 
 		public FileManagement(ArrayList<Task> storeInHere)	{
@@ -277,7 +279,12 @@ public class FileManagement {
 			for(Task temp : toBeWritten) {
 				out.write(TaskToDatabaseString(temp));			
 				out.newLine();
-			}		
+			}
+			
+			String currentTime = LINE_DATE_LONGER_FORMATTER.print(new DateTime());
+			
+			out.write("#Last Modified: " + currentTime);
+			out.newLine();
 
 			out.close();
 		}
