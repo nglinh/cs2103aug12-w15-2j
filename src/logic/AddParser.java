@@ -16,7 +16,6 @@ public class AddParser {
 	public static TaskType getType(String argument){
 		parser = new Parser(TimeZone.getDefault());
 		groups = parser.parse(argument);
-		System.out.println(groups.size());
 		if(groups.get(0).getDates().size()==0){
 			return Task.TaskType.FLOATING;
 		}

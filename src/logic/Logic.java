@@ -9,6 +9,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import shared.LogicToUi;
+import shared.SearchTerms;
 import shared.Task.TaskType;
 import storage.Database;
 import storage.NoMoreUndoStepsException;
@@ -40,12 +41,6 @@ public class Logic {
 		} catch (NoSuchCommandException e) {
 			feedback = new LogicToUi(
 					"Sorry but I could not understand you. Can you rephrase the message?");
-		} 
-
-			feedback = executeCommand(commandType,command);
-		}
-		catch(NoSuchCommandException e){
-			feedback = new LogicToUi("Sorry but I could not understand you. Can you rephrase the message?");
 		}
 		return feedback;
 	}
@@ -350,11 +345,7 @@ public class Logic {
 				try {
 					dataBase.add(new Task(newTaskName, st, et));
 					return new LogicToUi("Event " +newTaskName +" added");
-				} catch (IOException e) {
-					return new LogicToUi(
-							"In/Out error.Please restart the program.");
-				} catch (WillNotWriteToCorruptFileException e) {
-				}
+				} 
 				catch(IOException e){
 					return new LogicToUi("In/Out error.Please restart the program.");
 				}
@@ -368,18 +359,13 @@ public class Logic {
 					"Something is wrong with the file. I cannot write to it. Please check the permission"
 							+ "for the file");
 		}
-		catch(IOException e){
-		
-			return new LogicToUi("Something is wrong with the file. I cannot write to it. Please check the permission" +
-					"for the file");
-		}
 		return new LogicToUi(
 				"I could not determine the type of your event. Can you be more specific?");
 		// TODO Auto-generated method stub
 
 	}
 
-	public Logic() {
+
 
 	public Logic(){
 		dataBase = new Database();
