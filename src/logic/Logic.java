@@ -9,7 +9,7 @@ import shared.Task.TaskType;
 import storage.Database;
 import storage.WillNotWriteToCorruptFileException;
 import shared.Task;
-import shared.SearchTerms;
+
 
 public class Logic {
 	public static enum CommandType{ADD,DELETE};
@@ -21,6 +21,8 @@ public class Logic {
 		try{
 			command = new String(command);
 			CommandType commandType = parseCommand(command); 
+			
+			command = command.replaceFirst(command.trim().split(" ")[0], "").trim();
 			feedback = executeCommand(commandType,command);
 		}
 		catch(NoSuchCommandException e){
@@ -31,7 +33,7 @@ public class Logic {
 
 	private static CommandType parseCommand(String command) throws NoSuchCommandException{
 		String commandSyntax = command.trim().split(" ")[0];
-		command = command.replaceFirst(commandSyntax, "").trim();
+		
 		CommandType typeOfCommand = determineCommandType(commandSyntax);
 		return typeOfCommand;
 	}
@@ -72,7 +74,7 @@ public class Logic {
 				}
 				return new LogicToUi("Event " +arguments +"added");
 			case DEADLINE:
-				DateTime dt = AddParser.getEndTime(arguments);
+				DateTime dt = AddParser.getBeginTime(arguments);
 				String taskName = AddParser.getTaskName(arguments);
 				try{
 					dataBase.add(new Task(taskName,dt));
@@ -92,7 +94,7 @@ public class Logic {
 				String newTaskName = AddParser.getTaskName(arguments);
 				try{
 					dataBase.add(new Task(newTaskName,st,et));
-					return new LogicToUi("Event " +newTaskName +"added");
+					return new LogicToUi("Event " +newTaskName +" added");
 				}
 				catch(IOException e){
 					return new LogicToUi("In/Out error.Please restart the program.");
