@@ -308,7 +308,7 @@ public class Logic {
 
 	}
 	private static String dateToString(DateTime inputDate){
-		String LINE_DATE_FORMAT = "EEE dd MMM yyyy hh:mma";
+		String LINE_DATE_FORMAT = "EEE dd MMM yyyy h:mma";
 		DateTimeFormatter LINE_DATE_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_FORMAT);
 		return LINE_DATE_FORMATTER.print(inputDate);
 	}
