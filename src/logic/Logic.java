@@ -315,22 +315,25 @@ public class Logic {
 
 	private static LogicToUi addTask(String arguments) {
 		try {
+			Task newTask;
 			TaskType taskType = AddParser.getType(arguments);
 			switch (taskType) {
 			case FLOATING:
 				try {
-					dataBase.add(new Task(arguments));
+					newTask = new Task(arguments);
+					dataBase.add(newTask);
 				} catch (WillNotWriteToCorruptFileException e) {
 					return new LogicToUi(
 							"File corrupted. Please fix this first :(");
 				}
-				return new LogicToUi("Event " + arguments + "added");
+				return new LogicToUi(  taskToString(newTask)+ " added");
 			case DEADLINE:
 				DateTime dt = AddParser.getBeginTime(arguments);
 				String taskName = AddParser.getTaskName(arguments);
 				try {
-					dataBase.add(new Task(taskName, dt));
-					return new LogicToUi("Event " + taskName + "added");
+					newTask = new Task(taskName,dt);
+					dataBase.add(newTask);
+					return new LogicToUi(taskToString(newTask) + " added");
 				} catch (IOException e) {
 					return new LogicToUi(
 							"In/Out error. Please restart the program.");
@@ -343,8 +346,9 @@ public class Logic {
 				DateTime et = AddParser.getEndTime(arguments);
 				String newTaskName = AddParser.getTaskName(arguments);
 				try {
-					dataBase.add(new Task(newTaskName, st, et));
-					return new LogicToUi("Event " +newTaskName +" added");
+					newTask = new Task(newTaskName, st, et);
+					dataBase.add(newTask);
+					return new LogicToUi(taskToString(newTask) +" added");
 				} 
 				catch(IOException e){
 					return new LogicToUi("In/Out error.Please restart the program.");
