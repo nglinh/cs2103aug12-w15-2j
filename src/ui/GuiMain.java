@@ -30,10 +30,15 @@ import shared.Task.TaskType;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
+
 import javax.swing.JPanel;
 
 import logic.Logic;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
 
 public class GuiMain extends UI{
 
@@ -48,6 +53,9 @@ public class GuiMain extends UI{
 	private JEditorPane txtCmdHint;
 	private JEditorPane txtStatus;
 	private JPanel panel;
+	
+	private List<String> commandHistory;
+	private ListIterator<String> commandHistoryIterator;
 
 	/**
 	 * Launch the application.
@@ -95,13 +103,36 @@ public class GuiMain extends UI{
 		
 				textCmd = new JTextField();
 				panel.add(textCmd);
+				
+				commandHistory = new LinkedList<String>();
+				commandHistoryIterator = commandHistory.listIterator();
+				
 				textCmd.addKeyListener(new KeyAdapter() {
 					@Override
 					public void keyReleased(KeyEvent arg0) {
 						if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+							commandHistory.add(textCmd.getText());
+							commandHistoryIterator = commandHistory.listIterator(commandHistory.size());
+							
 							executeCommand(textCmd.getText());
 							popupCmdHint.setVisible(false);
-						} else if (textCmd.getText().startsWith("add")) {
+						} else if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_UP) {
+							if (commandHistoryIterator.hasPrevious()) {
+								textCmd.setText(commandHistoryIterator.previous());
+								showHint();
+							}
+						} else if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_DOWN) {
+							if (commandHistoryIterator.hasNext()) {
+								textCmd.setText(commandHistoryIterator.next());
+								showHint();
+							}
+						} else {
+							showHint();
+						}
+					}
+
+					private void showHint() {
+						if (textCmd.getText().startsWith("add")) {
 							txtCmdHint.setText("<html>\r\n<font face=\"Tahoma, Arial, Sans-serif\">\r\n<font size=\"4\">\r\n<b>add</b><br>\r\nAdds a new task<br>\r\n<br>\r\nExamples:<br>\r\n</font>\r\n<font size=\"3\">\r\n<b>add</b> Meeting <b>from</b> 2pm 25/9 <b>to</b> 3pm 25/9<br>\r\n<b>add</b> Complete report <b>by</b> 5pm 25/9<br>\r\n<b>add</b> Search for document<br>\r\n</font>\r\n</font>\r\n</html>");
 							popupCmdHint.setPopupSize(200, 120);
 							popupCmdHint.show(textCmd, 5, textCmd.getHeight());
@@ -129,6 +160,15 @@ public class GuiMain extends UI{
 		popupCmdHint.add(txtCmdHint);
 
 		txtStatus = new JEditorPane();
+		txtStatus.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent event) {
+				if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					if (event.getURL().toString().endsWith("/undo")) {
+						executeCommand("undo");
+					}
+				}
+			}
+		});
 		txtStatus.setBackground(new Color(0, 0, 0, 0));
 		txtStatus.setOpaque(false);
 		panel.add(txtStatus, BorderLayout.SOUTH);
