@@ -157,7 +157,7 @@ public class Logic {
 	//Can only search by keywords for now
 	private static LogicToUi search(String[] splitArguments) {
 		
-		if(splitArguments.length == 0) {
+		if(splitArguments.length == 1) {
 			return new LogicToUi(
 					"No search terms specified.");
 		}
@@ -168,7 +168,13 @@ public class Logic {
 		lastShownToUI = results;
 		latestRefreshCommandForGUI = new String(latestCommandFromUI);
 		
-		return new LogicToUi(results);
+		String statusMsg = "You have searched for ";
+		
+		for(String keyword : keywords) {
+			statusMsg += " \"" + keyword + "\" ";
+		}
+		
+		return new LogicToUi(results, statusMsg);
 	}
 
 	private static LogicToUi undo() {
@@ -211,12 +217,13 @@ public class Logic {
 		
 		if(splitArguments.length == 1) {
 			
+			
 			lastShownToUI = dataBase.readAll();
 			latestRefreshCommandForGUI = new String(latestCommandFromUI);
-			return new LogicToUi(lastShownToUI);
+			return new LogicToUi(lastShownToUI, "List of all tasks");
 		}
 		
-
+		String statusMsg = "Listing based on these paramaters: ";
 
 		String[] parameters = splitArguments[1].split(" ");
 
@@ -230,22 +237,27 @@ public class Logic {
 
 			if (eachParam.equals("completed") || eachParam.equals("done")) {
 				complete = true;
+				statusMsg += " \" done \" ";
 			}
 
 			if (eachParam.equals("incomplete") || eachParam.equals("undone")) {
 				incomplete = true;
+				statusMsg += " \" undone \" ";
 			}
 
 			if (eachParam.equals("timed")) {
 				timed = true;
+				statusMsg += " \" timed \" ";
 			}
 
 			if (eachParam.equals("deadline")) {
 				deadline = true;
+				statusMsg += " \" deadline \" ";
 			}
 
 			if (eachParam.equals("floating")) {
 				floating = true;
+				statusMsg += " \" floating \" ";
 			}
 
 		}
@@ -256,7 +268,7 @@ public class Logic {
 
 		lastShownToUI = results;
 		latestRefreshCommandForGUI = new String(latestCommandFromUI);
-		return new LogicToUi(results);
+		return new LogicToUi(results, statusMsg);
 	}
 
 	private static LogicToUi deleteTask(String[] splitArguments){
