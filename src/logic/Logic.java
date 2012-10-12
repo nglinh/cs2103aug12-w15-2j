@@ -220,7 +220,7 @@ public class Logic {
 		if(status.equals(DB_File_Status.FILE_ALL_OK)) {
 			return new LogicToUi("Database file is ready!");
 		} else if(status.equals(DB_File_Status.FILE_READ_ONLY)) {
-			return new LogicToUi("Database file is read-only. You can only view but not make changes");
+			return new LogicToUi("Database file is read-only or in use by another program. You can only view but not make changes");
 		} else if(status.equals(DB_File_Status.FILE_IS_CORRUPT)) {
 			return new LogicToUi("The database file is corrupt. DoIt has attempted to read in as much as possible. You will not be able to write to the file until the file is cleared");
 		} else {
