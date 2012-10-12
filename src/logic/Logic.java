@@ -3,6 +3,7 @@ package logic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.Stack;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -25,8 +26,10 @@ public class Logic {
 
 	public static Database dataBase = new Database();
 	private static ArrayList<Task> lastShownToUI = new ArrayList<Task>();
-	public static String latestRefreshCommandForGUI = "list";
-	public static String latestCommandFromUI = null;
+	private static String latestRefreshCommandForGUI = "list";
+	private static String latestCommandFromUI = null;
+	private static Stack<String> commandHistory = new Stack<String>();
+
 
 
 	public static LogicToUi uiCommunicator(String command) {
@@ -108,6 +111,14 @@ public class Logic {
 			return null;
 		}
 	}
+	
+	private static void pushCommandToStack() {
+		if(latestCommandFromUI == null) {
+			return;
+		}
+		
+		commandHistory.push(latestCommandFromUI);
+	}
 	private static LogicToUi done(String arguments, boolean newDoneStatus) {
 		if(arguments.length() != 1) {
 			return new LogicToUi(
@@ -130,6 +141,8 @@ public class Logic {
 			Task toBeDone = dataBase.locateATask(serial);
 			toBeDone.done(newDoneStatus);
 			dataBase.update(serial, toBeDone);
+			
+			pushCommandToStack();
 
 			String taskDetails = taskToString(toBeDone);
 			
@@ -185,8 +198,9 @@ public class Logic {
 			}
 			
 			dataBase.undo();
+			String status = "This command \"" + commandHistory.pop() + "\" has been undone"; 
 			
-			return new LogicToUi("Undo Successful");
+			return new LogicToUi(status);
 		} catch (NoMoreUndoStepsException e) {
 			return new LogicToUi("You don't have any more undo steps left");
 		} catch (IOException e) {
@@ -290,6 +304,7 @@ public class Logic {
 			
 			Task toBeDeleted = dataBase.locateATask(serial);
 			dataBase.delete(serial);
+			pushCommandToStack();
 
 			String taskDetails = taskToString(toBeDeleted);
 			return new LogicToUi(taskDetails + " has been deleted.");
@@ -332,6 +347,7 @@ public class Logic {
 				try {
 					newTask = new Task(arguments);
 					dataBase.add(newTask);
+					pushCommandToStack();
 				} catch (WillNotWriteToCorruptFileException e) {
 					return new LogicToUi(
 							"File corrupted. Please fix this first :(");
@@ -343,6 +359,7 @@ public class Logic {
 				try {
 					newTask = new Task(taskName,dt);
 					dataBase.add(newTask);
+					pushCommandToStack();
 					return new LogicToUi(taskToString(newTask) + " added");
 				} catch (IOException e) {
 					return new LogicToUi(
@@ -358,6 +375,7 @@ public class Logic {
 				try {
 					newTask = new Task(newTaskName, st, et);
 					dataBase.add(newTask);
+					pushCommandToStack();
 					return new LogicToUi(taskToString(newTask) +" added");
 				} 
 				catch(IOException e){
