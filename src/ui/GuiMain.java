@@ -32,7 +32,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
 
 public class GuiMain extends UI{
 
@@ -99,6 +98,7 @@ public class GuiMain extends UI{
 					public void keyReleased(KeyEvent arg0) {
 						if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
 							executeCommand(textCmd.getText());
+							popupCmdHint.setVisible(false);
 						} else if (textCmd.getText().startsWith("add")) {
 							txtCmdHint.setText("<html>\r\n<font face=\"Tahoma, Arial, Sans-serif\">\r\n<font size=\"4\">\r\n<b>add</b><br>\r\nAdds a new task<br>\r\n<br>\r\nExamples:<br>\r\n</font>\r\n<font size=\"3\">\r\n<b>add</b> Meeting <b>from</b> 2pm 25/9 <b>to</b> 3pm 25/9<br>\r\n<b>add</b> Complete report <b>by</b> 5pm 25/9<br>\r\n<b>add</b> Search for document<br>\r\n</font>\r\n</font>\r\n</html>");
 							popupCmdHint.setPopupSize(200, 120);
@@ -163,7 +163,9 @@ public class GuiMain extends UI{
 		addPopup(scrollPane, popupStatus);
 		scrollPane.setViewportView(table);
 		
+		String fileStatus = checkFilePermissions();		
 		executeCommand("list");
+		showStatus(fileStatus);
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
@@ -232,15 +234,15 @@ public class GuiMain extends UI{
 
 			String start, end;
 			if(task.getType().equals(TaskType.TIMED)) {
-				start = dateTimeToString(task.getStartTime());
+				start = dateTimeToLongerString(task.getStartTime());
 			} else if(task.getType().equals(TaskType.DEADLINE)) {
-				start = dateTimeToString(task.getDeadline());
+				start = dateTimeToLongerString(task.getDeadline());
 			} else {
 				start = TABLE_EMPTY_DATE_FIELD;
 			}
 
 			if(task.getType().equals(TaskType.TIMED)) {
-				end = dateTimeToString(task.getEndTime());
+				end = dateTimeToLongerString(task.getEndTime());
 			} else {
 				end = TABLE_EMPTY_DATE_FIELD;
 			}
@@ -313,10 +315,10 @@ public class GuiMain extends UI{
 		table.getColumnModel().getColumn(0).setMaxWidth(25);
 		table.getColumnModel().getColumn(1).setMinWidth(20);
 		table.getColumnModel().getColumn(1).setMaxWidth(20);
-		table.getColumnModel().getColumn(2).setMinWidth(120);
-		table.getColumnModel().getColumn(2).setMaxWidth(120);
-		table.getColumnModel().getColumn(3).setMinWidth(120);
-		table.getColumnModel().getColumn(3).setMaxWidth(120);
+		table.getColumnModel().getColumn(2).setMinWidth(150);
+		table.getColumnModel().getColumn(2).setMaxWidth(150);
+		table.getColumnModel().getColumn(3).setMinWidth(150);
+		table.getColumnModel().getColumn(3).setMaxWidth(150);
 		//table.getColumnModel().getColumn(4).setPreferredWidth(160);
 		
 		table.getModel().addTableModelListener(new TableModelListener() {
@@ -353,10 +355,7 @@ public class GuiMain extends UI{
 		//int popupWidth = 300;
 		//int popupHeight = 60;
 
-		txtStatus
-		.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\"><font size=\"4\">"
-				+ returnValue.getString()
-				+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a></font></td></tr></table></html>");
+		showStatus(returnValue.getString());
 
 		//popupStatus.setPopupSize(popupWidth, popupHeight);
 		//popupStatus.show(frmDoit, (frmDoit.getWidth() - popupWidth) / 2,
@@ -370,6 +369,13 @@ public class GuiMain extends UI{
 			showTasksList(returnValue.getList());
 		}
 
+	}
+
+	private void showStatus(String status) {
+		txtStatus
+				.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\"><font size=\"4\">"
+						+ status
+						+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a></font></td></tr></table></html>");
 	}
 
 }
