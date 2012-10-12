@@ -1,9 +1,7 @@
 package logic;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
@@ -38,8 +36,8 @@ public class Logic {
 			latestCommandFromUI = new String(command);
 			CommandType commandType = parseCommand(command);
 			
-			command = command.replaceFirst(command.trim().split(" ")[0], "").trim();
-			feedback = executeCommand(commandType, command);
+			String arguments = command.replaceFirst(command.trim().split(" ")[0], "").trim();
+			feedback = executeCommand(commandType, arguments);
 		} catch (NoSuchCommandException e) {
 			feedback = new LogicToUi(
 					"Sorry but I could not understand you. Can you rephrase the message?");
@@ -86,33 +84,32 @@ public class Logic {
 	private static LogicToUi executeCommand(CommandType commandType,
 			String arguments) {
 		
-		
-		String[] splitArguments = arguments.split(" ", 2);
+	
 		switch (commandType) {
 		case ADD:
 			return addTask(arguments);
 		case DELETE:
-			return deleteTask(splitArguments);
+			return deleteTask(arguments);
 		case LIST:
-			return list(splitArguments);
+			return list(arguments);
 		case FILE_STATUS:
 			return checkfileStatus();
 		case UNDO:
 			return undo();
 		case SEARCH:
-			return search(splitArguments);
+			return search(arguments);
 		case REFRESH:
 			return refresh();
 		case DONE:
-			return done(splitArguments, true);
+			return done(arguments, true);
 		case UNDONE: 
-			return done(splitArguments, false);
+			return done(arguments, false);
 		default:
 			return null;
 		}
 	}
-	private static LogicToUi done(String[] splitArguments, boolean newDoneStatus) {
-		if(splitArguments.length != 1) {
+	private static LogicToUi done(String arguments, boolean newDoneStatus) {
+		if(arguments.length() != 1) {
 			return new LogicToUi(
 					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
 		}
@@ -121,7 +118,7 @@ public class Logic {
 
 		
 		try {
-			index = Integer.parseInt(splitArguments[0]);
+			index = Integer.parseInt(arguments);
 			index--; //Since arraylist index starts from 0
 			
 			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {
@@ -157,13 +154,13 @@ public class Logic {
 	}
 
 	//Can only search by keywords for now
-	private static LogicToUi search(String[] splitArguments) {
+	private static LogicToUi search(String arguments) {
 		
-		if(splitArguments.length == 1) {
+		if(arguments.length() == 0) {
 			return new LogicToUi(
 					"No search terms specified.");
 		}
-		String[] keywords = splitArguments[1].split(" ");
+		String[] keywords = arguments.split(" ");
 		
 		SearchTerms terms = new SearchTerms(keywords);
 		ArrayList<Task> results = dataBase.search(terms);
@@ -215,10 +212,9 @@ public class Logic {
 		}
 	}
 
-	private static LogicToUi list(String[] splitArguments) {
+	private static LogicToUi list(String arguments) {
 		
-		if(splitArguments.length == 1) {
-			
+		if(arguments.length() == 0) {
 			
 			lastShownToUI = dataBase.readAll();
 			latestRefreshCommandForGUI = new String(latestCommandFromUI);
@@ -227,7 +223,7 @@ public class Logic {
 		
 		String statusMsg = "Listing based on these paramaters: ";
 
-		String[] parameters = splitArguments[1].split(" ");
+		String[] parameters = arguments.split(" ");
 
 		boolean complete = false;
 		boolean incomplete = false;
@@ -273,17 +269,17 @@ public class Logic {
 		return new LogicToUi(results, statusMsg);
 	}
 
-	private static LogicToUi deleteTask(String[] splitArguments){
-		if(splitArguments.length == 1) {
+	private static LogicToUi deleteTask(String arguments){
+		if(arguments.length() == 0) {
 			return new LogicToUi(
 					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
 		}
 		
 		int index;
 
-		
+
 		try {
-			index = Integer.parseInt(splitArguments[1]);
+			index = Integer.parseInt(arguments);
 			index--; //Since arraylist index starts from 0
 			
 			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {
