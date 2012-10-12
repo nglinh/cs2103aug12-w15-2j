@@ -156,7 +156,8 @@ public class Logic {
 					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
 		} catch (IOException e) {
 			return new LogicToUi(
-					"In/Out error. Please restart the program.");
+					"Something is wrong with the file. I cannot write to it. Please check the permission"
+							+ "for the file");
 		} catch (WillNotWriteToCorruptFileException e) {
 			return new LogicToUi("File is corrupted. Please check :(.");
 		}
@@ -205,7 +206,8 @@ public class Logic {
 			return new LogicToUi("You don't have any more undo steps left");
 		} catch (IOException e) {
 			return new LogicToUi(
-					"In/Out error. Please restart the program.");
+					"Something is wrong with the file. I cannot write to it. Please check the permission"
+							+ "for the file");
 		} catch (WillNotWriteToCorruptFileException e) {
 			return new LogicToUi("File is corrupted. Please check :(.");
 		}
@@ -313,7 +315,8 @@ public class Logic {
 					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
 		} catch (IOException e) {
 			return new LogicToUi(
-					"In/Out error. Please restart the program.");
+					"Something is wrong with the file. I cannot write to it. Please check the permission"
+							+ "for the file");
 		} catch (WillNotWriteToCorruptFileException e) {
 			return new LogicToUi("File is corrupted. Please check :(.");
 		}
@@ -361,9 +364,6 @@ public class Logic {
 					dataBase.add(newTask);
 					pushCommandToStack();
 					return new LogicToUi(taskToString(newTask) + " added");
-				} catch (IOException e) {
-					return new LogicToUi(
-							"In/Out error. Please restart the program.");
 				} catch (WillNotWriteToCorruptFileException e) {
 					return new LogicToUi("File is corrupted. Please check :(.");
 				}
@@ -378,15 +378,11 @@ public class Logic {
 					pushCommandToStack();
 					return new LogicToUi(taskToString(newTask) +" added");
 				} 
-				catch(IOException e){
-					return new LogicToUi("In/Out error.Please restart the program.");
-				}
 				catch(WillNotWriteToCorruptFileException e){
 					return new LogicToUi("File is corrupted. Please check :(.");
 				}
 			}
 		} catch (IOException e) {
-
 			return new LogicToUi(
 					"Something is wrong with the file. I cannot write to it. Please check the permission"
 							+ "for the file");
