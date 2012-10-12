@@ -50,6 +50,7 @@ public class Task implements Comparable<Task> {
 	public Task(String name) {
 		
 		assert(name != null);
+		assert(name.length() != 0);
 		
 		this.type = TaskType.FLOATING;
 		this.taskName = name;
@@ -68,6 +69,7 @@ public class Task implements Comparable<Task> {
 	public Task(String name, boolean done)	{
 		
 		assert(name != null);
+		assert(name.length() != 0);
 
 		this.type = TaskType.FLOATING;
 		this.taskName = name;
@@ -87,6 +89,7 @@ public class Task implements Comparable<Task> {
 	public Task(String name, DateTime deadline) {
 		
 		assert(name != null);
+		assert(name.length() != 0);
 		
 		assert(deadline != null);
 		assert(!deadline.equals(INVALID_DATE_FIELD));
@@ -111,6 +114,7 @@ public class Task implements Comparable<Task> {
 	public Task(String name, DateTime deadline, boolean done) {
 		
 		assert(name != null);
+		assert(name.length() != 0);
 		
 		assert(deadline != null);
 		assert(!deadline.isEqual(INVALID_DATE_FIELD));
@@ -139,6 +143,7 @@ public class Task implements Comparable<Task> {
 	public Task(String name, DateTime startTime, DateTime endTime) {
 		
 		assert(name != null);
+		assert(name.length() != 0);
 		
 		assert(startTime != null);
 		assert(!startTime.equals(INVALID_DATE_FIELD));
@@ -170,6 +175,7 @@ public class Task implements Comparable<Task> {
 
 	public Task(String name, DateTime startTime, DateTime endTime, boolean done) {
 		assert(name != null);
+		assert(name.length() != 0);
 		
 		assert(startTime != null);
 		assert(!startTime.equals(INVALID_DATE_FIELD));
@@ -377,6 +383,7 @@ public class Task implements Comparable<Task> {
 
 	public void changeName(String newName)	{
 		assert(newName != null);
+		assert(newName.length() != 0);
 		
 		this.taskName = newName;
 	}
