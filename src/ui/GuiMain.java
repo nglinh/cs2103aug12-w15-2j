@@ -33,6 +33,8 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.swing.JPanel;
 
+import logic.Logic;
+
 public class GuiMain extends UI{
 
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
@@ -122,6 +124,8 @@ public class GuiMain extends UI{
 		txtCmdHint = new JEditorPane();
 		txtCmdHint.setEditable(false);
 		txtCmdHint.setContentType("text/html");
+		txtCmdHint.setBackground(new Color(0, 0, 0, 0));
+		txtCmdHint.setOpaque(false);
 		popupCmdHint.add(txtCmdHint);
 
 		txtStatus = new JEditorPane();
@@ -249,7 +253,7 @@ public class GuiMain extends UI{
 
 			switch(col){
 			case COL_INDEX:
-	    			return row+1;
+	    		return row+1;
 			case COL_DONE:
 				return task.isDone();
 			case COL_START:
