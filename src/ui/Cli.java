@@ -19,7 +19,7 @@ import shared.LogicToUi;
 public class Cli extends UI{
 	
 	private static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT! ";
-	private static final String MESSAGE_PROGRAM_READY = "Type \"help\" for a list of commands.";
+	private static final String MESSAGE_INITIAL_HELP_OFFER = "Type \"help\" for a list of commands.";
 	private static final String MESSAGE_NEXT_COMMAND = "Command: ";
 
 
@@ -60,11 +60,11 @@ public class Cli extends UI{
 	public void runUI(){
 		
 
-		System.out.print(MESSAGE_WELCOME_TO_DO_IT);
+		System.out.println(MESSAGE_WELCOME_TO_DO_IT);
 
-		System.out.println(checkFilePermissions());
+		System.out.println(checkFilePermissions() + "\n");
 
-		System.out.println(MESSAGE_PROGRAM_READY);
+		System.out.println(MESSAGE_INITIAL_HELP_OFFER);
 
 		System.out.print(MESSAGE_NEXT_COMMAND);
 
@@ -80,7 +80,7 @@ public class Cli extends UI{
 
 				System.out.println();
 				System.out.println(consoleOut);
-				System.out.println();
+
 
 				System.out.print(MESSAGE_NEXT_COMMAND);
 			}
