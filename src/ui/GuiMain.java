@@ -329,7 +329,7 @@ public class GuiMain extends UI{
 					frmDoit.getHeight() - popupHeight + 5);
 			
 			// Call command to refresh the table
-			showTasksList(sendCommandToLogic("list").getList());
+			showTasksList(sendCommandToLogic("refresh").getList());
 		}
 
 		if (returnValue.isReturnValueAList()) {
