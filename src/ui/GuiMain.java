@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -30,6 +31,8 @@ import shared.Task.TaskType;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import javax.swing.JPanel;
+import javax.swing.JTextPane;
 
 public class GuiMain extends UI{
 
@@ -43,6 +46,7 @@ public class GuiMain extends UI{
 	private JMenu mnSomeMenu;
 	private JEditorPane txtCmdHint;
 	private JEditorPane txtStatus;
+	private JPanel panel;
 
 	/**
 	 * Launch the application.
@@ -72,7 +76,7 @@ public class GuiMain extends UI{
 	private void initialize() {
 		frmDoit = new JFrame();
 		frmDoit.setTitle("DoIt!");
-		frmDoit.setBounds(100, 100, 500, 300);
+		frmDoit.setBounds(100, 100, 500, 400);
 		frmDoit.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -81,31 +85,35 @@ public class GuiMain extends UI{
 		mnSomeMenu = new JMenu("Some Menu");
 		mnSomeMenu.setMnemonic('s');
 		menuBar.add(mnSomeMenu);
-
-
-
-		textCmd = new JTextField();
-		textCmd.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-					executeCommand(textCmd.getText());
-				} else if (textCmd.getText().startsWith("add")) {
-					txtCmdHint.setText("<html>\r\n<font face=\"Tahoma, Arial, Sans-serif\">\r\n<font size=\"4\">\r\n<b>add</b><br>\r\nAdds a new task<br>\r\n<br>\r\nExamples:<br>\r\n</font>\r\n<font size=\"3\">\r\n<b>add</b> Meeting <b>from</b> 2pm 25/9 <b>to</b> 3pm 25/9<br>\r\n<b>add</b> Complete report <b>by</b> 5pm 25/9<br>\r\n<b>add</b> Search for document<br>\r\n</font>\r\n</font>\r\n</html>");
-					popupCmdHint.setPopupSize(200, 120);
-					popupCmdHint.show(textCmd, 5, textCmd.getHeight());
-					textCmd.requestFocus();
-				} else if (textCmd.getText().startsWith("list")) {
-					txtCmdHint.setText("<html>\r\n<font face=\"Tahoma, Arial, Sans-serif\">\r\n<font size=\"4\">\r\n<b>list</b><br>\r\nList tasks<br>\r\n<br>\r\nExamples:<br>\r\n</font>\r\n<font size=\"3\">\r\n<b>list</b><br><b>list all</b><br><b>list done</b><br><b>list etc.</b>\r\n</font>\r\n</font>\r\n</html>");
-					popupCmdHint.setPopupSize(200, 140);
-					popupCmdHint.show(textCmd, 5, textCmd.getHeight());
-					textCmd.requestFocus();
-				} else {
-					popupCmdHint.setVisible(false);
-				}
-			}
-		});
-		frmDoit.getContentPane().add(textCmd, BorderLayout.SOUTH);
+		
+		panel = new JPanel();
+		frmDoit.getContentPane().add(panel, BorderLayout.SOUTH);
+				panel.setLayout(new BorderLayout(0, 0));
+		
+		
+		
+				textCmd = new JTextField();
+				panel.add(textCmd);
+				textCmd.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyReleased(KeyEvent arg0) {
+						if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+							executeCommand(textCmd.getText());
+						} else if (textCmd.getText().startsWith("add")) {
+							txtCmdHint.setText("<html>\r\n<font face=\"Tahoma, Arial, Sans-serif\">\r\n<font size=\"4\">\r\n<b>add</b><br>\r\nAdds a new task<br>\r\n<br>\r\nExamples:<br>\r\n</font>\r\n<font size=\"3\">\r\n<b>add</b> Meeting <b>from</b> 2pm 25/9 <b>to</b> 3pm 25/9<br>\r\n<b>add</b> Complete report <b>by</b> 5pm 25/9<br>\r\n<b>add</b> Search for document<br>\r\n</font>\r\n</font>\r\n</html>");
+							popupCmdHint.setPopupSize(200, 120);
+							popupCmdHint.show(textCmd, 5, textCmd.getHeight());
+							textCmd.requestFocus();
+						} else if (textCmd.getText().startsWith("list")) {
+							txtCmdHint.setText("<html>\r\n<font face=\"Tahoma, Arial, Sans-serif\">\r\n<font size=\"4\">\r\n<b>list</b><br>\r\nList tasks<br>\r\n<br>\r\nExamples:<br>\r\n</font>\r\n<font size=\"3\">\r\n<b>list</b><br><b>list all</b><br><b>list done</b><br><b>list etc.</b>\r\n</font>\r\n</font>\r\n</html>");
+							popupCmdHint.setPopupSize(200, 140);
+							popupCmdHint.show(textCmd, 5, textCmd.getHeight());
+							textCmd.requestFocus();
+						} else {
+							popupCmdHint.setVisible(false);
+						}
+					}
+				});
 		textCmd.setColumns(10);
 
 		popupCmdHint = new JPopupMenu();
@@ -115,6 +123,13 @@ public class GuiMain extends UI{
 		txtCmdHint.setEditable(false);
 		txtCmdHint.setContentType("text/html");
 		popupCmdHint.add(txtCmdHint);
+
+		txtStatus = new JEditorPane();
+		txtStatus.setBackground(new Color(0, 0, 0, 0));
+		txtStatus.setOpaque(false);
+		panel.add(txtStatus, BorderLayout.SOUTH);
+		txtStatus.setEditable(false);
+		txtStatus.setContentType("text/html");
 
 		scrollPane = new JScrollPane();
 		frmDoit.getContentPane().add(scrollPane, BorderLayout.CENTER);
@@ -147,11 +162,6 @@ public class GuiMain extends UI{
 		popupStatus = new JPopupMenu();
 		addPopup(scrollPane, popupStatus);
 		scrollPane.setViewportView(table);
-
-		txtStatus = new JEditorPane();
-		txtStatus.setEditable(false);
-		txtStatus.setContentType("text/html");
-		popupStatus.add(txtStatus);
 		
 		executeCommand("list");
 	}
@@ -340,19 +350,17 @@ public class GuiMain extends UI{
 
 
 
-		int popupWidth = 300;
-		int popupHeight = 60;
+		//int popupWidth = 300;
+		//int popupHeight = 60;
 
 		txtStatus
-		.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\" height=\""
-				+ (popupHeight - 10 /* TODO: */)
-				+ "\"><font size=\"4\">"
+		.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\"><font size=\"4\">"
 				+ returnValue.getString()
-				+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a> &nbsp;<a href=\"http://doit/close\">close</a></font></td></tr></table></html>");
+				+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a></font></td></tr></table></html>");
 
-		popupStatus.setPopupSize(popupWidth, popupHeight);
-		popupStatus.show(frmDoit, (frmDoit.getWidth() - popupWidth) / 2,
-				frmDoit.getHeight() - popupHeight + 5);
+		//popupStatus.setPopupSize(popupWidth, popupHeight);
+		//popupStatus.show(frmDoit, (frmDoit.getWidth() - popupWidth) / 2,
+		//		frmDoit.getHeight() - popupHeight + 5);
 
 		// Call command to refresh the table
 			showTasksList(sendCommandToLogic("refresh").getList());
