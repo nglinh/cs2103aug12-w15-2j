@@ -123,10 +123,11 @@ public class Cli extends UI{
 		LogicToUi logicReturn = sendCommandToLogic(lineFromInput);
 
 		String result;
-		if(logicReturn.isReturnValueAString()) {
-			result =  logicReturn.getString();
+		if(logicReturn.containsList()) {
+			result = formatTaskListToString(logicReturn); 
+			result +=  "\n" + logicReturn.getString() + "\n";
 		} else {
-			result = formatTaskListToString(logicReturn);
+			result = logicReturn.getString();
 		}
 
 		return result;

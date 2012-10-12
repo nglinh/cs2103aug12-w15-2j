@@ -19,21 +19,15 @@ public class LogicToUi {
 		this.output = output;
 	}
 	
-	public LogicToUi(ArrayList<Task> display) {
+	public LogicToUi(ArrayList<Task> display, String output) {
 		assert(display != null);
+		assert(output != null);
 		this.display = display;
+		this.output = output;
 	}
 	
 	
-	public boolean isReturnValueAString() {
-		if (this.output == null) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	public boolean isReturnValueAList() {
+	public boolean containsList() {
 		if (this.display == null) {
 			return false;
 		} else {

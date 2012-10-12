@@ -71,16 +71,16 @@ public class GuiMain extends UI{
 		frmDoit.setTitle("DoIt!");
 		frmDoit.setBounds(100, 100, 500, 300);
 		frmDoit.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		frmDoit.setJMenuBar(menuBar);
-		
+
 		mnSomeMenu = new JMenu("Some Menu");
 		mnSomeMenu.setMnemonic('s');
 		menuBar.add(mnSomeMenu);
-		
-		
-		
+
+
+
 		textCmd = new JTextField();
 		textCmd.addKeyListener(new KeyAdapter() {
 			@Override
@@ -104,27 +104,27 @@ public class GuiMain extends UI{
 		});
 		frmDoit.getContentPane().add(textCmd, BorderLayout.SOUTH);
 		textCmd.setColumns(10);
-		
+
 		popupCmdHint = new JPopupMenu();
 		addPopup(textCmd, popupCmdHint);
-		
+
 		txtCmdHint = new JEditorPane();
 		txtCmdHint.setEditable(false);
 		txtCmdHint.setContentType("text/html");
 		popupCmdHint.add(txtCmdHint);
-		
+
 		scrollPane = new JScrollPane();
 		frmDoit.getContentPane().add(scrollPane, BorderLayout.CENTER);
-		
+
 		table = new JTable();
 		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{new Integer(1), null, "-", "-", "-"},
-			},
-			new String[] {
-				"Idx", "", "Start/Deadline", "End", "What to do?"
-			}
-		) {
+				new Object[][] {
+						{new Integer(1), null, "-", "-", "-"},
+				},
+				new String[] {
+						"Idx", "", "Start/Deadline", "End", "What to do?"
+				}
+				) {
 			@SuppressWarnings("rawtypes")
 			Class[] columnTypes = new Class[] {
 				Integer.class, Boolean.class, Object.class, Object.class, String.class
@@ -139,11 +139,11 @@ public class GuiMain extends UI{
 		table.getColumnModel().getColumn(2).setPreferredWidth(110);
 		table.getColumnModel().getColumn(3).setPreferredWidth(110);
 		table.getColumnModel().getColumn(4).setPreferredWidth(160);
-		
+
 		popupStatus = new JPopupMenu();
 		addPopup(scrollPane, popupStatus);
 		scrollPane.setViewportView(table);
-		
+
 		txtStatus = new JEditorPane();
 		txtStatus.setEditable(false);
 		txtStatus.setContentType("text/html");
@@ -181,7 +181,7 @@ public class GuiMain extends UI{
 			}
 		});
 	}
-	
+
 	class MyTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = 8328597110205703514L;
 		private static final int COL_INDEX = 0;
@@ -189,32 +189,32 @@ public class GuiMain extends UI{
 		private static final int COL_START = 2;
 		private static final int COL_END = 3;
 		private static final int COL_TASKNAME = 4;
-		
+
 		private String[] columnNames;
 		private List<Task> data;
-	    
-	    public MyTableModel(List<Task> taskList){
-	    	columnNames = new String[]{"Idx", "", "Start/Deadline", "End", "Task"};
-	    	data = taskList;
-	    }
 
-	    public int getColumnCount() {
-	        return columnNames.length;
-	    }
+		public MyTableModel(List<Task> taskList){
+			columnNames = new String[]{"Idx", "", "Start/Deadline", "End", "Task"};
+			data = taskList;
+		}
 
-	    public int getRowCount() {
-	        //return data.length;
-	        return data.size();
-	    }
+		public int getColumnCount() {
+			return columnNames.length;
+		}
 
-	    public String getColumnName(int col) {
-	        return columnNames[col];
-	    }
+		public int getRowCount() {
+			//return data.length;
+			return data.size();
+		}
 
-	    public Object getValueAt(int row, int col) {
-	    	Task task = data.get(row);
-	    	
-	    	String start, end;
+		public String getColumnName(int col) {
+			return columnNames[col];
+		}
+
+		public Object getValueAt(int row, int col) {
+			Task task = data.get(row);
+
+			String start, end;
 			if(task.getType().equals(TaskType.TIMED)) {
 				start = dateTimeToString(task.getStartTime());
 			} else if(task.getType().equals(TaskType.DEADLINE)) {
@@ -228,70 +228,70 @@ public class GuiMain extends UI{
 			} else {
 				end = TABLE_EMPTY_DATE_FIELD;
 			}
-	    	
-	    	switch(col){
-	    		case COL_INDEX:
-	    			return row;
-	    		case COL_DONE:
-	    			return task.isDone();
-	    		case COL_START:
-	    			return start;
-	    		case COL_END:
-	    			return end;
-	    		case COL_TASKNAME:
-	    			return task.getTaskName();
-	    		default:
-	    			assert false;
-	    	}
-	    	return null;
-	    }
 
-	    @SuppressWarnings({ "unchecked", "rawtypes" })
-		public Class getColumnClass(int c) {
-	        return getValueAt(0, c).getClass();
-	    }
-
-	    public boolean isCellEditable(int row, int col) {
-	        //Note that the data/cell address is constant,
-	        //no matter where the cell appears on-screen.
-	        if (col != COL_DONE) {
-	            return false;
-	        } else {
-	            return true;
-	        }
-	    }
-	    
-	    /*
-	     * Don't need to implement this method unless your table's
-	     * data can change.
-	     */
-	    public void setValueAt(Object value, int row, int col) {
-	    	// TODO: must handle cell updated to tell the logic task has been marked as done!
-	    	
-	    	Task task = data.get(row);
-	    	
-			switch (col) {
-				case COL_INDEX:
-					assert false;
-					break;
-				case COL_DONE:
-						task.done((boolean) value);
-				case COL_START:
-					break;
-				case COL_END:
-					break;
-				case COL_TASKNAME:
-					break;
-				default:
-					assert false;
+			switch(col){
+			case COL_INDEX:
+				return row;
+			case COL_DONE:
+				return task.isDone();
+			case COL_START:
+				return start;
+			case COL_END:
+				return end;
+			case COL_TASKNAME:
+				return task.getTaskName();
+			default:
+				assert false;
 			}
-			
-	        fireTableCellUpdated(row, col);
-	    }
+			return null;
+		}
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		public Class getColumnClass(int c) {
+			return getValueAt(0, c).getClass();
+		}
+
+		public boolean isCellEditable(int row, int col) {
+			//Note that the data/cell address is constant,
+			//no matter where the cell appears on-screen.
+			if (col != COL_DONE) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		/*
+		 * Don't need to implement this method unless your table's
+		 * data can change.
+		 */
+		public void setValueAt(Object value, int row, int col) {
+			// TODO: must handle cell updated to tell the logic task has been marked as done!
+
+			Task task = data.get(row);
+
+			switch (col) {
+			case COL_INDEX:
+				assert false;
+				break;
+			case COL_DONE:
+				task.done((boolean) value);
+			case COL_START:
+				break;
+			case COL_END:
+				break;
+			case COL_TASKNAME:
+				break;
+			default:
+				assert false;
+			}
+
+			fireTableCellUpdated(row, col);
+		}
 	}
-	
+
 	public void showTasksList(List<Task> taskList){		
-		
+
 		table.setModel(new MyTableModel(taskList));
 		table.getColumnModel().getColumn(0).setMinWidth(25);
 		table.getColumnModel().getColumn(0).setMaxWidth(25);
@@ -303,39 +303,39 @@ public class GuiMain extends UI{
 		table.getColumnModel().getColumn(3).setMaxWidth(120);
 		//table.getColumnModel().getColumn(4).setPreferredWidth(160);
 	}
-	
+
 	public void executeCommand(String text) {
-		
+
 		// Call command parser
 		LogicToUi returnValue = sendCommandToLogic(text);
-		
+
 		// Set command text box to empty
 		textCmd.setText("");
-		
-		if (returnValue.isReturnValueAString()) {
 
-			int popupWidth = 300;
-			int popupHeight = 60;
 
-			txtStatus
-					.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\" height=\""
-							+ (popupHeight - 10 /* TODO: */)
-							+ "\"><font size=\"4\">"
-							+ returnValue.getString()
-							+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a> &nbsp;<a href=\"http://doit/close\">close</a></font></td></tr></table></html>");
 
-			popupStatus.setPopupSize(popupWidth, popupHeight);
-			popupStatus.show(frmDoit, (frmDoit.getWidth() - popupWidth) / 2,
-					frmDoit.getHeight() - popupHeight + 5);
-			
-			// Call command to refresh the table
-			showTasksList(sendCommandToLogic("list").getList());
-		}
+		int popupWidth = 300;
+		int popupHeight = 60;
 
-		if (returnValue.isReturnValueAList()) {
+		txtStatus
+		.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\" height=\""
+				+ (popupHeight - 10 /* TODO: */)
+				+ "\"><font size=\"4\">"
+				+ returnValue.getString()
+				+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a> &nbsp;<a href=\"http://doit/close\">close</a></font></td></tr></table></html>");
+
+		popupStatus.setPopupSize(popupWidth, popupHeight);
+		popupStatus.show(frmDoit, (frmDoit.getWidth() - popupWidth) / 2,
+				frmDoit.getHeight() - popupHeight + 5);
+
+		// Call command to refresh the table
+		showTasksList(sendCommandToLogic("list").getList());
+
+
+		if (returnValue.containsList()) {
 			showTasksList(returnValue.getList());
 		}
-		
+
 	}
 
 }
