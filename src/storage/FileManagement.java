@@ -329,7 +329,14 @@ public class FileManagement {
 		}
 
 		private boolean isFileWritable(File databaseFile) {
-			return databaseFile.canWrite();
+			try	{
+				BufferedWriter out = new BufferedWriter(new FileWriter(filename,true));
+				out.close();
+				return true;
+			}
+			catch(Exception e) {
+				return false;
+			}
 		}
 
 		private boolean isFileReadable(File databaseFile) {
