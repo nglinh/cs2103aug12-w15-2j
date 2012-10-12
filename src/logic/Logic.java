@@ -120,7 +120,7 @@ public class Logic {
 		commandHistory.push(latestCommandFromUI);
 	}
 	private static LogicToUi done(String arguments, boolean newDoneStatus) {
-		if(arguments.length() != 1) {
+		if(arguments.length() == 0) {
 			return new LogicToUi(
 					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
 		}
