@@ -1,7 +1,9 @@
 package logic;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
@@ -110,7 +112,7 @@ public class Logic {
 		}
 	}
 	private static LogicToUi done(String[] splitArguments, boolean newDoneStatus) {
-		if(splitArguments.length == 1) {
+		if(splitArguments.length != 1) {
 			return new LogicToUi(
 					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
 		}
@@ -119,7 +121,7 @@ public class Logic {
 
 		
 		try {
-			index = Integer.parseInt(splitArguments[1]);
+			index = Integer.parseInt(splitArguments[0]);
 			index--; //Since arraylist index starts from 0
 			
 			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {

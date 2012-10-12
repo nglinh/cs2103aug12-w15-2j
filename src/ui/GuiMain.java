@@ -11,8 +11,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -117,6 +120,7 @@ public class GuiMain extends UI{
 		frmDoit.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
+		// Dummy table for WindowBuilder, the table will be filled up by code below
 		table.setModel(new DefaultTableModel(
 				new Object[][] {
 						{new Integer(1), null, "-", "-", "-"},
@@ -148,6 +152,8 @@ public class GuiMain extends UI{
 		txtStatus.setEditable(false);
 		txtStatus.setContentType("text/html");
 		popupStatus.add(txtStatus);
+		
+		executeCommand("list");
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
@@ -183,12 +189,12 @@ public class GuiMain extends UI{
 	}
 
 	class MyTableModel extends AbstractTableModel {
-		private static final long serialVersionUID = 8328597110205703514L;
-		private static final int COL_INDEX = 0;
-		private static final int COL_DONE = 1;
-		private static final int COL_START = 2;
-		private static final int COL_END = 3;
-		private static final int COL_TASKNAME = 4;
+		public static final long serialVersionUID = 8328597110205703514L;
+		public static final int COL_INDEX = 0;
+		public static final int COL_DONE = 1;
+		public static final int COL_START = 2;
+		public static final int COL_END = 3;
+		public static final int COL_TASKNAME = 4;
 
 		private String[] columnNames;
 		private List<Task> data;
@@ -231,7 +237,7 @@ public class GuiMain extends UI{
 
 			switch(col){
 			case COL_INDEX:
-				return row;
+	    			return row+1;
 			case COL_DONE:
 				return task.isDone();
 			case COL_START:
@@ -302,6 +308,26 @@ public class GuiMain extends UI{
 		table.getColumnModel().getColumn(3).setMinWidth(120);
 		table.getColumnModel().getColumn(3).setMaxWidth(120);
 		//table.getColumnModel().getColumn(4).setPreferredWidth(160);
+		
+		table.getModel().addTableModelListener(new TableModelListener() {
+
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				int row = e.getFirstRow();
+				int column = e.getColumn();
+				TableModel model = (TableModel) e.getSource();
+				if (column == MyTableModel.COL_DONE) {
+					boolean done = (boolean) model.getValueAt(row, column);
+					int index = row + 1;
+					if (done) {
+						executeCommand("done " + index);
+					} else {
+						executeCommand("undone " + index);
+					}
+				}
+			}
+
+		});
 	}
 
 	public void executeCommand(String text) {
@@ -329,7 +355,7 @@ public class GuiMain extends UI{
 				frmDoit.getHeight() - popupHeight + 5);
 
 		// Call command to refresh the table
-		showTasksList(sendCommandToLogic("list").getList());
+			showTasksList(sendCommandToLogic("refresh").getList());
 
 
 		if (returnValue.containsList()) {
