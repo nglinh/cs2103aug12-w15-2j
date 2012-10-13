@@ -1,5 +1,11 @@
 package ui;
 
+/**  
+ * Cli.java
+ * A class holding the help contents for Cli
+ * @author  Yeo Kheng Meng
+ */
+
 public class CliHelpText {
 
 	private static final String MESSAGE_NO_SUCH_COMMAND_AVAILABLE = "This command \"%1%s\" is not supported by DoIT.";
@@ -25,6 +31,7 @@ public class CliHelpText {
 
 	public String detailedCommandHelp(String commandHelp) {
 
+		commandHelp = commandHelp.trim();
 		commandHelp = commandHelp.toLowerCase();
 		String helpText = null;
 
@@ -99,23 +106,27 @@ public class CliHelpText {
 	}
 
 	private String edit() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = 
+				"";
+		return text;
 	}
 
 	private String delete() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = 
+				"";
+		return text;
 	}
 
 	private String list() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = 
+				"";
+		return text;
 	}
 
 	private String add() {
-		// TODO Auto-generated method stub
-		return null;
+		String text = 
+				"";
+		return text;
 	}
 
 }
