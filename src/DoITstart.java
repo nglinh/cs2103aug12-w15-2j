@@ -1,11 +1,16 @@
 /**  
  * DoItstart.java 
  * The starting point of the program.
- * Default is GUI, CLI if command line argument is -cli
+ * 
+ * Default is GUI
+ * CliWithJline if command line argument is -cli
+ * Pure compliant CLI if argument is -clisafe or consoleless system
+ * 
  * @author  Yeo Kheng Meng
  */ 
 
 import ui.Cli;
+import ui.CliWithJline;
 import ui.GuiMain;
 import ui.UI;
 
@@ -15,15 +20,31 @@ public class DoITstart {
 	
 	public static void main(String[] args){
 		
-		if (args.length == 1 && args[0].equals("-cli")) {
-			UI doITUi = new Cli();
-			doITUi.runUI();	
-		} 
-		else {
-			UI doITUi = new GuiMain();
-			doITUi.runUI();
-		}
+		UI doITUi;
 		
+		if (args.length == 0) {
+			doITUi = new GuiMain();	
+		} else if (args[0].equals("-cli") && isConsoleAttached()) {
+			doITUi = new CliWithJline();	
+		} else if (args[0].equals("-clisafe")) {
+			doITUi = new Cli();
+		} else {
+			doITUi = new Cli();
+		}
+			
+		
+		doITUi.runUI();	
+	}
+
+	/**
+	 * To check if Terminal Window is attached to DoIt.
+	 * <p>
+	 * The Jline library employs a native hook to the terminal, a console must be attached.                     
+	 *
+	 * @return true if terminal is attached, false if inside Eclipse or in a console-less system
+	 */
+	private static boolean isConsoleAttached() {
+		return System.console() != null;
 	}
 
 }
