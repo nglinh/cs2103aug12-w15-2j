@@ -58,7 +58,7 @@ public class CliWithJline extends Cli{
 
 			}
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} 
 
