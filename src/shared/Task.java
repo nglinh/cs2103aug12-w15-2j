@@ -656,9 +656,9 @@ public class Task implements Comparable<Task> {
 		String typeString;
 		String doneString;
 		
-		if(type.equals(TaskType.TIMED)) {
+		if(this.getType().equals(TaskType.TIMED)) {
 			typeString = TYPE_TIMED;
-		} else if(type.equals(TaskType.DEADLINE)) {
+		} else if(this.getType().equals(TaskType.DEADLINE)) {
 			typeString = TYPE_DEADLINE;
 		} else {
 			typeString = TYPE_FLOATING;
@@ -678,15 +678,15 @@ public class Task implements Comparable<Task> {
 		String end;
 
 
-		if(startTime.equals(INVALID_DATE_FIELD)) {
+		if(this.getStartTime().equals(INVALID_DATE_FIELD)) {
 			start = FILE_EMPTY_DATE;
 		}
 
-		else start = FILE_DATE_FORMAT.print(startTime);
+		else start = FILE_DATE_FORMAT.print(this.getStartTime());
 
 
 
-		if(endTime.equals(INVALID_DATE_FIELD))	{
+		if(this.getEndTime().equals(INVALID_DATE_FIELD))	{
 			end = FILE_EMPTY_DATE;
 		}
 
@@ -694,7 +694,7 @@ public class Task implements Comparable<Task> {
 
 
 
-		if(deadline.equals(INVALID_DATE_FIELD)) {
+		if(this.getDeadline().equals(INVALID_DATE_FIELD)) {
 			dead = FILE_EMPTY_DATE;
 		}
 
