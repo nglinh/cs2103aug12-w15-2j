@@ -23,9 +23,16 @@ public class DoITstart {
 		UI doITUi;
 		
 		if (args.length == 0) {
-			doITUi = new GuiMain();	
+			doITUi = new GuiMain();
+			doITUi.runUI();	
 		} else if (args[0].equals("-cli") && isConsoleAttached()) {
 			doITUi = new CliWithJline();
+			
+			//Only can reach here if CliWithJline has crashed.
+			System.out.println("DoIt will now revert to fail-safe mode");
+			doITUi = new Cli();
+			doITUi.runUI();	
+		
 		} else if (args[0].equals("-clisafe")) {
 			doITUi = new Cli();
 		} else {
@@ -33,11 +40,7 @@ public class DoITstart {
 		}
 			
 		
-		doITUi.runUI();	
-		
-		//Only can reach here if CliWithJline has crashed.
-		System.out.println("DoIt will now revert to fail-safe mode");
-		doITUi = new Cli();
+
 	}
 
 	/**
