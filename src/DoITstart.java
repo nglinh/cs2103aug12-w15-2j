@@ -25,7 +25,7 @@ public class DoITstart {
 		if (args.length == 0) {
 			doITUi = new GuiMain();	
 		} else if (args[0].equals("-cli") && isConsoleAttached()) {
-			doITUi = new CliWithJline();	
+			doITUi = new CliWithJline();
 		} else if (args[0].equals("-clisafe")) {
 			doITUi = new Cli();
 		} else {
@@ -34,12 +34,16 @@ public class DoITstart {
 			
 		
 		doITUi.runUI();	
+		
+		//Only can reach here if CliWithJline has crashed.
+		System.out.println("DoIt will now revert to fail-safe mode");
+		doITUi = new Cli();
 	}
 
 	/**
 	 * To check if Terminal Window is attached to DoIt.
 	 * <p>
-	 * The Jline library employs a native hook to the terminal, a console must be attached.                     
+	 * The Jline library employs a native hook to the terminal, a console must be attached for it to work.                     
 	 *
 	 * @return true if terminal is attached, false if inside Eclipse or in a console-less system
 	 */
