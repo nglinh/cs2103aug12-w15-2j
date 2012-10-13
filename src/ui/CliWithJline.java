@@ -1,5 +1,11 @@
 package ui;
 
+/**  
+ * CliWithJline.java
+ * A class for managing the Cli interface that has features like Tab Completion and Command History
+ * @author  Yeo Kheng Meng
+ */
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +25,16 @@ public class CliWithJline extends Cli{
 
 	private static final Completer listCommand = new StringsCompleter (new String [] {"list"});
 	private static final Completer listArguments = new StringsCompleter (new String [] {"done", "undone", "timed", "deadline", "floating" , "today", "tomorrow"});
+	
+	private static final Completer helpCommand = new StringsCompleter (new String [] {"help"});
+	private static final Completer helpArguments = baseCommandList;
 
 	List<Completer> listSet = new ArrayList<Completer>();
 	ArgumentCompleter listArgCmp;
 	
+	List<Completer> helpSet = new ArrayList<Completer>();
+	ArgumentCompleter helpArgCmp;
+	ConsoleReader console;
 	
 	@Override
 	public void runUI(){
@@ -32,14 +44,20 @@ public class CliWithJline extends Cli{
 		System.out.println();
 		
 		try {
-			ConsoleReader console = new ConsoleReader();
+			console = new ConsoleReader();
 
 			listSet.add(listCommand);
 			listSet.add(listArguments);
 			listArgCmp = new ArgumentCompleter(listSet);
+			
+			helpSet.add(helpCommand);
+			helpSet.add(helpArguments);
+			helpArgCmp = new ArgumentCompleter(helpSet);
+			
 
 			console.addCompleter(baseCommandList);
 			console.addCompleter(listArgCmp);
+			console.addCompleter(helpArgCmp);
 
 
 			console.println(checkFilePermissions() + "\n");
