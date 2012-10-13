@@ -27,6 +27,7 @@ public class DoITstart {
 			doITUi.runUI();	
 		} else if (args[0].equals("-cli") && isConsoleAttached()) {
 			doITUi = new CliWithJline();
+			doITUi.runUI();	
 			
 			//Only can reach here if CliWithJline has crashed.
 			System.out.println("DoIt will now revert to fail-safe mode");
@@ -35,8 +36,10 @@ public class DoITstart {
 		
 		} else if (args[0].equals("-clisafe")) {
 			doITUi = new Cli();
+			doITUi.runUI();
 		} else {
 			doITUi = new Cli();
+			doITUi.runUI();
 		}
 			
 		
