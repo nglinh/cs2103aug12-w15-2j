@@ -36,7 +36,6 @@ import java.util.ListIterator;
 
 import javax.swing.JPanel;
 
-import logic.Logic;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
 
