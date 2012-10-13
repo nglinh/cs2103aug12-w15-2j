@@ -1,18 +1,17 @@
 package ui;
 
+/**  
+ * Cli.java
+ * A class for managing the Cli interface
+ * @author  Yeo Kheng Meng
+ */
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import shared.Task;
 import shared.Task.TaskType;
 import shared.LogicToUi;
-
-/**  
- * Cli.java 
- * A class for managing the Cli interface
- * @author  Yeo Kheng Meng
- */ 
-
 
 public class Cli extends UI{
 
@@ -30,10 +29,10 @@ public class Cli extends UI{
 
 	protected static final String TABLE_TOP_AND_BOTTOM           = "+-----------------------------------------------------------------------------+";
 	protected static final String TABLE_HEADER                   = "|Idx| |  Start/Deadline   |        End        |           What to Do?         |";
-	protected static final String TABLE_ROW_DEMARCATION		   = "+---+-+-------------------+-------------------+-------------------------------+";
+	protected static final String TABLE_ROW_DEMARCATION          = "+---+-+-------------------+-------------------+-------------------------------+";
 	protected static final String TABLE_ENTRY_FORMAT = TABLE_LINE_PARAM_DELIMITER + "%1$3d" + TABLE_LINE_PARAM_DELIMITER + "%2$s" + TABLE_LINE_PARAM_DELIMITER +  " %3$s " + TABLE_LINE_PARAM_DELIMITER +  " %4$s " + TABLE_LINE_PARAM_DELIMITER +  " %5$s " + TABLE_LINE_PARAM_DELIMITER;
 
-	protected static final int 	TABLE_DESCRIPTION_ALLOWANCE = 29;
+	protected static final int    TABLE_DESCRIPTION_ALLOWANCE = 29;
 	protected static final String TABLE_ENTRY_OVERFLOW_FORMAT = TABLE_LINE_PARAM_DELIMITER + "                                             "  +   TABLE_LINE_PARAM_DELIMITER + " %1$s " + TABLE_LINE_PARAM_DELIMITER;
 	protected static final String TABLE_DESCRIPTION_PAD = "%-" + TABLE_DESCRIPTION_ALLOWANCE + "s";
 
@@ -57,10 +56,10 @@ public class Cli extends UI{
 
 		String lineFromInput;
 
-		
 
 
-		while(true)	{
+
+		while(true)     {
 			lineFromInput = scan.nextLine();
 			String consoleOut = processInput(lineFromInput);
 
@@ -96,7 +95,7 @@ public class Cli extends UI{
 		case COMMAND_HELP :
 			outputLine = parseHelp(commandKeyword);
 			break;
-		default : 
+		default :
 			outputLine = passMessageToLogic(lineFromInput);
 
 		}
@@ -111,7 +110,7 @@ public class Cli extends UI{
 
 		String result;
 		if(logicReturn.containsList()) {
-			result = formatTaskListToString(logicReturn); 
+			result = formatTaskListToString(logicReturn);
 			result +=  "\n" + logicReturn.getString() + "\n";
 		} else {
 			result = logicReturn.getString();
@@ -199,7 +198,7 @@ public class Cli extends UI{
 		return returnString;
 	}
 
-	protected String multiLineEntry(int index, String done, String start,	String end, String description) {
+	protected String multiLineEntry(int index, String done, String start, String end, String description) {
 
 		StringBuffer returnEntry = new StringBuffer();
 		int linesRequired =  (int) Math.ceil(((float) description.length()) / TABLE_DESCRIPTION_ALLOWANCE);
@@ -238,6 +237,3 @@ public class Cli extends UI{
 	}
 
 }
-
-
-
