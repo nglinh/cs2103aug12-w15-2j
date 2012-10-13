@@ -1,9 +1,7 @@
 package ui;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import shared.Task;
 import shared.Task.TaskType;
@@ -17,84 +15,69 @@ import shared.LogicToUi;
 
 
 public class Cli extends UI{
-	
-	private static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT! ";
-	private static final String MESSAGE_INITIAL_HELP_OFFER = "Type \"help\" for a list of commands.";
-	private static final String MESSAGE_NEXT_COMMAND = "Command: ";
 
+	protected static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT!";
+	private static final String MESSAGE_CLI_CUSTOM = "(Fail-Safe) No command history and Tab completion";
+	protected static final String MESSAGE_INITIAL_HELP_OFFER = "Type \"help\" for a list of commands.";
+	protected static final String MESSAGE_NEXT_COMMAND = "Command: ";
 
-	
-	private static final String COMMAND_HELP = "help";
-	private static final String COMMAND_EXIT = "exit";
-	private static final String COMMAND_QUIT = "quit";
-	private static final String COMMAND_GAPS = " ";
+	protected static final String COMMAND_HELP = "help";
+	protected static final String COMMAND_EXIT = "exit";
+	protected static final String COMMAND_QUIT = "quit";
+	protected static final String COMMAND_GAPS = " ";
 
+	protected static final String TABLE_LINE_PARAM_DELIMITER = "|";
 
-	private static final String TABLE_LINE_PARAM_DELIMITER = "|";
+	protected static final String TABLE_TOP_AND_BOTTOM           = "+-----------------------------------------------------------------------------+";
+	protected static final String TABLE_HEADER                   = "|Idx| |  Start/Deadline   |        End        |           What to Do?         |";
+	protected static final String TABLE_ROW_DEMARCATION		   = "+---+-+-------------------+-------------------+-------------------------------+";
+	protected static final String TABLE_ENTRY_FORMAT = TABLE_LINE_PARAM_DELIMITER + "%1$3d" + TABLE_LINE_PARAM_DELIMITER + "%2$s" + TABLE_LINE_PARAM_DELIMITER +  " %3$s " + TABLE_LINE_PARAM_DELIMITER +  " %4$s " + TABLE_LINE_PARAM_DELIMITER +  " %5$s " + TABLE_LINE_PARAM_DELIMITER;
 
-	private static final String TABLE_TOP_AND_BOTTOM           = "+-----------------------------------------------------------------------------+";
-	private static final String TABLE_HEADER                   = "|Idx| |  Start/Deadline   |        End        |           What to Do?         |";
-	private static final String TABLE_ROW_DEMARCATION		   = "+---+-+-------------------+-------------------+-------------------------------+";
-	private static final String TABLE_ENTRY_FORMAT = TABLE_LINE_PARAM_DELIMITER + "%1$3d" + TABLE_LINE_PARAM_DELIMITER + "%2$s" + TABLE_LINE_PARAM_DELIMITER +  " %3$s " + TABLE_LINE_PARAM_DELIMITER +  " %4$s " + TABLE_LINE_PARAM_DELIMITER +  " %5$s " + TABLE_LINE_PARAM_DELIMITER;
+	protected static final int 	TABLE_DESCRIPTION_ALLOWANCE = 29;
+	protected static final String TABLE_ENTRY_OVERFLOW_FORMAT = TABLE_LINE_PARAM_DELIMITER + "                                             "  +   TABLE_LINE_PARAM_DELIMITER + " %1$s " + TABLE_LINE_PARAM_DELIMITER;
+	protected static final String TABLE_DESCRIPTION_PAD = "%-" + TABLE_DESCRIPTION_ALLOWANCE + "s";
 
-	private static final int 	TABLE_DESCRIPTION_ALLOWANCE = 29;
-	private static final String TABLE_ENTRY_OVERFLOW_FORMAT = TABLE_LINE_PARAM_DELIMITER + "                                             "  +   TABLE_LINE_PARAM_DELIMITER + " %1$s " + TABLE_LINE_PARAM_DELIMITER;
-	private static final String TABLE_DESCRIPTION_PAD = "%-" + TABLE_DESCRIPTION_ALLOWANCE + "s";
-
-	private static final String TABLE_ENTRY_UNDONE = "-";
-	private static final String TABLE_ENTRY_DONE = "D";
-	private static final String TABLE_EMPTY_DATE_FIELD = "        -        ";
+	protected static final String TABLE_ENTRY_UNDONE = "-";
+	protected static final String TABLE_ENTRY_DONE = "D";
+	protected static final String TABLE_EMPTY_DATE_FIELD = "        -        ";
 
 
 
-	private static final BufferedReader consoleIn =  new BufferedReader(new InputStreamReader(System.in));
-
-
-	CliHelpText cliHelp;
-
-	public Cli(){
-
-		cliHelp = new CliHelpText();
-	}
+	CliHelpText cliHelp = new CliHelpText();
+	Scanner scan = new Scanner(System.in);
 
 	public void runUI(){
-		
+
 
 		System.out.println(MESSAGE_WELCOME_TO_DO_IT);
-
+		System.out.println(MESSAGE_CLI_CUSTOM);
 		System.out.println(checkFilePermissions() + "\n");
-
 		System.out.println(MESSAGE_INITIAL_HELP_OFFER);
-
 		System.out.print(MESSAGE_NEXT_COMMAND);
-
 
 		String lineFromInput;
 
+		
 
 
-		try {
-			while(true)	{
-				lineFromInput = consoleIn.readLine();
-				String consoleOut = processInput(lineFromInput);
+		while(true)	{
+			lineFromInput = scan.nextLine();
+			String consoleOut = processInput(lineFromInput);
 
-				System.out.println();
-				System.out.println(consoleOut);
-
-
-				System.out.print(MESSAGE_NEXT_COMMAND);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println();
+			System.out.println(consoleOut);
+			System.out.print(MESSAGE_NEXT_COMMAND);
 		}
+
+
 
 
 	}
 
 
-	private String processInput(String lineFromInput) {
+	protected String processInput(String lineFromInput) {
 
-
+		assert(lineFromInput != null);
 		lineFromInput = lineFromInput.trim();
 		String outputLine = "";
 		String lineFromInputLowerCase = lineFromInput.toLowerCase();
@@ -105,8 +88,11 @@ public class Cli extends UI{
 		case COMMAND_EXIT :
 			//Fallthrough
 		case COMMAND_QUIT :
+		{
+			scan.close();
 			System.exit(0);
-			break;
+		}
+		break;
 		case COMMAND_HELP :
 			outputLine = parseHelp(commandKeyword);
 			break;
@@ -119,7 +105,8 @@ public class Cli extends UI{
 
 	}
 
-	private String passMessageToLogic(String lineFromInput) {
+	protected String passMessageToLogic(String lineFromInput) {
+		assert(lineFromInput != null);
 		LogicToUi logicReturn = sendCommandToLogic(lineFromInput);
 
 		String result;
@@ -135,11 +122,13 @@ public class Cli extends UI{
 
 
 
-	private String formatTaskListToString(LogicToUi logicReturn) {
+	protected String formatTaskListToString(LogicToUi logicReturn) {
+		assert(logicReturn != null);
+
 		ArrayList<Task> listResults = logicReturn.getList();
 
 		StringBuffer screenTable = new StringBuffer();
-		
+
 		screenTable.append("Current Date/Time is: "+ currentTimeInLongerForm() + "\n");
 
 		screenTable.append(TABLE_TOP_AND_BOTTOM + "\n");
@@ -168,8 +157,8 @@ public class Cli extends UI{
 
 	}
 
-	private String formatTaskEntry(Task entry, int index) {
-
+	protected String formatTaskEntry(Task entry, int index) {
+		assert(entry != null);
 		String returnString;
 
 		String done;
@@ -210,7 +199,7 @@ public class Cli extends UI{
 		return returnString;
 	}
 
-	private String multiLineEntry(int index, String done, String start,	String end, String description) {
+	protected String multiLineEntry(int index, String done, String start,	String end, String description) {
 
 		StringBuffer returnEntry = new StringBuffer();
 		int linesRequired =  (int) Math.ceil(((float) description.length()) / TABLE_DESCRIPTION_ALLOWANCE);
@@ -235,7 +224,7 @@ public class Cli extends UI{
 		return returnEntry.toString();
 	}
 
-	private String parseHelp(String[] separated) {
+	protected String parseHelp(String[] separated) {
 		String text = null;
 		final int FIRST_PARAMETER = 1;
 
