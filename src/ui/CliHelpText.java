@@ -1,7 +1,7 @@
 package ui;
 
 /**  
- * Cli.java
+ * CliHelp.java
  * A class holding the help contents for Cli
  * @author  Yeo Kheng Meng
  */
@@ -24,7 +24,8 @@ public class CliHelpText {
 						"postpone" + "\n" + 
 						"done" + "\n" + 
 						"undone" + "\n" + 
-						"undo" + "\n";
+						"undo" + "\n" +
+						"refresh" + "\n";
 
 		return helpCommands;
 	}
@@ -60,11 +61,20 @@ public class CliHelpText {
 		case "undo" :
 			helpText = undo();
 			break;
+		case "refresh" :
+			helpText = refresh();
+			break;
 		default :
 			helpText =  String.format(MESSAGE_NO_SUCH_COMMAND_AVAILABLE, commandHelp);
 		}
 
 		return helpText;
+	}
+
+	private String refresh() {
+		String text = 
+				"";
+		return text;
 	}
 
 	private String undo() {
