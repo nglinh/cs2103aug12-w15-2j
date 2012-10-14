@@ -30,12 +30,6 @@ public class SearchTerms {
 	public SearchTerms(String[] keywords) {
 		assert(keywords != null);
 		
-		this.completedTasks = true;
-		this.incompleteTasks = true;
-		this.timedTasks = true;
-		this.deadlineTasks = true;
-		this.floatingTasks = true;
-		
 		this.keywords = keywords;
 		
 	}
@@ -43,12 +37,6 @@ public class SearchTerms {
 	public SearchTerms(DateTime startDate, DateTime endDate) {
 		assert(startDate != null);
 		assert(endDate != null);
-		
-		this.completedTasks = true;
-		this.incompleteTasks = true;
-		this.timedTasks = true;
-		this.deadlineTasks = true;
-		this.floatingTasks = true;
 		
 		this.startRange = startDate;
 		this.endRange = endDate;
@@ -61,13 +49,6 @@ public class SearchTerms {
 		assert(keywords != null);
 		assert(startDate != null);
 		assert(endDate != null);
-		
-		
-		this.completedTasks = true;
-		this.incompleteTasks = true;
-		this.timedTasks = true;
-		this.deadlineTasks = true;
-		this.floatingTasks = true;
 		
 		this.startRange = startDate;
 		this.endRange = endDate;
@@ -172,7 +153,7 @@ public class SearchTerms {
 		return floatingTasks;
 	}
 	
-	public boolean doesSearchContainKeymords() {
+	public boolean doesSearchContainKeywords() {
 		if(keywords.length == 0) {
 			return false;
 		} else {
@@ -181,7 +162,7 @@ public class SearchTerms {
 	}
 	
 	public boolean doesSearchContainDateRange() {
-		if(startRange == INVALID_DATE_FIELD) {
+		if(startRange.equals(INVALID_DATE_FIELD)) {
 			return false;
 		} else {
 			return true;

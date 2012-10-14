@@ -115,7 +115,7 @@ public class Database {
 				taskTimed = true;
 			}
 
-			if((terms.doesSearchContainKeymords() == false) || keywordMatching(currentEntry, terms)) {
+			if((terms.doesSearchContainKeywords() == false) || keywordMatching(currentEntry, terms)) {
 				keywordMatched = true;
 			}
 
