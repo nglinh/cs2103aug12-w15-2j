@@ -62,15 +62,29 @@ public class Logic {
 		
 		switch (string.toLowerCase()) {
 		case "add":
+			//Fallthrough
+		case "a" :
 			return CommandType.ADD;
 		case "delete":
+			//Fallthrough
+		case "del" :
 			return CommandType.DELETE;
+		
 		case "list":
+			//Fallthrough
+		case "l" :
+			//Fallthrough
+		case "ls" :
 			return CommandType.LIST;
+		
 		case "search":
 			return CommandType.SEARCH;
+		
 		case "undo":
+			//Fallthrough
+		case "u" :
 			return CommandType.UNDO;
+		
 		case "filestatus":
 			return CommandType.FILE_STATUS;
 		case "refresh":
@@ -237,7 +251,7 @@ public class Logic {
 			return new LogicToUi(lastShownToUI, "List of all tasks");
 		}
 		
-		String statusMsg = "Listing based on these paramaters: ";
+		String statusMsg = "Listing based on these parameters: ";
 
 		String[] parameters = arguments.split(" ");
 
@@ -288,7 +302,7 @@ public class Logic {
 	private static LogicToUi deleteTask(String arguments){
 		if(arguments.length() == 0) {
 			return new LogicToUi(
-					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
+					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
 		}
 		
 		int index;
