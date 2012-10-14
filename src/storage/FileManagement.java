@@ -342,4 +342,12 @@ public class FileManagement {
 		private boolean isFileReadable(File databaseFile) {
 			return databaseFile.canRead();
 		}
+		
+		public boolean isFileCorrupt() {
+			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 }
