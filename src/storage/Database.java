@@ -252,13 +252,7 @@ public class Database {
 
 			assert(newTask != null);
 
-			if(diskFile.canWriteFile() == false) {
-				throw new IOException();
-			}
-			
-			if(diskFile.isFileCorrupt()) {
-				throw new WillNotWriteToCorruptFileException();
-			}
+			verifyFileAttributes();
 
 			cloneDatabase();
 
@@ -303,14 +297,7 @@ public class Database {
 		public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException{
 			assert(updated != null);
 
-
-			if(diskFile.canWriteFile() == false) {
-				throw new IOException();
-			}
-			
-			if(diskFile.isFileCorrupt()) {
-				throw new WillNotWriteToCorruptFileException();
-			}
+			verifyFileAttributes();
 
 			cloneDatabase();
 
@@ -335,6 +322,26 @@ public class Database {
 
 		}
 
+		private void verifyFileAttributes() throws IOException,
+				WillNotWriteToCorruptFileException {
+			if(fileAttributes.equals(DB_File_Status.FILE_PERMISSIONS_UNKNOWN)
+					|| fileAttributes.equals(DB_File_Status.FILE_UNUSABLE)) {
+				throw new IOException();
+			}
+			
+			if(fileAttributes.equals(DB_File_Status.FILE_IS_CORRUPT)) {
+				throw new WillNotWriteToCorruptFileException();
+			}
+				
+			if(diskFile.canWriteFile() == false) {
+				fileAttributes = DB_File_Status.FILE_READ_ONLY;
+				throw new IOException();
+			}
+			
+			fileAttributes = DB_File_Status.FILE_ALL_OK;
+
+		}
+
 		/**
 		 * To delete existing task in database   
 		 *                         
@@ -347,13 +354,7 @@ public class Database {
 
 		public void delete(int serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
 
-			if(diskFile.canWriteFile() == false) {
-				throw new IOException();
-			}
-
-			if(diskFile.isFileCorrupt()) {
-				throw new WillNotWriteToCorruptFileException();
-			}
+			verifyFileAttributes();
 			
 			cloneDatabase();
 
@@ -393,13 +394,7 @@ public class Database {
 
 
 		public void deleteAll() throws IOException, WillNotWriteToCorruptFileException {
-			if(diskFile.canWriteFile() == false) {
-				throw new IOException();
-			}
-			
-			if(diskFile.isFileCorrupt()) {
-				throw new WillNotWriteToCorruptFileException();
-			}
+			verifyFileAttributes();
 
 			cloneDatabase();
 			taskStore.clear();
@@ -414,13 +409,7 @@ public class Database {
 		 */
 
 		public void deleteDone() throws IOException, WillNotWriteToCorruptFileException {
-			if(diskFile.canWriteFile() == false) {
-				throw new IOException();
-			}
-			
-			if(diskFile.isFileCorrupt()) {
-				throw new WillNotWriteToCorruptFileException();
-			}
+			verifyFileAttributes();
 
 			cloneDatabase();
 
@@ -447,13 +436,7 @@ public class Database {
 		 */
 
 		public void deleteOver() throws IOException, WillNotWriteToCorruptFileException {
-			if(diskFile.canWriteFile() == false) {
-				throw new IOException();
-			}
-			
-			if(diskFile.isFileCorrupt()) {
-				throw new WillNotWriteToCorruptFileException();
-			}
+			verifyFileAttributes();
 
 			cloneDatabase();
 
@@ -507,13 +490,7 @@ public class Database {
 
 		public void undo() throws IOException, NoMoreUndoStepsException, WillNotWriteToCorruptFileException {
 
-			if(diskFile.canWriteFile() == false) {
-				throw new IOException();
-			}
-			
-			if(diskFile.isFileCorrupt()) {
-				throw new WillNotWriteToCorruptFileException();
-			}
+			verifyFileAttributes();
 
 
 			if(undoOperations.isEmpty()) {
