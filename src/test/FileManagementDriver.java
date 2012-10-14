@@ -22,13 +22,13 @@ public class FileManagementDriver {
 		System.out.println(filemgr.getFileAttributes());
 		
 		Task floatingtask = new Task("Test Floating", true);
-		Task floatingtask2 = new Task("Test Floating2", true);
+		Task floatingtask2 = new Task("Test Floating2", false);
 		
 		
-		Task deadlinetask = new Task("Test deadline", new DateTime());
+		Task deadlinetask = new Task("Test deadline", new DateTime(), true);
 		Task deadlinetask2 = new Task("Test deadline2", new DateTime().minusYears(5));
 		
-		Task timedtask = new Task("Test Timed", new DateTime().minusDays(100), new DateTime(2013, 12, 31, 00, 00), false);
+		Task timedtask = new Task("Test Timed", new DateTime().minusDays(100), new DateTime(2013, 12, 31, 00, 00), true);
 		Task timedtask2 = new Task("Test Timed2", new DateTime(2011, 9, 5, 23,59), new DateTime(2013, 12, 31, 00, 00), false);
 		
 		taskStoretest.add(floatingtask);
