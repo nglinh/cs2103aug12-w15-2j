@@ -50,8 +50,6 @@ public class FileManagement {
 
 		private static final int LINE_NUM_FIELDS = 6;
 
-		private FileStatus fileAttributes;
-
 
 		private static final String[] filehelp = {	"##########################################################################################################################################" ,
 			"#<Type F/D/T> | <Done U/D> | <Deadline dd-MMM-yyyy HHmm> | <Start dd-MMM-yyyy HHmm> | <End dd-MMM-yyyy HHmm> | <Task>                    #" ,
@@ -71,7 +69,11 @@ public class FileManagement {
 		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
 		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
-
+		private final int ZERO_LENGTH_TASK_NAME = 0;
+		
+		private FileStatus fileAttributes;
+		
+		
 		public FileManagement(ArrayList<Task> storeInHere)	{
 			assert(storeInHere != null);
 
@@ -135,8 +137,11 @@ public class FileManagement {
 			DateTime startDate = parseDate(parsed[LINE_POSITION_START_DATE]); 
 			DateTime endDate = parseDate(parsed[LINE_POSITION_END_DATE]); 
 
-			String taskname = parsed[LINE_POSITION_TASKNAME];
-
+			String taskName = parsed[LINE_POSITION_TASKNAME];
+			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
+				throw new DataFormatException();
+			}
+			
 			boolean done;
 
 			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
@@ -147,7 +152,7 @@ public class FileManagement {
 
 
 
-			return new Task(taskname, startDate, endDate, done);
+			return new Task(taskName, startDate, endDate, done);
 		}
 
 
@@ -158,7 +163,11 @@ public class FileManagement {
 			}
 			
 			DateTime deadline = parseDate(parsed[LINE_POSITION_DEADLINE_DATE]);
-			String taskname = parsed[LINE_POSITION_TASKNAME];
+			String taskName = parsed[LINE_POSITION_TASKNAME];
+			
+			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
+				throw new DataFormatException();
+			}
 
 			boolean done;
 
@@ -168,12 +177,17 @@ public class FileManagement {
 				done = false;
 			}
 
-			return new Task(taskname, deadline, done);
+			return new Task(taskName, deadline, done);
 		}
 
 		private Task parseInFloatingTask(String[] parsed) throws DataFormatException {
 
 			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
+				throw new DataFormatException();
+			}
+			
+			String taskName = parsed[LINE_POSITION_TASKNAME];
+			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
 				throw new DataFormatException();
 			}
 			
@@ -186,7 +200,7 @@ public class FileManagement {
 			}
 
 
-			return new Task(parsed[LINE_POSITION_TASKNAME], done);
+			return new Task(taskName, done);
 		}
 
 
