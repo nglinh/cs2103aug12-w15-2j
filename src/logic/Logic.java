@@ -251,27 +251,27 @@ public class Logic {
 
 			if (eachParam.equals("completed") || eachParam.equals("done")) {
 				complete = true;
-				statusMsg += " \" done \" ";
+				statusMsg += " \"done\" ";
 			}
 
 			if (eachParam.equals("incomplete") || eachParam.equals("undone")) {
 				incomplete = true;
-				statusMsg += " \" undone \" ";
+				statusMsg += " \"undone\" ";
 			}
 
 			if (eachParam.equals("timed")) {
 				timed = true;
-				statusMsg += " \" timed \" ";
+				statusMsg += " \"timed\" ";
 			}
 
 			if (eachParam.equals("deadline")) {
 				deadline = true;
-				statusMsg += " \" deadline \" ";
+				statusMsg += " \"deadline\" ";
 			}
 
 			if (eachParam.equals("floating")) {
 				floating = true;
-				statusMsg += " \" floating \" ";
+				statusMsg += " \"floating\" ";
 			}
 
 		}
