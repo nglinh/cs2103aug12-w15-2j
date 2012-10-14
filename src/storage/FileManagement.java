@@ -53,13 +53,13 @@ public class FileManagement {
 
 
 		private static final String[] filehelp = {
-			"######################################################################################################################################################" ,
-			"#Ref | Type | Done |     Deadline     |       Start      |       End        |                                <Task>                                  #" ,
-			"#  1 |  D   |   D  | 01-Jan-2012 0600 | ---------------- | ---------------- | This is a undone deadline task 0600 on 1st Jan 2012.                   #" ,
-			"#  2 |  T   |   U  | ---------------- | 31-Dec-2012 2359 | 28-Feb-2013 2248 | This is an undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #" , 
-			"#  3 |  F   |   D  | ---------------- | ---------------- | ---------------- | This is a done floating task.                                          #" ,
-			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                               #" ,
-			"######################################################################################################################################################"	
+			"##############################################################################################################################################" ,
+			"# Ref| Type | Done |     Deadline     |       Start      |       End        |                                  Task                          #" ,
+			"#  1 |  D   |   D  | 01-Jan-2012 0600 | ---------------- | ---------------- | An undone deadline task by 0600 1st Jan 2012                   #" ,
+			"#  2 |  T   |   U  | ---------------- | 31-Dec-2012 2359 | 28-Feb-2013 2248 | An undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #" , 
+			"#  3 |  F   |   D  | ---------------- | ---------------- | ---------------- | A done floating task                                           #" ,
+			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                       #" ,
+			"##############################################################################################################################################"	
 		};
 
 		private static final String LINE_FLOATING = "F";
