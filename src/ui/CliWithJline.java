@@ -21,13 +21,13 @@ public class CliWithJline extends Cli{
 	protected static final String MESSAGE_INITIAL_HELP_OFFER_JLINE = "Press Tab or type \"help\" for a list of commands.";
 	
 	
-	private static final Completer baseCommandList = new StringsCompleter (new String [] {"help", "add", "list", "refresh", "delete", "edit", "postpone", "done", "undone", "undo", "exit"});
+	private static final Completer baseCommandList = new StringsCompleter (new String [] {"help", "add", "list", "refresh", "delete", "edit", "postpone", "done", "undone", "undo", "search", "exit"});
 
 	private static final Completer helpCommand = new StringsCompleter (new String [] {"help"});
 	private static final Completer helpArguments = baseCommandList;
 	
 	private static final Completer listCommand = new StringsCompleter (new String [] {"list", "ls", "l"});
-	private static final Completer listArguments = new StringsCompleter (new String [] {"done", "undone", "timed", "deadline", "floating" , "today", "tomorrow"});
+	private static final Completer listArguments = new StringsCompleter (new String [] {"done", "undone", "timed", "deadline", "floating" , "today", "tomorrow", "overdue", "thisweek", "nextweek"});
 	
 	private static final Completer delCommand = new StringsCompleter (new String [] {"del", "delete", "d"});
 	private static final Completer delArguments = new StringsCompleter (new String [] {"all", "over", "done", "completed"});
