@@ -9,20 +9,23 @@ import org.joda.time.DateTime;
 
 public class SearchTerms {
 
+	public static final DateTime INVALID_DATE_FIELD = new DateTime(Long.MAX_VALUE);
+	
+	
 	private boolean completedTasks = false;
 	private boolean incompleteTasks = false;
 	private boolean timedTasks = false;
 	private boolean deadlineTasks = false;
 	private boolean floatingTasks = false;
 
-	private String keywords[] = null; //Not case sensitive
+	private String keywords[] = new String[0]; //Not case sensitive
 	
 	//  may support if needed
 	//	private boolean caseSensitive = false;
 
 	//Have to make sure startDate is always before endDate
-	private DateTime startRange = null;
-	private DateTime endRange = null;
+	private DateTime startRange = INVALID_DATE_FIELD;
+	private DateTime endRange = INVALID_DATE_FIELD;
 	
 	public SearchTerms(String[] keywords) {
 		assert(keywords != null);
@@ -77,7 +80,7 @@ public class SearchTerms {
 	
 	
 
-	public SearchTerms(boolean completedTasks,boolean incompleteTasks, 
+	public SearchTerms(boolean completedTasks, boolean incompleteTasks, 
 			boolean timedTasks, boolean deadlineTasks, boolean floatingTasks) {
 
 		this.completedTasks = completedTasks;
@@ -88,7 +91,7 @@ public class SearchTerms {
 		
 	}
 	
-	public SearchTerms(boolean completedTasks,boolean incompleteTasks, 
+	public SearchTerms(boolean completedTasks, boolean incompleteTasks, 
 			boolean timedTasks, boolean deadlineTasks, boolean floatingTasks,
 			String[] keywords) {
 
@@ -103,7 +106,7 @@ public class SearchTerms {
 		this.keywords = keywords;		
 	}
 	
-	public SearchTerms(boolean completedTasks,boolean incompleteTasks, 
+	public SearchTerms(boolean completedTasks, boolean incompleteTasks, 
 			boolean timedTasks, boolean deadlineTasks, boolean floatingTasks,
 			DateTime startDate, DateTime endDate) {
 		
@@ -124,7 +127,7 @@ public class SearchTerms {
 		
 	}
 
-	public SearchTerms(boolean completedTasks,boolean incompleteTasks, 
+	public SearchTerms(boolean completedTasks, boolean incompleteTasks, 
 			boolean timedTasks, boolean deadlineTasks, boolean floatingTasks,
 			String[] keywords, DateTime startDate, DateTime endDate) {
 
@@ -170,7 +173,7 @@ public class SearchTerms {
 	}
 	
 	public boolean doesSearchContainKeymords() {
-		if(keywords == null) {
+		if(keywords.length == 0) {
 			return false;
 		} else {
 			return true;
@@ -178,21 +181,42 @@ public class SearchTerms {
 	}
 	
 	public boolean doesSearchContainDateRange() {
-		if(startRange == null) {
+		if(startRange == INVALID_DATE_FIELD) {
 			return false;
 		} else {
 			return true;
 		}
 	}
+	
+	/**
+	 * Get search keywords                           
+	 *
+	 * @return array of keywords or size 0 array if not filled          
+	 *  
+	 */
 
 
 	public String[] getKeywords() {
 		return keywords;
 	}
 	
+	/**
+	 * Get start range of search                           
+	 *
+	 * @return start range if valid or SearchTerms.INVALID_DATE_FIELD if not filled.           
+	 *  
+	 */
+	
 	public DateTime getStartRange() {
 		return startRange;
 	}
+	
+	/**
+	 * Get end range of search                           
+	 *
+	 * @return end range if valid or SearchTerms.INVALID_DATE_FIELD if not filled.           
+	 *  
+	 */
 	
 	public DateTime getEndRange() {
 		return endRange;
