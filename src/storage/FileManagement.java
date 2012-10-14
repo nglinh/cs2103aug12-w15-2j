@@ -39,24 +39,27 @@ public class FileManagement {
 		private static final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm";
 		private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern(LINE_DATE_TIME_FORMAT);
 
-		private static final String FILE_LINE_FORMAT = "%1$s" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s";
+		private static final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
 
-		private static final int LINE_POSITION_TASKTYPE = 0;
-		private static final int LINE_POSITION_DONE = 1;
-		private static final int LINE_POSITION_DEADLINE_DATE = 2;
-		private static final int LINE_POSITION_START_DATE = 3;
-		private static final int LINE_POSITION_END_DATE = 4;
-		private static final int LINE_POSITION_TASKNAME = 5;
+		private static final int LINE_POSITION_TASKINDEX = 0;
+		private static final int LINE_POSITION_TASKTYPE = 1;
+		private static final int LINE_POSITION_DONE = 2;
+		private static final int LINE_POSITION_DEADLINE_DATE = 3;
+		private static final int LINE_POSITION_START_DATE = 4;
+		private static final int LINE_POSITION_END_DATE = 5;
+		private static final int LINE_POSITION_TASKNAME = 6;
 
-		private static final int LINE_NUM_FIELDS = 6;
+		private static final int LINE_NUM_FIELDS = 7;
 
 
-		private static final String[] filehelp = {	"##########################################################################################################################################" ,
-			"#<Type F/D/T> | <Done U/D> | <Deadline dd-MMM-yyyy HHmm> | <Start dd-MMM-yyyy HHmm> | <End dd-MMM-yyyy HHmm> | <Task>                    #" ,
-			"#D | U | 01-Jan-2012 0600 | ---------------- | ---------------- | This is a undone deadline task 0600 on 1st Jan 2012.                   #" ,
-			"#T | U | ---------------- | 31-Dec-2012 2359 | 28-Feb-2013 2248 | This is an undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #" , 
-			"#F | D | ---------------- | ---------------- | ---------------- | This is a done floating task.                                          #" ,
-			"##########################################################################################################################################"	
+		private static final String[] filehelp = {
+			"######################################################################################################################################################" ,
+			"#Ref | Type | Done |     Deadline     |       Start      |       End        |                                <Task>                                  #" ,
+			"#  1 |  D   |   D  | 01-Jan-2012 0600 | ---------------- | ---------------- | This is a undone deadline task 0600 on 1st Jan 2012.                   #" ,
+			"#  2 |  T   |   U  | ---------------- | 31-Dec-2012 2359 | 28-Feb-2013 2248 | This is an undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #" , 
+			"#  3 |  F   |   D  | ---------------- | ---------------- | ---------------- | This is a done floating task.                                          #" ,
+			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                               #" ,
+			"######################################################################################################################################################"	
 		};
 
 		private static final String LINE_FLOATING = "F";
@@ -65,15 +68,15 @@ public class FileManagement {
 
 		private static final String LINE_DONE = "D";
 		private static final String LINE_UNDONE = "U";
-		
+
 		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
 		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
 		private final int ZERO_LENGTH_TASK_NAME = 0;
-		
+
 		private FileStatus fileAttributes;
-		
-		
+
+
 		public FileManagement(ArrayList<Task> storeInHere)	{
 			assert(storeInHere != null);
 
@@ -133,7 +136,7 @@ public class FileManagement {
 			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
 				throw new DataFormatException();
 			}
-			
+
 			DateTime startDate = parseDate(parsed[LINE_POSITION_START_DATE]); 
 			DateTime endDate = parseDate(parsed[LINE_POSITION_END_DATE]); 
 
@@ -141,7 +144,7 @@ public class FileManagement {
 			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
 				throw new DataFormatException();
 			}
-			
+
 			boolean done;
 
 			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
@@ -161,10 +164,10 @@ public class FileManagement {
 			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
 				throw new DataFormatException();
 			}
-			
+
 			DateTime deadline = parseDate(parsed[LINE_POSITION_DEADLINE_DATE]);
 			String taskName = parsed[LINE_POSITION_TASKNAME];
-			
+
 			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
 				throw new DataFormatException();
 			}
@@ -185,12 +188,12 @@ public class FileManagement {
 			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
 				throw new DataFormatException();
 			}
-			
+
 			String taskName = parsed[LINE_POSITION_TASKNAME];
 			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
 				throw new DataFormatException();
 			}
-			
+
 			boolean done;
 
 			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
@@ -206,18 +209,18 @@ public class FileManagement {
 
 		private DateTime parseDate(String parsed) throws DataFormatException {
 			DateTime parsedDate = null;
-			
+
 			try {
 				parsedDate = new DateTime(FILE_DATE_FORMAT.parseDateTime(parsed));
 			} catch (IllegalArgumentException e) {
 				throw new DataFormatException();
 			}
-			
+
 			return parsedDate;
 		}
 
 
-		private String TaskToDatabaseString(Task toBeConverted) {	
+		private String TaskToDatabaseString(Task toBeConverted, int index) {	
 
 
 
@@ -250,7 +253,7 @@ public class FileManagement {
 
 			String task = toBeConverted.getTaskName();
 
-			return String.format(FileManagement.FILE_LINE_FORMAT, typeString, doneString, deadline, start, end, task);
+			return String.format(FileManagement.FILE_LINE_FORMAT, index, typeString, doneString, deadline, start, end, task);
 		}
 
 
@@ -282,7 +285,7 @@ public class FileManagement {
 			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
 				throw new WillNotWriteToCorruptFileException();
 			}
-			
+
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 
 			for(String helpline : filehelp)	{
@@ -290,13 +293,16 @@ public class FileManagement {
 				out.newLine();
 			}
 
+			int index = 1;
+
 			for(Task temp : toBeWritten) {
-				out.write(TaskToDatabaseString(temp));			
+				out.write(TaskToDatabaseString(temp, index));			
 				out.newLine();
+				index++;
 			}
-			
+
 			String currentTime = LINE_DATE_LONGER_FORMATTER.print(new DateTime());
-			
+
 			out.write("#Last Modified: " + currentTime);
 			out.newLine();
 
@@ -356,7 +362,7 @@ public class FileManagement {
 		private boolean isFileReadable(File databaseFile) {
 			return databaseFile.canRead();
 		}
-		
+
 		public boolean isFileCorrupt() {
 			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
 				return true;
