@@ -146,15 +146,16 @@ public class Database {
 
 	}
 
+	//Check if task contains all the keywords specified
 	private boolean keywordMatching(Task currentEntry, SearchTerms terms) {
-		boolean match = false;
+		boolean match = true;
 
 		String[] keywordList = terms.getKeywords();
 
 		for(String word : keywordList)	{
 
-			if(currentEntry.searchName(word))	{
-				match = true;
+			if(!currentEntry.searchName(word))	{
+				match = false;
 			}
 		}
 
