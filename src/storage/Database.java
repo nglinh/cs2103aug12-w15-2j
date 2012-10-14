@@ -255,6 +255,10 @@ public class Database {
 			if(diskFile.canWriteFile() == false) {
 				throw new IOException();
 			}
+			
+			if(diskFile.isFileCorrupt()) {
+				throw new WillNotWriteToCorruptFileException();
+			}
 
 			cloneDatabase();
 
@@ -303,6 +307,10 @@ public class Database {
 			if(diskFile.canWriteFile() == false) {
 				throw new IOException();
 			}
+			
+			if(diskFile.isFileCorrupt()) {
+				throw new WillNotWriteToCorruptFileException();
+			}
 
 			cloneDatabase();
 
@@ -343,6 +351,10 @@ public class Database {
 				throw new IOException();
 			}
 
+			if(diskFile.isFileCorrupt()) {
+				throw new WillNotWriteToCorruptFileException();
+			}
+			
 			cloneDatabase();
 
 			boolean isOriginalTaskFound = false;
@@ -384,6 +396,10 @@ public class Database {
 			if(diskFile.canWriteFile() == false) {
 				throw new IOException();
 			}
+			
+			if(diskFile.isFileCorrupt()) {
+				throw new WillNotWriteToCorruptFileException();
+			}
 
 			cloneDatabase();
 			taskStore.clear();
@@ -400,6 +416,10 @@ public class Database {
 		public void deleteDone() throws IOException, WillNotWriteToCorruptFileException {
 			if(diskFile.canWriteFile() == false) {
 				throw new IOException();
+			}
+			
+			if(diskFile.isFileCorrupt()) {
+				throw new WillNotWriteToCorruptFileException();
 			}
 
 			cloneDatabase();
@@ -429,6 +449,10 @@ public class Database {
 		public void deleteOver() throws IOException, WillNotWriteToCorruptFileException {
 			if(diskFile.canWriteFile() == false) {
 				throw new IOException();
+			}
+			
+			if(diskFile.isFileCorrupt()) {
+				throw new WillNotWriteToCorruptFileException();
 			}
 
 			cloneDatabase();
@@ -485,6 +509,10 @@ public class Database {
 
 			if(diskFile.canWriteFile() == false) {
 				throw new IOException();
+			}
+			
+			if(diskFile.isFileCorrupt()) {
+				throw new WillNotWriteToCorruptFileException();
 			}
 
 
