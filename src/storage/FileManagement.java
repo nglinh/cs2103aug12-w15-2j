@@ -147,7 +147,7 @@ public class FileManagement {
 
 			boolean done;
 
-			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+			if(parsed[LINE_POSITION_DONE].equals(LINE_DONE)) {
 				done = true;
 			} else {
 				done = false;
@@ -174,7 +174,7 @@ public class FileManagement {
 
 			boolean done;
 
-			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+			if(parsed[LINE_POSITION_DONE].equals(LINE_DONE)) {
 				done = true;
 			} else {
 				done = false;
@@ -196,7 +196,7 @@ public class FileManagement {
 
 			boolean done;
 
-			if(parsed[LINE_POSITION_DONE] == LINE_DONE) {
+			if(parsed[LINE_POSITION_DONE].equals(LINE_DONE)) {
 				done = true;
 			} else {
 				done = false;
