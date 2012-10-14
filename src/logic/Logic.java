@@ -344,7 +344,8 @@ public class Logic {
 	private static LogicToUi addTask(String arguments) {
 		try {
 			Task newTask;
-			TaskType taskType = AddParser.getType(arguments);
+			AddParser argParser = new AddParser(arguments);
+			TaskType taskType = argParser.getTaskType();
 			switch (taskType) {
 			case FLOATING:
 				try {
@@ -357,8 +358,8 @@ public class Logic {
 				}
 				return new LogicToUi(  taskToString(newTask)+ " added");
 			case DEADLINE:
-				DateTime dt = AddParser.getBeginTime(arguments);
-				String taskName = AddParser.getTaskName(arguments);
+				DateTime dt = argParser.getBeginTime();
+				String taskName = argParser.getTaskDescription();
 				try {
 					newTask = new Task(taskName,dt);
 					dataBase.add(newTask);
@@ -369,9 +370,9 @@ public class Logic {
 				}
 
 			case TIMED:
-				DateTime st = AddParser.getBeginTime(arguments);
-				DateTime et = AddParser.getEndTime(arguments);
-				String newTaskName = AddParser.getTaskName(arguments);
+				DateTime st = argParser.getBeginTime();
+				DateTime et = argParser.getEndTime();
+				String newTaskName = argParser.getTaskDescription();
 				try {
 					newTask = new Task(newTaskName, st, et);
 					dataBase.add(newTask);
