@@ -41,7 +41,7 @@ public class FileManagement {
 
 		private static final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
 
-		private static final int LINE_POSITION_TASKINDEX = 0;
+//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
 		private static final int LINE_POSITION_TASKTYPE = 1;
 		private static final int LINE_POSITION_DONE = 2;
 		private static final int LINE_POSITION_DEADLINE_DATE = 3;
