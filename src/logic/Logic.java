@@ -28,7 +28,7 @@ public class Logic {
 	private static ArrayList<Task> lastShownToUI = new ArrayList<Task>();
 	private static String latestRefreshCommandForGUI = "list";
 	private static String latestCommandFromUI = null;
-	private static Stack<String> commandHistory = new Stack<String>();
+	private static Stack<String> undoHistory = new Stack<String>();
 
 
 
@@ -126,12 +126,12 @@ public class Logic {
 		}
 	}
 	
-	private static void pushCommandToStack() {
+	private static void pushCommandToUndoHistoryStack() {
 		if(latestCommandFromUI == null) {
 			return;
 		}
 		
-		commandHistory.push(latestCommandFromUI);
+		undoHistory.push(latestCommandFromUI);
 	}
 	private static LogicToUi done(String arguments, boolean newDoneStatus) {
 		if(arguments.length() == 0) {
@@ -156,7 +156,7 @@ public class Logic {
 			toBeDone.done(newDoneStatus);
 			dataBase.update(serial, toBeDone);
 			
-			pushCommandToStack();
+			pushCommandToUndoHistoryStack();
 
 			String taskDetails = taskToString(toBeDone);
 			
@@ -213,7 +213,7 @@ public class Logic {
 			}
 			
 			dataBase.undo();
-			String status = "This command \"" + commandHistory.pop() + "\" has been undone"; 
+			String status = "This command \"" + undoHistory.pop() + "\" has been undone"; 
 			
 			return new LogicToUi(status);
 		} catch (NoMoreUndoStepsException e) {
@@ -311,19 +311,19 @@ public class Logic {
 		try {
 			if(arguments.equals("over")){
 				dataBase.deleteOver();
-				pushCommandToStack();
+				pushCommandToUndoHistoryStack();
 				return new LogicToUi("All tasks that has ended before this moment have been deleted");
 			}
 			
 			if(arguments.equals("done")){
 				dataBase.deleteDone();
-				pushCommandToStack();
+				pushCommandToUndoHistoryStack();
 				return new LogicToUi("All completed tasks have been deleted");
 			}
 			
 			if(arguments.equals("all")){
 				dataBase.deleteAll();
-				pushCommandToStack();
+				pushCommandToUndoHistoryStack();
 				return new LogicToUi("All tasks have been deleted");
 			}
 			
@@ -339,7 +339,7 @@ public class Logic {
 			
 			Task toBeDeleted = dataBase.locateATask(serial);
 			dataBase.delete(serial);
-			pushCommandToStack();
+			pushCommandToUndoHistoryStack();
 
 			String taskDetails = taskToString(toBeDeleted);
 			return new LogicToUi(taskDetails + " has been deleted.");
@@ -383,7 +383,7 @@ public class Logic {
 				try {
 					newTask = new Task(arguments);
 					dataBase.add(newTask);
-					pushCommandToStack();
+					pushCommandToUndoHistoryStack();
 				} catch (WillNotWriteToCorruptFileException e) {
 					return new LogicToUi(
 							"File corrupted. Please fix this first :(");
@@ -395,7 +395,7 @@ public class Logic {
 				try {
 					newTask = new Task(taskName,dt);
 					dataBase.add(newTask);
-					pushCommandToStack();
+					pushCommandToUndoHistoryStack();
 					return new LogicToUi(taskToString(newTask) + " added");
 				} catch (WillNotWriteToCorruptFileException e) {
 					return new LogicToUi("File is corrupted. Please check :(.");
@@ -408,7 +408,7 @@ public class Logic {
 				try {
 					newTask = new Task(newTaskName, st, et);
 					dataBase.add(newTask);
-					pushCommandToStack();
+					pushCommandToUndoHistoryStack();
 					return new LogicToUi(taskToString(newTask) +" added");
 				} 
 				catch(WillNotWriteToCorruptFileException e){
