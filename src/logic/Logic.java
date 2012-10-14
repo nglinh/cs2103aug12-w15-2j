@@ -305,10 +305,29 @@ public class Logic {
 					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
 		}
 		
+
 		int index;
 
-
 		try {
+			if(arguments.equals("over")){
+				dataBase.deleteOver();
+				pushCommandToStack();
+				return new LogicToUi("All tasks that has ended before this moment have been deleted");
+			}
+			
+			if(arguments.equals("done")){
+				dataBase.deleteDone();
+				pushCommandToStack();
+				return new LogicToUi("All completed tasks have been deleted");
+			}
+			
+			if(arguments.equals("all")){
+				dataBase.deleteAll();
+				pushCommandToStack();
+				return new LogicToUi("All tasks have been deleted");
+			}
+			
+			
 			index = Integer.parseInt(arguments);
 			index--; //Since arraylist index starts from 0
 			
@@ -326,7 +345,7 @@ public class Logic {
 			return new LogicToUi(taskDetails + " has been deleted.");
 		} catch (NoSuchElementException e) {
 			return new LogicToUi(
-					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
+					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
 		} catch (IOException e) {
 			return new LogicToUi(
 					"Something is wrong with the file. I cannot write to it. Please check the permission"
