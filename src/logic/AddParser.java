@@ -55,12 +55,18 @@ public class AddParser {
 		String result = "";
 		String[] tempStringArray = argument2.split(" ");
 		for (int i =0;i<tempStringArray.length;++i){
-			if(tempStringArray[i].compareTo("from")!=0 &&
-					tempStringArray[i].compareTo("by")!=0 &&
-					tempStringArray[i].compareTo("before")!=0)
+			if(tempStringArray[i].compareTo("from")==0 )
+				result = result + "    ";
+			else if(tempStringArray[i].compareTo("by")==0)
+				result = result + "   ";
+			else if(tempStringArray[i].compareTo("before")==0)
+				result = result + "       ";
+			else if(tempStringArray[i].compareTo("on")==0)
+				result = result +"   ";
+			else
 				result = result+ tempStringArray[i]+" ";
 		}
-		return result;
+		return result.trim();
 	}
 	private boolean checkFullWord(String dateString, int location) {
 		char[] tempCharArray = dateString.toCharArray();
@@ -95,9 +101,10 @@ public class AddParser {
 			result = result+tempCharArray[i];
 		result = result.trim();
 		String[] tempStringArray = result.split(" ");
-		if(tempStringArray[tempStringArray.length-1]=="from"||
-				tempStringArray[tempStringArray.length-1]=="by"||
-				tempStringArray[tempStringArray.length-1]=="before"){
+		if(tempStringArray[tempStringArray.length-1].compareTo("from")==0||
+				tempStringArray[tempStringArray.length-1].compareTo("by")==0||
+				tempStringArray[tempStringArray.length-1].compareTo("before")==0||
+				tempStringArray[tempStringArray.length-1].compareTo("on")==0){
 			tempStringArray[tempStringArray.length-1] = "";
 			result = "";
 			for(int i=0;i<tempStringArray.length;++i)
