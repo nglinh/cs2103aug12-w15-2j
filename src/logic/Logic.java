@@ -96,7 +96,7 @@ public class Logic {
 		case LIST:
 			return list(arguments);
 		case FILE_STATUS:
-			return checkfileStatus();
+			return checkFileStatus();
 		case UNDO:
 			return undo();
 		case SEARCH:
@@ -214,7 +214,7 @@ public class Logic {
 		
 	}
 
-	private static LogicToUi checkfileStatus() {
+	private static LogicToUi checkFileStatus() {
 		DB_File_Status status = dataBase.getFileAttributes();
 		
 		if(status.equals(DB_File_Status.FILE_ALL_OK)) {
