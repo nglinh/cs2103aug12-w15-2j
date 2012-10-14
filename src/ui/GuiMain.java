@@ -84,7 +84,7 @@ public class GuiMain extends UI{
 	private void initialize() {
 		frmDoit = new JFrame();
 		frmDoit.setTitle("DoIt!");
-		frmDoit.setBounds(100, 100, 500, 400);
+		frmDoit.setBounds(100, 100, 700, 400);
 		frmDoit.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -358,10 +358,11 @@ public class GuiMain extends UI{
 		table.getColumnModel().getColumn(0).setMaxWidth(25);
 		table.getColumnModel().getColumn(1).setMinWidth(20);
 		table.getColumnModel().getColumn(1).setMaxWidth(20);
-		table.getColumnModel().getColumn(2).setMinWidth(150);
-		table.getColumnModel().getColumn(2).setMaxWidth(150);
-		table.getColumnModel().getColumn(3).setMinWidth(150);
-		table.getColumnModel().getColumn(3).setMaxWidth(150);
+		// Give more space to date: Test with 27 May 2009 10am to 27 May 2009 10pm
+		table.getColumnModel().getColumn(2).setMinWidth(170);
+		table.getColumnModel().getColumn(2).setMaxWidth(170);
+		table.getColumnModel().getColumn(3).setMinWidth(170);
+		table.getColumnModel().getColumn(3).setMaxWidth(170);
 		//table.getColumnModel().getColumn(4).setPreferredWidth(160);
 		
 		table.getModel().addTableModelListener(new TableModelListener() {
