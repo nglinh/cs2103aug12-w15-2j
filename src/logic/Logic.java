@@ -343,7 +343,7 @@ public class Logic {
 
 			String taskDetails = taskToString(toBeDeleted);
 			return new LogicToUi(taskDetails + " has been deleted.");
-		} catch (NoSuchElementException e) {
+		} catch (NoSuchElementException | NumberFormatException e) {
 			return new LogicToUi(
 					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
 		} catch (IOException e) {
