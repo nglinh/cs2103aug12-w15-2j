@@ -133,70 +133,49 @@ public class FileManagement {
 
 		private Task parseInTimedTask(String[] parsed) throws DataFormatException {
 
-			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
-				throw new DataFormatException();
-			}
-
+			String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);
+			boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
 			DateTime startDate = parseDate(parsed[LINE_POSITION_START_DATE]); 
 			DateTime endDate = parseDate(parsed[LINE_POSITION_END_DATE]); 
 
-			String taskName = parsed[LINE_POSITION_TASKNAME];
+			return new Task(taskName, startDate, endDate, done);
+		}
+		
+		
+		private String parseTaskName(String taskName)
+				throws DataFormatException {
+
 			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
 				throw new DataFormatException();
 			}
-
-
-			boolean done = retrieveTaskDoneStatus(parsed);
-
-
-
-			return new Task(taskName, startDate, endDate, done);
+			return taskName;
 		}
 
 
 		private Task parseInDeadlineTask(String[] parsed) throws DataFormatException {
 
-			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
-				throw new DataFormatException();
-			}
-
+			String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);		
+			boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
 			DateTime deadline = parseDate(parsed[LINE_POSITION_DEADLINE_DATE]);
-			String taskName = parsed[LINE_POSITION_TASKNAME];
-
-			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
-				throw new DataFormatException();
-			}
-
-			boolean done = retrieveTaskDoneStatus(parsed);
 
 			return new Task(taskName, deadline, done);
 		}
 
 		private Task parseInFloatingTask(String[] parsed) throws DataFormatException {
 
-			if(!((parsed[LINE_POSITION_DONE].equals(LINE_DONE)) || (parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)))) {
-				throw new DataFormatException();
-			}
-
-			String taskName = parsed[LINE_POSITION_TASKNAME];
-			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
-				throw new DataFormatException();
-			}
-
-
-			boolean done = retrieveTaskDoneStatus(parsed);
-
-
+			String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);
+			boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
+			
 			return new Task(taskName, done);
 		}
 		
-		private boolean retrieveTaskDoneStatus(String[] parsed)
+		private boolean retrieveTaskDoneStatus(String parsed)
 				throws DataFormatException {
 			boolean done;
 			
-			if(parsed[LINE_POSITION_DONE].equals(LINE_DONE)) {
+			if(parsed.equals(LINE_DONE)) {
 				done = true;
-			} else if(parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)){
+			} else if(parsed.equals(LINE_UNDONE)){
 				done = false;
 			} else {
 				throw new DataFormatException();
@@ -205,11 +184,11 @@ public class FileManagement {
 		}
 
 
-		private DateTime parseDate(String parsed) throws DataFormatException {
+		private DateTime parseDate(String date) throws DataFormatException {
 			DateTime parsedDate = null;
 
 			try {
-				parsedDate = new DateTime(FILE_DATE_FORMAT.parseDateTime(parsed));
+				parsedDate = new DateTime(FILE_DATE_FORMAT.parseDateTime(date));
 			} catch (IllegalArgumentException e) {
 				throw new DataFormatException();
 			}
