@@ -138,6 +138,10 @@ public class FileManagement {
 			DateTime startDate = parseDate(parsed[LINE_POSITION_START_DATE]); 
 			DateTime endDate = parseDate(parsed[LINE_POSITION_END_DATE]); 
 
+			if(startDate.isAfter(endDate)) {
+				throw new DataFormatException();
+			}
+			
 			return new Task(taskName, startDate, endDate, done);
 		}
 		
