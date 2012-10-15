@@ -145,13 +145,8 @@ public class FileManagement {
 				throw new DataFormatException();
 			}
 
-			boolean done;
 
-			if(parsed[LINE_POSITION_DONE].equals(LINE_DONE)) {
-				done = true;
-			} else {
-				done = false;
-			}
+			boolean done = retrieveTaskDoneStatus(parsed);
 
 
 
@@ -172,13 +167,7 @@ public class FileManagement {
 				throw new DataFormatException();
 			}
 
-			boolean done;
-
-			if(parsed[LINE_POSITION_DONE].equals(LINE_DONE)) {
-				done = true;
-			} else {
-				done = false;
-			}
+			boolean done = retrieveTaskDoneStatus(parsed);
 
 			return new Task(taskName, deadline, done);
 		}
@@ -194,16 +183,25 @@ public class FileManagement {
 				throw new DataFormatException();
 			}
 
-			boolean done;
 
-			if(parsed[LINE_POSITION_DONE].equals(LINE_DONE)) {
-				done = true;
-			} else {
-				done = false;
-			}
+			boolean done = retrieveTaskDoneStatus(parsed);
 
 
 			return new Task(taskName, done);
+		}
+		
+		private boolean retrieveTaskDoneStatus(String[] parsed)
+				throws DataFormatException {
+			boolean done;
+			
+			if(parsed[LINE_POSITION_DONE].equals(LINE_DONE)) {
+				done = true;
+			} else if(parsed[LINE_POSITION_DONE].equals(LINE_UNDONE)){
+				done = false;
+			} else {
+				throw new DataFormatException();
+			}
+			return done;
 		}
 
 
