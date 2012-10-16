@@ -270,7 +270,24 @@ public class Logic {
 			return new LogicToUi(lastShownToUI, "List of all tasks");
 		}
 		
+		SearchTerms filter;
+		
 		String statusMsg = "Listing based on these parameters: ";
+		
+		if(arguments.contains("overdue")){
+			DateTime startDate = new DateTime(Long.MIN_VALUE);
+			DateTime endDate = new DateTime(); 
+			
+			filter = new SearchTerms(false, true, false, false, false, startDate, endDate);
+			
+			ArrayList<Task> results = dataBase.search(filter);
+
+			lastShownToUI = results;
+			latestRefreshCommandForGUI = new String(latestCommandFromUI);
+			
+			statusMsg += " \"overdue\" ";
+			return new LogicToUi(results, statusMsg, filter);
+		}
 
 		String[] parameters = arguments.split(" ");
 
@@ -279,6 +296,10 @@ public class Logic {
 		boolean timed = false;
 		boolean deadline = false;
 		boolean floating = false;
+		boolean today = false;
+		boolean tomorrow = false;
+		
+
 
 		for (String eachParam : parameters) {
 
@@ -306,11 +327,47 @@ public class Logic {
 				floating = true;
 				statusMsg += " \"floating\" ";
 			}
+			
+			if (eachParam.equals("today")) {
+				today = true;
+				statusMsg += " \"today\" ";
+			}
+			
+			if (eachParam.equals("tomorrow")) {
+				tomorrow = true;
+				statusMsg += " \"tomorrow\" ";
+			}
+			
 
 		}
 
-		SearchTerms filter = new SearchTerms(complete, incomplete, timed,
+		if(today && tomorrow){
+			DateTime startDate = new DateTime().withTimeAtStartOfDay();
+			DateTime endDate = startDate.plusDays(1).withTime(23, 59, 59, 999); 
+			
+			filter = new SearchTerms(complete, incomplete, timed,
+					deadline, floating, startDate, endDate );
+		} else if (today){
+			
+			DateTime startDate = new DateTime().withTimeAtStartOfDay();
+			DateTime endDate = startDate.withTime(23, 59, 59, 999); 
+			
+			filter = new SearchTerms(complete, incomplete, timed,
+					deadline, floating, startDate, endDate );
+			
+		} else if(tomorrow ) {
+			DateTime startDate = new DateTime().plusDays(1).withTimeAtStartOfDay();
+			DateTime endDate = startDate.plusDays(1).withTime(23, 59, 59, 999); 
+			
+			filter = new SearchTerms(complete, incomplete, timed,
+					deadline, floating, startDate, endDate );
+			
+		} else {
+			filter = new SearchTerms(complete, incomplete, timed,
 				deadline, floating);
+		}
+		
+		
 		ArrayList<Task> results = dataBase.search(filter);
 
 		lastShownToUI = results;
