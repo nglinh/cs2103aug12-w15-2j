@@ -13,7 +13,8 @@ public class LogicToUi {
 
 	
 	public static enum SortStatus {TYPE, DONE, START, END, NAME };
-
+	boolean sortReverse = false;
+	
 	String output = null;
 	ArrayList<Task> display = null;
 	SearchTerms filters = null;
@@ -46,18 +47,19 @@ public class LogicToUi {
 		
 	}
 	
-	public LogicToUi(ArrayList<Task> display, String output, SortStatus sorting) {
+	public LogicToUi(ArrayList<Task> display, String output, SortStatus sorting, boolean reverse) {
 		assert(display != null);
 		assert(output != null);
 
 		this.display = display;
 		this.output = output;
 		this.currentSorting = sorting;
+		this.sortReverse = reverse;
 		
 	}
 	
 	
-	public LogicToUi(ArrayList<Task> display, String output, SearchTerms filters, SortStatus sorting) {
+	public LogicToUi(ArrayList<Task> display, String output, SearchTerms filters, SortStatus sorting, boolean reverse) {
 		assert(display != null);
 		assert(output != null);
 		assert(filters != null);
@@ -66,6 +68,7 @@ public class LogicToUi {
 		this.output = output;
 		this.filters = filters;
 		this.currentSorting = sorting;
+		this.sortReverse = reverse;
 		
 	}
 	
