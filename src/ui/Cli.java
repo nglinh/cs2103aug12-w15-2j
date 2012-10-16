@@ -174,7 +174,7 @@ public class Cli extends UI{
 
 
 		if(entry.getType().equals(TaskType.TIMED)) {
-			start = dateTimeToString(entry.getStartTime());
+			start = dateTimeToString(entry.getStartDate());
 		} else if(entry.getType().equals(TaskType.DEADLINE)) {
 			start = dateTimeToString(entry.getDeadline());
 		} else {
@@ -182,7 +182,7 @@ public class Cli extends UI{
 		}
 
 		if(entry.getType().equals(TaskType.TIMED)) {
-			end = dateTimeToString(entry.getEndTime());
+			end = dateTimeToString(entry.getEndDate());
 		} else {
 			end = TABLE_EMPTY_DATE_FIELD;
 		}

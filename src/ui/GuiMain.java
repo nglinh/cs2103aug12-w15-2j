@@ -277,7 +277,7 @@ public class GuiMain extends UI{
 
 			String start, end;
 			if(task.getType().equals(TaskType.TIMED)) {
-				start = dateTimeToLongerString(task.getStartTime());
+				start = dateTimeToLongerString(task.getStartDate());
 			} else if(task.getType().equals(TaskType.DEADLINE)) {
 				start = dateTimeToLongerString(task.getDeadline());
 			} else {
@@ -285,7 +285,7 @@ public class GuiMain extends UI{
 			}
 
 			if(task.getType().equals(TaskType.TIMED)) {
-				end = dateTimeToLongerString(task.getEndTime());
+				end = dateTimeToLongerString(task.getEndDate());
 			} else {
 				end = TABLE_EMPTY_DATE_FIELD;
 			}

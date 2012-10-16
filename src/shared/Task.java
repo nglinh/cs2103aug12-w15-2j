@@ -34,8 +34,8 @@ public class Task implements Comparable<Task> {
 	private TaskType type = null;
 	private String taskName = null;
 
-	private DateTime startTime = INVALID_DATE_FIELD;
-	private DateTime endTime = INVALID_DATE_FIELD;
+	private DateTime startDate = INVALID_DATE_FIELD;
+	private DateTime endDate = INVALID_DATE_FIELD;
 	private DateTime deadline = INVALID_DATE_FIELD;
 
 
@@ -136,27 +136,27 @@ public class Task implements Comparable<Task> {
 	 * Accepts case where start and end time are the same                     
 	 *
 	 * @param name the task description
-	 * @param startTime the start time and date in Joda DateTime form
-	 * @param endTime the end time and date in Joda DateTime form
+	 * @param startDate the start time and date in Joda DateTime form
+	 * @param endDate the end time and date in Joda DateTime form
 	 */
 
-	public Task(String name, DateTime startTime, DateTime endTime) {
+	public Task(String name, DateTime startDate, DateTime endDate) {
 		
 		assert(name != null);
 		assert(name.length() != 0);
 		
-		assert(startTime != null);
-		assert(!startTime.equals(INVALID_DATE_FIELD));
+		assert(startDate != null);
+		assert(!startDate.equals(INVALID_DATE_FIELD));
 		
-		assert(endTime != null);
-		assert(!endTime.equals(INVALID_DATE_FIELD));
+		assert(endDate != null);
+		assert(!endDate.equals(INVALID_DATE_FIELD));
 		
-		assert(startTime.isBefore(endTime) || startTime.isEqual(endTime));
+		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
 		
 		this.type = TaskType.TIMED;
 		this.taskName = name;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.startDate = startDate;
+		this.endDate = endDate;
 
 		serial = nextSerial;
 		nextSerial++;
@@ -168,27 +168,27 @@ public class Task implements Comparable<Task> {
 	 * Accepts case where start and end time are the same                      
 	 *
 	 * @param name the task description
-	 * @param startTime the start time and date in Joda DateTime form
-	 * @param endTime the end time and date in Joda DateTime form
+	 * @param startDate the start time and date in Joda DateTime form
+	 * @param endDate the end time and date in Joda DateTime form
 	 * @param done the done value.
 	 */
 
-	public Task(String name, DateTime startTime, DateTime endTime, boolean done) {
+	public Task(String name, DateTime startDate, DateTime endDate, boolean done) {
 		assert(name != null);
 		assert(name.length() != 0);
 		
-		assert(startTime != null);
-		assert(!startTime.equals(INVALID_DATE_FIELD));
+		assert(startDate != null);
+		assert(!startDate.equals(INVALID_DATE_FIELD));
 		
-		assert(endTime != null);
-		assert(!endTime.equals(INVALID_DATE_FIELD));
+		assert(endDate != null);
+		assert(!endDate.equals(INVALID_DATE_FIELD));
 		
-		assert(startTime.isBefore(endTime) || startTime.isEqual(endTime));
+		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
 		
 		this.type = TaskType.TIMED;
 		this.taskName = name;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.isCompleted = done;
 
 		serial = nextSerial;
@@ -227,12 +227,12 @@ public class Task implements Comparable<Task> {
 
 		this.serial = updated.getSerial();
 
-		if(!updated.getStartTime().equals(INVALID_DATE_FIELD)) {
-			this.startTime = new DateTime(updated.getStartTime());
+		if(!updated.getStartDate().equals(INVALID_DATE_FIELD)) {
+			this.startDate = new DateTime(updated.getStartDate());
 		}
 
-		if(!updated.getEndTime().equals(INVALID_DATE_FIELD))	{
-			this.endTime = new DateTime(updated.getEndTime());
+		if(!updated.getEndDate().equals(INVALID_DATE_FIELD))	{
+			this.endDate = new DateTime(updated.getEndDate());
 		}
 
 		if(!updated.getDeadline().equals(INVALID_DATE_FIELD))	{
@@ -300,8 +300,8 @@ public class Task implements Comparable<Task> {
 	 *  
 	 */
 
-	public DateTime getStartTime()	{
-		return startTime;
+	public DateTime getStartDate()	{
+		return startDate;
 	}
 	
 	/**
@@ -312,8 +312,8 @@ public class Task implements Comparable<Task> {
 	 */
 
 
-	public DateTime getEndTime(){
-		return endTime;
+	public DateTime getEndDate(){
+		return endDate;
 	}
 	
 	/**
@@ -343,8 +343,8 @@ public class Task implements Comparable<Task> {
 		this.type = TaskType.FLOATING;
 
 		this.deadline = INVALID_DATE_FIELD;
-		this.startTime = INVALID_DATE_FIELD;
-		this.endTime = INVALID_DATE_FIELD;
+		this.startDate = INVALID_DATE_FIELD;
+		this.endDate = INVALID_DATE_FIELD;
 	}
 
 	public void changetoDeadline(DateTime newDeadline)	{
@@ -356,23 +356,23 @@ public class Task implements Comparable<Task> {
 
 		this.deadline = newDeadline;
 
-		this.startTime = INVALID_DATE_FIELD;
-		this.endTime = INVALID_DATE_FIELD;
+		this.startDate = INVALID_DATE_FIELD;
+		this.endDate = INVALID_DATE_FIELD;
 
 	}
 
-	public void changetoTimed(DateTime newStartTime, DateTime newEndTime)	{
-		assert(newStartTime != null);
-		assert(!newStartTime.equals(INVALID_DATE_FIELD));
+	public void changetoTimed(DateTime newstartDate, DateTime newendDate)	{
+		assert(newstartDate != null);
+		assert(!newstartDate.equals(INVALID_DATE_FIELD));
 		
-		assert(newEndTime != null);
-		assert(!newEndTime.equals(INVALID_DATE_FIELD));
+		assert(newendDate != null);
+		assert(!newendDate.equals(INVALID_DATE_FIELD));
 		
 		
 		this.type = TaskType.TIMED;
 
-		this.startTime = newStartTime;
-		this.endTime = newEndTime;
+		this.startDate = newstartDate;
+		this.endDate = newendDate;
 
 		this.deadline = INVALID_DATE_FIELD;
 
@@ -388,17 +388,17 @@ public class Task implements Comparable<Task> {
 		this.taskName = newName;
 	}
 
-	public void changeStartAndEndTime(DateTime newStartTime, DateTime newEndTime)	{
-		assert(newStartTime != null);
-		assert(!newStartTime.equals(INVALID_DATE_FIELD));
+	public void changeStartAndendDate(DateTime newstartDate, DateTime newendDate)	{
+		assert(newstartDate != null);
+		assert(!newstartDate.equals(INVALID_DATE_FIELD));
 		
-		assert(newEndTime != null);
-		assert(!newEndTime.equals(INVALID_DATE_FIELD));
+		assert(newendDate != null);
+		assert(!newendDate.equals(INVALID_DATE_FIELD));
 		
-		assert(startTime.isBefore(newEndTime) || startTime.isEqual(newEndTime));
+		assert(startDate.isBefore(newendDate) || startDate.isEqual(newendDate));
 		
-		this.startTime = newStartTime;
-		this.endTime = newEndTime;
+		this.startDate = newstartDate;
+		this.endDate = newendDate;
 	}
 
 
@@ -439,7 +439,7 @@ public class Task implements Comparable<Task> {
 			currentTaskDate = this.getDeadline();
 		}
 		else {
-			currentTaskDate = this.getStartTime();
+			currentTaskDate = this.getStartDate();
 		}
 
 
@@ -447,7 +447,7 @@ public class Task implements Comparable<Task> {
 			inputTaskDate = input.getDeadline();
 		}
 		else {
-			inputTaskDate = input.getStartTime();
+			inputTaskDate = input.getStartDate();
 		}
 
 
@@ -486,7 +486,7 @@ public class Task implements Comparable<Task> {
 			currentTaskDate = this.getDeadline();
 		}
 		else {
-			currentTaskDate = this.getStartTime();
+			currentTaskDate = this.getStartDate();
 		}
 
 
@@ -573,13 +573,13 @@ public class Task implements Comparable<Task> {
 			DateTime o2Start;
 			
 			if(o1.isTimedTask()) {
-				o1Start = o1.getStartTime();
+				o1Start = o1.getStartDate();
 			} else {
 				o1Start = o1.getDeadline();
 			}
 			
 			if(o2.isTimedTask()) {
-				o2Start = o2.getStartTime();
+				o2Start = o2.getStartDate();
 			} else {
 				o2Start = o2.getDeadline();
 			}
@@ -605,13 +605,13 @@ public class Task implements Comparable<Task> {
 			DateTime o2End;
 			
 			if(o1.isTimedTask()) {
-				o1End = o1.getEndTime();
+				o1End = o1.getEndDate();
 			} else {
 				o1End = o1.getDeadline();
 			}
 			
 			if(o2.isTimedTask()) {
-				o2End = o2.getEndTime();
+				o2End = o2.getEndDate();
 			} else {
 				o2End = o2.getDeadline();
 			}
@@ -678,19 +678,19 @@ public class Task implements Comparable<Task> {
 		String end;
 
 
-		if(this.getStartTime().equals(INVALID_DATE_FIELD)) {
+		if(this.getStartDate().equals(INVALID_DATE_FIELD)) {
 			start = FILE_EMPTY_DATE;
 		}
 
-		else start = FILE_DATE_FORMAT.print(this.getStartTime());
+		else start = FILE_DATE_FORMAT.print(this.getStartDate());
 
 
 
-		if(this.getEndTime().equals(INVALID_DATE_FIELD))	{
+		if(this.getEndDate().equals(INVALID_DATE_FIELD))	{
 			end = FILE_EMPTY_DATE;
 		}
 
-		else end = FILE_DATE_FORMAT.print(endTime);
+		else end = FILE_DATE_FORMAT.print(endDate);
 
 
 

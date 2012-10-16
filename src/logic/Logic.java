@@ -375,7 +375,7 @@ public class Logic {
 	private static String taskToString(Task toBeConverted) {
 		
 		if(toBeConverted.isTimedTask()) {
-			return("Timed task " + "\"" + toBeConverted.getTaskName() + "\"" + " from " + dateToString(toBeConverted.getStartTime()) + " to " + dateToString(toBeConverted.getEndTime()));
+			return("Timed task " + "\"" + toBeConverted.getTaskName() + "\"" + " from " + dateToString(toBeConverted.getStartDate()) + " to " + dateToString(toBeConverted.getEndDate()));
 		} else if(toBeConverted.isDeadlineTask()) {
 			return("Deadline task " + "\"" + toBeConverted.getTaskName() + "\"" + " by " + dateToString(toBeConverted.getDeadline()));
 		} else {
