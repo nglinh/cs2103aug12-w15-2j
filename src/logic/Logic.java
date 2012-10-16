@@ -21,7 +21,7 @@ import storage.Database.DB_File_Status;
 
 public class Logic {
 	public static enum CommandType {
-		ADD, DELETE, LIST, SEARCH, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE,
+		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE,
 	};
 
 	public static Database dataBase = new Database();
@@ -67,6 +67,8 @@ public class Logic {
 			return CommandType.ADD;
 		case "delete":
 			//Fallthrough
+		case "de":
+			//Fallthrough
 		case "del" :
 			return CommandType.DELETE;
 		
@@ -79,7 +81,9 @@ public class Logic {
 		
 		case "search":
 			return CommandType.SEARCH;
-		
+		case "searchpartial":
+			return CommandType.SEARCH_PARTIAL;
+			
 		case "undo":
 			//Fallthrough
 		case "u" :
@@ -115,6 +119,8 @@ public class Logic {
 			return undo();
 		case SEARCH:
 			return search(arguments);
+		case SEARCH_PARTIAL:
+			return searchPartial(arguments);
 		case REFRESH:
 			return refresh();
 		case DONE:
@@ -184,6 +190,17 @@ public class Logic {
 	//Can only search by keywords for now
 	private static LogicToUi search(String arguments) {
 		
+		LogicToUi toBeSent = searchPartial(arguments);
+		
+		lastShownToUI = toBeSent.getList();
+		latestRefreshCommandForGUI = new String(latestCommandFromUI);
+		
+		return toBeSent;
+	}
+	
+	//Can only search by keywords for now, allow GUI to show suggestions without affecting state
+	private static LogicToUi searchPartial(String arguments) {
+		
 		if(arguments.length() == 0) {
 			return new LogicToUi(
 					"No search terms specified.");
@@ -192,8 +209,6 @@ public class Logic {
 		
 		SearchTerms terms = new SearchTerms(keywords);
 		ArrayList<Task> results = dataBase.search(terms);
-		lastShownToUI = results;
-		latestRefreshCommandForGUI = new String(latestCommandFromUI);
 		
 		String statusMsg = "You have searched for ";
 		
