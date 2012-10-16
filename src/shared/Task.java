@@ -509,7 +509,7 @@ public class Task implements Comparable<Task> {
 	
 	
 	
-	static class SortByType implements Comparator<Task> {
+	public static class SortByType implements Comparator<Task> {
 		//Order of priority to be shown is Deadline, Timed and Floating.
 		
 		public int compare(Task o1, Task o2) {
@@ -538,7 +538,7 @@ public class Task implements Comparable<Task> {
 		}
 	}
 	
-	static class SortByDone implements Comparator<Task> {
+	public static class SortByDone implements Comparator<Task> {
 
 		public int compare(Task o1, Task o2) {
 			
@@ -557,7 +557,7 @@ public class Task implements Comparable<Task> {
 		}
 	}
 	
-	static class SortByStartDate implements Comparator<Task> {
+	public static class SortByStartDate implements Comparator<Task> {
 
 		public int compare(Task o1, Task o2) {
 			
@@ -589,7 +589,7 @@ public class Task implements Comparable<Task> {
 		}
 	}
 	
-	static class SortByEndDate implements Comparator<Task> {
+	public static class SortByEndDate implements Comparator<Task> {
 
 		public int compare(Task o1, Task o2) {
 			
@@ -620,7 +620,7 @@ public class Task implements Comparable<Task> {
 		}
 	}
 	
-	static class SortByDescription implements Comparator<Task> {
+	public static class SortByName implements Comparator<Task> {
 
 		public int compare(Task o1, Task o2) {
 			String o1Name = o1.getTaskName();
