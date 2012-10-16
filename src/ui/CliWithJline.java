@@ -32,7 +32,9 @@ public class CliWithJline extends Cli{
 	private static final Completer delCommand = new StringsCompleter (new String [] {"del", "delete", "d"});
 	private static final Completer delArguments = new StringsCompleter (new String [] {"all", "over", "done", "completed"});
 
-
+	private static final Completer sortCommand = new StringsCompleter (new String [] {"sort"});
+	private static final Completer sortArguments = new StringsCompleter (new String [] {"type", "done", "start", "end", "name"});
+	
 	List<Completer> listSet = new ArrayList<Completer>();
 	ArgumentCompleter listArgCmp;
 	
@@ -41,6 +43,9 @@ public class CliWithJline extends Cli{
 	
 	List<Completer> delSet = new ArrayList<Completer>();
 	ArgumentCompleter delArgCmp;
+	
+	List<Completer> sortSet = new ArrayList<Completer>();
+	ArgumentCompleter sortArgCmp;
 	
 	ConsoleReader console;
 	
@@ -66,11 +71,16 @@ public class CliWithJline extends Cli{
 			delSet.add(delArguments);
 			delArgCmp = new ArgumentCompleter(delSet);
 			
+			sortSet.add(sortCommand);
+			sortSet.add(sortArguments);
+			sortArgCmp = new ArgumentCompleter(sortSet);			
+			
 
 			console.addCompleter(baseCommandList);
 			console.addCompleter(listArgCmp);
 			console.addCompleter(helpArgCmp);
 			console.addCompleter(delArgCmp);
+			console.addCompleter(sortArgCmp);
 
 
 			console.println(checkFilePermissions() + "\n");
