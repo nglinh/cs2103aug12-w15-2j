@@ -229,8 +229,8 @@ public class FileManagement {
 			}
 
 			String deadline = getTimeFileFormat(toBeConverted.getDeadline());
-			String start = getTimeFileFormat(toBeConverted.getStartTime());
-			String end = getTimeFileFormat(toBeConverted.getEndTime());
+			String start = getTimeFileFormat(toBeConverted.getStartDate());
+			String end = getTimeFileFormat(toBeConverted.getEndDate());
 
 			String task = toBeConverted.getTaskName();
 

@@ -144,16 +144,16 @@ public class Database {
 			if(currentEntry.isDeadlineTask()) {
 				timeToCompare = currentEntry.getDeadline();
 			} else {
-				timeToCompare = currentEntry.getStartTime();
+				timeToCompare = currentEntry.getStartDate();
 			}
 
-			if(terms.getStartRange().isEqual(timeToCompare) || 
-					terms.getEndRange().isEqual(timeToCompare)) {
+			if(terms.getStartDate().isEqual(timeToCompare) || 
+					terms.getEndDate().isEqual(timeToCompare)) {
 				return true;
 			}
 
-			if(terms.getStartRange().isBefore(timeToCompare) && 
-					timeToCompare.isBefore(terms.getEndRange())) {
+			if(terms.getStartDate().isBefore(timeToCompare) && 
+					timeToCompare.isBefore(terms.getEndDate())) {
 				return true;
 			}
 
@@ -449,7 +449,7 @@ public class Database {
 				if(currentTask.isDeadlineTask()) {
 					timeToCompare = currentTask.getDeadline();
 				} else if (currentTask.isTimedTask()) {
-					timeToCompare = currentTask.getEndTime();
+					timeToCompare = currentTask.getEndDate();
 				} else { //Floating tasks
 					onlyPendingTasks.add(currentTask);
 					continue;

@@ -20,8 +20,8 @@ public class SearchTerms {
 
 	private String keywords[] = new String[0]; //Not case sensitive
 
-	private DateTime startRange = INVALID_DATE_FIELD;
-	private DateTime endRange = INVALID_DATE_FIELD;
+	private DateTime startDate = INVALID_DATE_FIELD;
+	private DateTime endDate = INVALID_DATE_FIELD;
 	
 	
 	public SearchTerms(String[] keywords) {
@@ -36,8 +36,8 @@ public class SearchTerms {
 		assert(endDate != null);
 		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
 		
-		this.startRange = startDate;
-		this.endRange = endDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		
 
 		
@@ -49,8 +49,8 @@ public class SearchTerms {
 		assert(endDate != null);
 		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
 		
-		this.startRange = startDate;
-		this.endRange = endDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		
 		this.keywords = keywords;
 		
@@ -101,8 +101,8 @@ public class SearchTerms {
 		this.deadlineTasks = deadlineTasks;
 		this.floatingTasks = floatingTasks;
 
-		this.startRange = startDate;
-		this.endRange = endDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 
 		
 	}
@@ -126,8 +126,8 @@ public class SearchTerms {
 
 
 		this.keywords = keywords;
-		this.startRange = startDate;
-		this.endRange = endDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 
 		
 	}
@@ -161,7 +161,7 @@ public class SearchTerms {
 	}
 	
 	public boolean doesSearchContainDateRange() {
-		if(startRange.equals(INVALID_DATE_FIELD)) {
+		if(startDate.equals(INVALID_DATE_FIELD)) {
 			return false;
 		} else {
 			return true;
@@ -187,8 +187,8 @@ public class SearchTerms {
 	 *  
 	 */
 	
-	public DateTime getStartRange() {
-		return startRange;
+	public DateTime getStartDate() {
+		return startDate;
 	}
 	
 	/**
@@ -198,8 +198,8 @@ public class SearchTerms {
 	 *  
 	 */
 	
-	public DateTime getEndRange() {
-		return endRange;
+	public DateTime getEndDate() {
+		return endDate;
 	}
 }
 
