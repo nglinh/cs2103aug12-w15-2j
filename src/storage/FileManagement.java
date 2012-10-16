@@ -201,7 +201,7 @@ public class FileManagement {
 		}
 
 
-		private String TaskToDatabaseString(Task toBeConverted, int index) {	
+		private String taskToDatabaseString(Task toBeConverted, int index) {	
 
 
 
@@ -277,7 +277,7 @@ public class FileManagement {
 			int index = 1;
 
 			for(Task temp : toBeWritten) {
-				out.write(TaskToDatabaseString(temp, index));			
+				out.write(taskToDatabaseString(temp, index));			
 				out.newLine();
 				index++;
 			}
