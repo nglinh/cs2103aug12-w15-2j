@@ -158,15 +158,19 @@ public class Logic {
 			
 			int serial = lastShownToUI.get(index).getSerial();
 			
-			Task toBeDone = dataBase.locateATask(serial);
-			toBeDone.done(newDoneStatus);
-			dataBase.update(serial, toBeDone);
+			Task toBeUpdated = dataBase.locateATask(serial);
+			boolean oldDoneStatus = toBeUpdated.isDone();
+			
+			toBeUpdated.done(newDoneStatus);
+			dataBase.update(serial, toBeUpdated);
 			
 			pushCommandToUndoHistoryStack();
 
-			String taskDetails = taskToString(toBeDone);
+			String taskDetails = taskToString(toBeUpdated);
 			
-			if(newDoneStatus == true) {
+			if(oldDoneStatus == newDoneStatus) {
+				return new LogicToUi(taskDetails + " has been already been marked as done/undone.");
+			} else if(newDoneStatus == true) {
 				return new LogicToUi(taskDetails + " has been marked as done.");
 			} else {
 				return new LogicToUi(taskDetails + " has been marked as undone.");
