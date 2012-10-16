@@ -19,13 +19,10 @@ public class SearchTerms {
 	private boolean floatingTasks = false;
 
 	private String keywords[] = new String[0]; //Not case sensitive
-	
-	//  may support if needed
-	//	private boolean caseSensitive = false;
 
-	//Have to make sure startDate is always before endDate
 	private DateTime startRange = INVALID_DATE_FIELD;
 	private DateTime endRange = INVALID_DATE_FIELD;
+	
 	
 	public SearchTerms(String[] keywords) {
 		assert(keywords != null);
@@ -37,6 +34,7 @@ public class SearchTerms {
 	public SearchTerms(DateTime startDate, DateTime endDate) {
 		assert(startDate != null);
 		assert(endDate != null);
+		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
 		
 		this.startRange = startDate;
 		this.endRange = endDate;
@@ -49,6 +47,7 @@ public class SearchTerms {
 		assert(keywords != null);
 		assert(startDate != null);
 		assert(endDate != null);
+		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
 		
 		this.startRange = startDate;
 		this.endRange = endDate;
