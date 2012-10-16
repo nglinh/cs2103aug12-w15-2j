@@ -201,7 +201,7 @@ public class Logic {
 			statusMsg += " \"" + keyword + "\" ";
 		}
 		
-		return new LogicToUi(results, statusMsg);
+		return new LogicToUi(results, statusMsg, terms);
 	}
 
 	private static LogicToUi undo() {
@@ -296,7 +296,7 @@ public class Logic {
 
 		lastShownToUI = results;
 		latestRefreshCommandForGUI = new String(latestCommandFromUI);
-		return new LogicToUi(results, statusMsg);
+		return new LogicToUi(results, statusMsg, filter);
 	}
 
 	private static LogicToUi deleteTask(String arguments){

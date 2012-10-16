@@ -12,6 +12,7 @@ public class LogicToUi {
 
 	String output = null;
 	ArrayList<Task> display = null;
+	SearchTerms filters = null;
 
 	
 	public LogicToUi(String output)	{
@@ -22,8 +23,30 @@ public class LogicToUi {
 	public LogicToUi(ArrayList<Task> display, String output) {
 		assert(display != null);
 		assert(output != null);
+		
 		this.display = display;
 		this.output = output;
+
+		
+	}
+	
+	public LogicToUi(ArrayList<Task> display, String output, SearchTerms filters) {
+		assert(display != null);
+		assert(output != null);
+		assert(filters != null);
+		
+		this.display = display;
+		this.output = output;
+		this.filters = filters;
+		
+	}
+	
+	public boolean containsFilters(){
+		if(this.filters == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	
