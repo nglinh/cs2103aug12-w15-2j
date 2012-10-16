@@ -212,9 +212,9 @@ public class Logic {
 		String appendedSortStatus = listStatusMsg + ", " + statusMsg;
 
 		if(searchFilters == null){
-			return new LogicToUi(lastShownToUI, appendedSortStatus, latestSorting);
+			return new LogicToUi(lastShownToUI, appendedSortStatus, latestSorting, needToReverse);
 		} else {
-			return new LogicToUi(lastShownToUI, appendedSortStatus, searchFilters, latestSorting);
+			return new LogicToUi(lastShownToUI, appendedSortStatus, searchFilters, latestSorting, needToReverse);
 		}
 	}
 
