@@ -87,6 +87,10 @@ public class LogicToUi {
 		return currentSorting;
 	}
 	
+	public boolean getReverseSortStatus() {
+		return sortReverse;
+	}
+	
 	
 	
 	public boolean containsFilters(){
