@@ -10,10 +10,15 @@ import java.util.ArrayList;
 
 public class LogicToUi {
 
+
+	
+	public static enum SortStatus {TYPE, DONE, START, END, NAME };
+
 	String output = null;
 	ArrayList<Task> display = null;
 	SearchTerms filters = null;
-
+	
+	SortStatus currentSorting = null;
 	
 	public LogicToUi(String output)	{
 		assert(output != null);
@@ -41,12 +46,56 @@ public class LogicToUi {
 		
 	}
 	
+	public LogicToUi(ArrayList<Task> display, String output, SortStatus sorting) {
+		assert(display != null);
+		assert(output != null);
+
+		this.display = display;
+		this.output = output;
+		this.currentSorting = sorting;
+		
+	}
+	
+	
+	public LogicToUi(ArrayList<Task> display, String output, SearchTerms filters, SortStatus sorting) {
+		assert(display != null);
+		assert(output != null);
+		assert(filters != null);
+		
+		this.display = display;
+		this.output = output;
+		this.filters = filters;
+		this.currentSorting = sorting;
+		
+	}
+	
+	
+	
+	public boolean containsSortStatus(){
+		if(this.currentSorting == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	
+	public SortStatus getSortStatus(){
+		return currentSorting;
+	}
+	
+	
+	
 	public boolean containsFilters(){
 		if(this.filters == null) {
 			return false;
 		} else {
 			return true;
 		}
+	}
+	
+	public SearchTerms getFilters(){
+		return filters;
 	}
 	
 	
