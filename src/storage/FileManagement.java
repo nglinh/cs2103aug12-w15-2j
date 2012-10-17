@@ -5,12 +5,14 @@ package storage;
  * @author  Yeo Kheng Meng
  */ 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.StringReader;
+
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+
 import java.util.ArrayList;
 import java.util.zip.DataFormatException;
 
@@ -24,8 +26,11 @@ import shared.Task.TaskType;
 
 public class FileManagement {
 
-	public static enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, FILE_UNUSABLE, 
-		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT};
+	
+
+
+	public static enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, 
+		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT, FILE_IS_LOCKED};
 
 
 
@@ -41,7 +46,7 @@ public class FileManagement {
 
 		private static final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
 
-//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
+		//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
 		private static final int LINE_POSITION_TASKTYPE = 1;
 		private static final int LINE_POSITION_DONE = 2;
 		private static final int LINE_POSITION_DEADLINE_DATE = 3;
@@ -72,15 +77,23 @@ public class FileManagement {
 		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
 		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
+		private static final String LINE_LAST_MODIFIED = "#Last Modified: $1%s";
+		
 		private final int ZERO_LENGTH_TASK_NAME = 0;
+		
+		private final int START_OF_FILE = 0;
 
-		private FileStatus fileAttributes;
+		private FileStatus fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 
+		File databaseFile = new File(filename);
+		FileLock databaseFileLock;
+		FileChannel databaseChannel;
+		RandomAccessFile randAccess;
 
 		public FileManagement(ArrayList<Task> storeInHere)	{
 			assert(storeInHere != null);
 
-			fileAttributes = createAndCheckFileAttributes();
+			prepareDatabaseFile();
 
 			if((fileAttributes.equals(FileStatus.FILE_ALL_OK)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
 				try {
@@ -89,7 +102,40 @@ public class FileManagement {
 					fileAttributes = FileStatus.FILE_IS_CORRUPT;
 				}
 			}
+
+
 		}
+		public void prepareDatabaseFile() {
+
+			boolean isRWLockSucessful = true;
+			try {
+				randAccess = new RandomAccessFile(databaseFile, "rws");
+				databaseChannel = randAccess.getChannel();
+				databaseFileLock = databaseChannel.tryLock();
+				fileAttributes = FileStatus.FILE_ALL_OK;
+
+				if(databaseFileLock == null) {
+					fileAttributes = FileStatus.FILE_IS_LOCKED;
+					isRWLockSucessful = false;
+				}
+			} catch (IOException e) {
+				isRWLockSucessful = false;
+			}
+
+			if(isRWLockSucessful || fileAttributes.equals(FileStatus.FILE_IS_LOCKED)) {
+				return;
+			}
+
+			try {
+				randAccess = new RandomAccessFile(databaseFile, "r");
+				databaseChannel = randAccess.getChannel();
+				fileAttributes = FileStatus.FILE_READ_ONLY;
+			} catch (IOException e) {
+				fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
+			}
+
+		}
+
 		public FileStatus getFileAttributes()	{
 			return fileAttributes;
 		}
@@ -97,11 +143,20 @@ public class FileManagement {
 
 		private void readFiletoDataBase(ArrayList<Task> storeInHere) throws IOException, DataFormatException {
 
+			int fileSize = (int) databaseFile.length();
+			byte[] fileByteContents = new byte[fileSize];
+
+			randAccess.seek(START_OF_FILE);
+			randAccess.read(fileByteContents);
+
+			String fileInStringFormat = new String(fileByteContents);
+			BufferedReader fileStringReader = new BufferedReader(new StringReader(fileInStringFormat));
+
+
 			String lineFromInput;
 			String parsed[] = null;
 
-			BufferedReader inFile  = fileReading();
-			while((lineFromInput = inFile.readLine()) != null)	{
+			while((lineFromInput = fileStringReader.readLine()) != null)	{
 				if(lineFromInput.startsWith(LINE_IGNORE_CHARACTER)) continue;
 
 				parsed = lineFromInput.split(LINE_PARAM_DELIMITER_READ, LINE_NUM_FIELDS);
@@ -141,11 +196,11 @@ public class FileManagement {
 			if(startDate.isAfter(endDate)) {
 				throw new DataFormatException();
 			}
-			
+
 			return new Task(taskName, startDate, endDate, done);
 		}
-		
-		
+
+
 		private String parseTaskName(String taskName)
 				throws DataFormatException {
 
@@ -169,14 +224,14 @@ public class FileManagement {
 
 			String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);
 			boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
-			
+
 			return new Task(taskName, done);
 		}
-		
+
 		private boolean retrieveTaskDoneStatus(String parsed)
 				throws DataFormatException {
 			boolean done;
-			
+
 			if(parsed.equals(LINE_DONE)) {
 				done = true;
 			} else if(parsed.equals(LINE_UNDONE)){
@@ -247,19 +302,6 @@ public class FileManagement {
 		}
 
 
-
-		public boolean canWriteFile() {
-			try	{
-				BufferedWriter out = new BufferedWriter(new FileWriter(filename, true));
-				out.close();
-			}
-			catch(Exception e)	{
-				return false;
-			}
-
-			return true;
-		}
-
 		public void writeDataBaseToFile(ArrayList<Task> toBeWritten) throws IOException, WillNotWriteToCorruptFileException	{
 			assert(toBeWritten != null);
 
@@ -267,82 +309,35 @@ public class FileManagement {
 				throw new WillNotWriteToCorruptFileException();
 			}
 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-
-			for(String helpline : filehelp)	{
-				out.write(helpline);
-				out.newLine();
+			if(randAccess == null) {
+				throw new IOException();
 			}
 
-			int index = 1;
+			StringBuffer dataToBeWritten = new StringBuffer();
+
+			for(String helpline : filehelp)	{
+				dataToBeWritten.append(helpline + "\n");
+			}
+
+			int index = 1; //Start index number from 1
 
 			for(Task temp : toBeWritten) {
-				out.write(taskToDatabaseString(temp, index));			
-				out.newLine();
+				dataToBeWritten.append(taskToDatabaseString(temp, index) + "\n");
 				index++;
 			}
 
 			String currentTime = LINE_DATE_LONGER_FORMATTER.print(new DateTime());
 
-			out.write("#Last Modified: " + currentTime);
-			out.newLine();
+			String appendLastModified = String.format(LINE_LAST_MODIFIED, currentTime);
+			dataToBeWritten.append(appendLastModified + "\n");
 
-			out.close();
+			String dataStringToBeWritten = dataToBeWritten.toString();
+
+			randAccess.seek(START_OF_FILE);
+			randAccess.writeBytes(dataStringToBeWritten);
+
 		}
 
-
-
-
-		private FileStatus createAndCheckFileAttributes() {
-
-			FileStatus attributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
-
-			File databaseFile = new File(filename);
-
-
-			try {
-
-				if(!databaseFile.exists()) {
-					databaseFile.createNewFile();
-				}
-
-
-				if(isFileReadable(databaseFile) && isFileWritable(databaseFile)) {
-					attributes = FileStatus.FILE_ALL_OK;
-				} else if(isFileReadable(databaseFile)){
-					attributes = FileStatus.FILE_READ_ONLY;
-				} else {
-					attributes = FileStatus.FILE_UNUSABLE;
-				}
-
-
-			} catch (IOException e) {
-				attributes = FileStatus.FILE_UNUSABLE;
-			} catch (SecurityException e) {
-				attributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
-			}
-
-			return attributes;
-		}
-
-		private static BufferedReader fileReading() throws FileNotFoundException {
-			return new BufferedReader(new FileReader(filename));
-		}
-
-		private boolean isFileWritable(File databaseFile) {
-			try	{
-				BufferedWriter out = new BufferedWriter(new FileWriter(filename,true));
-				out.close();
-				return true;
-			}
-			catch(Exception e) {
-				return false;
-			}
-		}
-
-		private boolean isFileReadable(File databaseFile) {
-			return databaseFile.canRead();
-		}
 
 		public boolean isFileCorrupt() {
 			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
