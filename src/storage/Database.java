@@ -252,7 +252,7 @@ public class Database {
 
 			assert(newTask != null);
 
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -297,7 +297,7 @@ public class Database {
 		public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException{
 			assert(updated != null);
 
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -322,7 +322,7 @@ public class Database {
 
 		}
 
-		private void verifyFileAttributes() throws IOException,
+		private void verifyFileWritingAbility() throws IOException,
 		WillNotWriteToCorruptFileException {
 			if(fileAttributes.equals(DB_File_Status.FILE_PERMISSIONS_UNKNOWN)
 					|| fileAttributes.equals(DB_File_Status.FILE_READ_ONLY)
@@ -351,7 +351,7 @@ public class Database {
 
 		public void delete(int serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
 
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -391,7 +391,7 @@ public class Database {
 
 
 		public void deleteAll() throws IOException, WillNotWriteToCorruptFileException {
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 			taskStore.clear();
@@ -406,7 +406,7 @@ public class Database {
 		 */
 
 		public void deleteDone() throws IOException, WillNotWriteToCorruptFileException {
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -433,7 +433,7 @@ public class Database {
 		 */
 
 		public void deleteOver() throws IOException, WillNotWriteToCorruptFileException {
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -487,7 +487,7 @@ public class Database {
 
 		public void undo() throws IOException, NoMoreUndoStepsException, WillNotWriteToCorruptFileException {
 
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 
 			if(undoOperations.isEmpty()) {
