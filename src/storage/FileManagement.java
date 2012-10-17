@@ -1,7 +1,7 @@
 package storage;
 /**  
  * FileManagement.java 
- * A class for managing all read and writes to disk
+ * A class for managing all read and writes to disk. Will lock the database file during the duration of the program run
  * @author  Yeo Kheng Meng
  */ 
 import java.io.BufferedReader;
@@ -46,7 +46,7 @@ public class FileManagement {
 
 		private static final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
 
-		//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
+//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
 		private static final int LINE_POSITION_TASKTYPE = 1;
 		private static final int LINE_POSITION_DONE = 2;
 		private static final int LINE_POSITION_DEADLINE_DATE = 3;
@@ -88,7 +88,7 @@ public class FileManagement {
 		File databaseFile = new File(filename);
 		FileLock databaseFileLock;
 		FileChannel databaseChannel;
-		RandomAccessFile randAccess;
+		RandomAccessFile randDatabaseAccess;
 
 		public FileManagement(ArrayList<Task> storeInHere)	{
 			assert(storeInHere != null);
@@ -109,14 +109,15 @@ public class FileManagement {
 
 			boolean isRWLockSucessful = true;
 			try {
-				randAccess = new RandomAccessFile(databaseFile, "rws");
-				databaseChannel = randAccess.getChannel();
+				randDatabaseAccess = new RandomAccessFile(databaseFile, "rws");
+				databaseChannel = randDatabaseAccess.getChannel();
 				databaseFileLock = databaseChannel.tryLock();
-				fileAttributes = FileStatus.FILE_ALL_OK;
-
+				
 				if(databaseFileLock == null) {
 					fileAttributes = FileStatus.FILE_IS_LOCKED;
 					isRWLockSucessful = false;
+				} else {
+					fileAttributes = FileStatus.FILE_ALL_OK;
 				}
 			} catch (IOException e) {
 				isRWLockSucessful = false;
@@ -127,8 +128,8 @@ public class FileManagement {
 			}
 
 			try {
-				randAccess = new RandomAccessFile(databaseFile, "r");
-				databaseChannel = randAccess.getChannel();
+				randDatabaseAccess = new RandomAccessFile(databaseFile, "r");
+				databaseChannel = randDatabaseAccess.getChannel();
 				fileAttributes = FileStatus.FILE_READ_ONLY;
 			} catch (IOException e) {
 				fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
@@ -146,8 +147,8 @@ public class FileManagement {
 			int fileSize = (int) databaseFile.length();
 			byte[] fileByteContents = new byte[fileSize];
 
-			randAccess.seek(START_OF_FILE);
-			randAccess.read(fileByteContents);
+			randDatabaseAccess.seek(START_OF_FILE);
+			randDatabaseAccess.read(fileByteContents);
 
 			String fileInStringFormat = new String(fileByteContents);
 			BufferedReader fileStringReader = new BufferedReader(new StringReader(fileInStringFormat));
@@ -309,7 +310,7 @@ public class FileManagement {
 				throw new WillNotWriteToCorruptFileException();
 			}
 
-			if(randAccess == null) {
+			if(randDatabaseAccess == null) {
 				throw new IOException();
 			}
 
@@ -333,8 +334,8 @@ public class FileManagement {
 
 			String dataStringToBeWritten = dataToBeWritten.toString();
 
-			randAccess.seek(START_OF_FILE);
-			randAccess.writeBytes(dataStringToBeWritten);
+			randDatabaseAccess.seek(START_OF_FILE);
+			randDatabaseAccess.writeBytes(dataStringToBeWritten);
 
 		}
 
