@@ -77,7 +77,7 @@ public class FileManagement {
 		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
 		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
-		private static final String LINE_LAST_MODIFIED = "#Last Modified: $1%s";
+		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
 		
 		private final int ZERO_LENGTH_TASK_NAME = 0;
 		
