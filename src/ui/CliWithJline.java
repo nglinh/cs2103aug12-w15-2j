@@ -17,7 +17,7 @@ import jline.console.completer.StringsCompleter;
 
 public class CliWithJline extends Cli{
 	
-	private static final String MESSAGE_CLI_CUSTOM = "Includes command history and Tab Completion\nRun DoIt with -clisafe if you experience problems";
+	private static final String MESSAGE_CLI_CUSTOM = "Includes Tab Completion\nRun DoIt with -clisafe if you experience problems";
 	protected static final String MESSAGE_INITIAL_HELP_OFFER_JLINE = "Press Tab or type \"help\" for a list of commands.";
 	
 	
