@@ -16,16 +16,18 @@ public class AddParser {
 	private Parser parser;
 	private String argument;
 	private TaskType taskType;
-	private int matchingPosition;
+	private int matchingPosition1;
+	private int endDateStringPosition;
 	public AddParser(String str){
 		argument = str;
 		String dateString = removeTriggerWord(argument);
-		matchingPosition = 0;
+		matchingPosition1 = 0;
+		endDateStringPosition = 0;
 		parser = new Parser(TimeZone.getDefault());
 		groups = parser.parse(dateString);
 		if(this.getTaskType()!= TaskType.FLOATING){
 			int location = groups.get(0).getPosition();
-			matchingPosition = location;
+			matchingPosition1 = location;
 			while(!checkFullWord(dateString,location)){
 				char[] tempCharArray = dateString.toCharArray();
 				String tempString = "";
@@ -36,21 +38,45 @@ public class AddParser {
 				if(i == tempCharArray.length){
 					dateString = argument.trim();
 					location = argument.length();
-					matchingPosition = location;
+					matchingPosition1 = location;
 					groups = parser.parse("");
 					break;
 				}
-				matchingPosition += i-location+1;
+				matchingPosition1 += i-location+1;
 				for(int k = i;k<dateString.length();k++){
 					tempString = tempString + tempCharArray[k];
 				}
 				dateString = tempString.trim();
 				groups = parser.parse(dateString);
 				location = groups.get(0).getPosition();
-				matchingPosition += location;
+				matchingPosition1 += location;
 			}
+			determineEndOfDateString();
+
+			//adjustTimeBasedOnTriggerWords();
 		}
 	}
+	private void determineEndOfDateString() {
+		if(this.getTaskType()!=TaskType.FLOATING){
+			String tempString = groups.get(0).getText();
+			endDateStringPosition = matchingPosition1+tempString.length()+1;
+
+		}
+
+	}
+	/*private void adjustTimeBasedOnTriggerWords() {
+		char[] tempCharArray = argument.toCharArray();
+		String tempString = "";
+		for(int i=0;i<matchingPosition;++i){
+			tempString += tempCharArray[i];
+		}
+	    String[] tempStringArray = tempString.split(" ");
+	    int len = tempStringArray.length;
+	    if(tempStringArray[len-1].compareTo("before")==0){
+	    	groups.get(0).getDates().get(0)
+	    }
+
+	}*/
 	private String removeTriggerWord(String argument2) {
 		String result = "";
 		String[] tempStringArray = argument2.split(" ");
@@ -61,7 +87,8 @@ public class AddParser {
 				result = result + "   ";
 			else if(tempStringArray[i].compareTo("before")==0)
 				result = result + "       ";
-			else if(tempStringArray[i].compareTo("on")==0)
+			else if(tempStringArray[i].compareTo("on")==0||
+					tempStringArray[i].compareTo("at")==0)
 				result = result +"   ";
 			else
 				result = result+ tempStringArray[i]+" ";
@@ -72,8 +99,9 @@ public class AddParser {
 		char[] tempCharArray = dateString.toCharArray();
 		String matchingValue = groups.get(0).getText();
 		char[] matchingArray = matchingValue.toCharArray();
-		if(location+matchingArray.length < tempCharArray.length &&
-				tempCharArray[location+matchingArray.length]!= ' ')
+		if((location+matchingArray.length < tempCharArray.length &&
+				tempCharArray[location+matchingArray.length] != ' ')||
+				location!=0 && tempCharArray[location-1]!=' ')
 			return false;
 		return true;
 	}
@@ -91,37 +119,60 @@ public class AddParser {
 		if(taskType == TaskType.FLOATING)
 			return argument;
 		else{
-			return buildString(argument,this.matchingPosition);
+			return buildString(argument,this.matchingPosition1);
 		}
 	}
-	private String buildString(String argument2, int matchingPosition2) {
+	private String buildString(String argument, int matchingPosition) {
 		String result = "";
-		char[] tempCharArray = argument2.toCharArray();
-		for(int i =0;i<matchingPosition2;++i)
+		char[] tempCharArray = argument.toCharArray();
+		for(int i =0;i<matchingPosition;++i)
 			result = result+tempCharArray[i];
 		result = result.trim();
 		String[] tempStringArray = result.split(" ");
 		if(tempStringArray[tempStringArray.length-1].compareTo("from")==0||
 				tempStringArray[tempStringArray.length-1].compareTo("by")==0||
 				tempStringArray[tempStringArray.length-1].compareTo("before")==0||
-				tempStringArray[tempStringArray.length-1].compareTo("on")==0){
+				tempStringArray[tempStringArray.length-1].compareTo("on")==0||
+				tempStringArray[tempStringArray.length-1].compareTo("at")==0){
 			tempStringArray[tempStringArray.length-1] = "";
 			result = "";
 			for(int i=0;i<tempStringArray.length;++i)
 				result = result + tempStringArray[i]+" ";
 			result = result.trim();
 		}
+		for(int i = endDateStringPosition;i<argument.length();i++){
+			result+= tempCharArray[i];
+		}
+		result = result.trim();
 		return result;
 	}
 	public DateTime getBeginTime(){
 		Date st = this.getGroups().get(0).getDates().get(0);
-		DateTime result = new DateTime(st);
-		return result;
+		DateTime time1 = new DateTime(st);
+		if(groups.get(0).getDates().size()==2){
+			Date et = groups.get(0).getDates().get(1);
+			DateTime time2 = new DateTime(et);
+			if(time2.isBefore(time1)){
+				return time2;
+			}
+			else
+				return time1;
+		}
+		return time1;
 	}
 	public DateTime getEndTime(){
 		Date et = this.getGroups().get(0).getDates().get(1);
-		DateTime result = new DateTime(et);
-		return result;
+		DateTime time2 = new DateTime(et);
+		if(groups.get(0).getDates().size()==2){
+			Date st = this.getGroups().get(0).getDates().get(0);
+			DateTime time1 = new DateTime(st);
+			if(time2.isBefore(time1)){
+				return time1;
+			}
+			else
+				return time2;
+		}
+		return time2;
 	}
 	public List<DateGroup> getGroups(){
 		return this.groups;
