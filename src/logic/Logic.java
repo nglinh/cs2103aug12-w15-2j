@@ -375,6 +375,8 @@ public class Logic {
 	}
 
 	private static LogicToUi addTask(String arguments) {
+		if(arguments.length()==0)
+			return new LogicToUi("Cannot add a task with empty description.");
 		try {
 			Task newTask;
 			AddParser argParser = new AddParser(arguments);
