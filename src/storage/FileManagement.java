@@ -340,11 +340,4 @@ public class FileManagement {
 		}
 
 
-		public boolean isFileCorrupt() {
-			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
-				return true;
-			} else {
-				return false;
-			}
-		}
 }
