@@ -79,6 +79,8 @@ public class FileManagement {
 
 		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
 		
+		private static final String LINE_END_OF_LINE = System.getProperty( "line.separator" );
+	
 		private final int ZERO_LENGTH_TASK_NAME = 0;
 		
 		private final int START_OF_FILE = 0;
@@ -317,20 +319,20 @@ public class FileManagement {
 			StringBuffer dataToBeWritten = new StringBuffer();
 
 			for(String helpline : filehelp)	{
-				dataToBeWritten.append(helpline + "\n");
+				dataToBeWritten.append(helpline + LINE_END_OF_LINE);
 			}
 
 			int index = 1; //Start index number from 1
 
 			for(Task temp : toBeWritten) {
-				dataToBeWritten.append(taskToDatabaseString(temp, index) + "\n");
+				dataToBeWritten.append(taskToDatabaseString(temp, index) + LINE_END_OF_LINE);
 				index++;
 			}
 
 			String currentTime = LINE_DATE_LONGER_FORMATTER.print(new DateTime());
 
 			String appendLastModified = String.format(LINE_LAST_MODIFIED, currentTime);
-			dataToBeWritten.append(appendLastModified + "\n");
+			dataToBeWritten.append(appendLastModified + LINE_END_OF_LINE);
 
 			String dataStringToBeWritten = dataToBeWritten.toString();
 
