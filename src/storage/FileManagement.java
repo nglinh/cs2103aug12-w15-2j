@@ -147,8 +147,8 @@ public class FileManagement {
 			try {
 				databaseFileLock.release();
 				databaseChannel.close();
+				randDatabaseAccess.close();
 		
-				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
