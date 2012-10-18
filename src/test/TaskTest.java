@@ -559,11 +559,11 @@ public class TaskTest {
 		
 		assertEquals(nameTimedFalse.compareTo(name), COMPARETO_SMALLER);
 		
-		assertEquals(nameDeadlineTrue.compareTo(nameDeadline), COMPARETO_SMALLER);
+		assertEquals(nameDeadlineTrue.compareTo(nameDeadline), nameDeadlineTrue.getDeadline().compareTo(nameDeadline.getDeadline()));
 		
-		assertEquals(nameTimed.compareTo(nameDeadlineTrue), COMPARETO_BIGGER);
+		assertEquals(nameTimed.compareTo(nameDeadlineTrue), nameTimed.getStartDate().compareTo(nameDeadlineTrue.getDeadline()));
 		
-		assertEquals(nameDeadlineTrue.compareTo(nameTimed), COMPARETO_SMALLER);
+		assertEquals(nameDeadlineTrue.compareTo(nameTimed), nameDeadlineTrue.getDeadline().compareTo(nameTimed.getEndDate()));
 		
 	}
 
