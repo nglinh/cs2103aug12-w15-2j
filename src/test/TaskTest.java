@@ -6,7 +6,12 @@ package test;
  * @author  Yeo Kheng Meng
  */ 
 
-import static org.junit.Assert.*;
+
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -167,6 +172,47 @@ public class TaskTest {
 	public void testTaskStringDateTimeDateTime() {
 		boolean fail;
 		try{
+			new Task("test", new DateTime(), null);
+			fail = true;
+		} catch (AssertionError e) {
+			fail = false;
+		}
+		if (fail) {
+			fail();
+		}
+
+
+		try{
+			new Task("test", null, new DateTime());
+			fail = true;
+		} catch (AssertionError e) {
+			fail = false;
+		}
+		if (fail) {
+			fail();
+		}
+
+		try{
+			new Task("test", new DateTime(), Task.INVALID_DATE_FIELD);
+			fail = true;
+		} catch (AssertionError e) {
+			fail = false;
+		}
+		if (fail) {
+			fail();
+		}
+		
+		try{
+			new Task("test", Task.INVALID_DATE_FIELD, new DateTime());
+			fail = true;
+		} catch (AssertionError e) {
+			fail = false;
+		}
+		if (fail) {
+			fail();
+		}
+
+		try{
 			new Task("test", null, null);
 			fail = true;
 		} catch (AssertionError e) {
@@ -175,28 +221,7 @@ public class TaskTest {
 		if (fail) {
 			fail();
 		}
-
-
-		try{
-			new Task("test", Task.INVALID_DATE_FIELD, null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
-			fail();
-		}
-
-		try{
-			new Task("test", null, Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
-			fail();
-		}
-
+		
 		try{
 			new Task("test", Task.INVALID_DATE_FIELD, Task.INVALID_DATE_FIELD);
 			fail = true;
