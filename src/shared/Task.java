@@ -365,7 +365,15 @@ public class Task implements Comparable<Task> {
 
 
 
-
+	/**
+	 * To compare this task with the incoming task based on dates     
+	 * <p>
+	 * Floating Task will always appear at the bottom.
+	 *  The time to use for timed tasks will be start dates.
+	 *
+	 * @param toBeCloned the new task to be cloned
+	 * @return -1 if receiving object is smaller, 0 if they are equal and 1 if the recieving object is bigger
+	 */
 
 	@Override
 	public int compareTo(Task input) {
