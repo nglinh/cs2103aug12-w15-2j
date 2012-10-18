@@ -68,15 +68,9 @@ public class Task implements Comparable<Task> {
 
 	public Task(String name, boolean done)	{
 		
-		assert(name != null);
-		assert(name.length() != 0);
-
-		this.type = TaskType.FLOATING;
-		this.taskName = name;
-		this.isCompleted = done;
-
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name);
+		newTask.done(done);
+		this.updateOrClone(newTask);
 	}
 
 	/**
@@ -88,18 +82,9 @@ public class Task implements Comparable<Task> {
 
 	public Task(String name, DateTime deadline) {
 		
-		assert(name != null);
-		assert(name.length() != 0);
-		
-		assert(deadline != null);
-		assert(!deadline.equals(INVALID_DATE_FIELD));
-		
-		this.type = TaskType.DEADLINE;
-		this.taskName = name;
-		this.deadline = deadline; 
-
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name);
+		newTask.changetoDeadline(deadline);
+		this.updateOrClone(newTask);
 
 	}
 
@@ -113,20 +98,9 @@ public class Task implements Comparable<Task> {
 
 	public Task(String name, DateTime deadline, boolean done) {
 		
-		assert(name != null);
-		assert(name.length() != 0);
-		
-		assert(deadline != null);
-		assert(!deadline.isEqual(INVALID_DATE_FIELD));
-		
-		
-		this.type = TaskType.DEADLINE;
-		this.taskName = name;
-		this.deadline = deadline; 
-		this.isCompleted = done;
-
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name, deadline);
+		newTask.done(done);
+		this.updateOrClone(newTask);
 
 	}
 	
@@ -142,24 +116,9 @@ public class Task implements Comparable<Task> {
 
 	public Task(String name, DateTime startDate, DateTime endDate) {
 		
-		assert(name != null);
-		assert(name.length() != 0);
-		
-		assert(startDate != null);
-		assert(!startDate.equals(INVALID_DATE_FIELD));
-		
-		assert(endDate != null);
-		assert(!endDate.equals(INVALID_DATE_FIELD));
-		
-		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
-		
-		this.type = TaskType.TIMED;
-		this.taskName = name;
-		this.startDate = startDate;
-		this.endDate = endDate;
-
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name);
+		newTask.changetoTimed(startDate, endDate);
+		this.updateOrClone(newTask);
 	}
 
 	/**
@@ -174,25 +133,9 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public Task(String name, DateTime startDate, DateTime endDate, boolean done) {
-		assert(name != null);
-		assert(name.length() != 0);
-		
-		assert(startDate != null);
-		assert(!startDate.equals(INVALID_DATE_FIELD));
-		
-		assert(endDate != null);
-		assert(!endDate.equals(INVALID_DATE_FIELD));
-		
-		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
-		
-		this.type = TaskType.TIMED;
-		this.taskName = name;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.isCompleted = done;
-
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name, startDate, endDate);
+		newTask.done(done);
+		this.updateOrClone(newTask);
 	}
 	
 	
@@ -353,8 +296,8 @@ public class Task implements Comparable<Task> {
 		assert(!this.type.equals(TaskType.DEADLINE));
 		
 		
-		assert(deadline != null);
-		assert(!deadline.equals(INVALID_DATE_FIELD));
+		assert(newDeadline != null);
+		assert(!newDeadline.equals(INVALID_DATE_FIELD));
 		
 		this.type = TaskType.DEADLINE;
 
@@ -365,20 +308,21 @@ public class Task implements Comparable<Task> {
 
 	}
 
-	public void changetoTimed(DateTime newstartDate, DateTime newendDate)	{
+	public void changetoTimed(DateTime newStartDate, DateTime newEndDate)	{
 		assert(!this.type.equals(TaskType.TIMED));
 		
-		assert(newstartDate != null);
-		assert(!newstartDate.equals(INVALID_DATE_FIELD));
+		assert(newStartDate != null);
+		assert(!newStartDate.equals(INVALID_DATE_FIELD));
 		
-		assert(newendDate != null);
-		assert(!newendDate.equals(INVALID_DATE_FIELD));
+		assert(newEndDate != null);
+		assert(!newEndDate.equals(INVALID_DATE_FIELD));
 		
+		assert(newStartDate.isBefore(newEndDate) || newStartDate.isEqual(newEndDate));
 		
 		this.type = TaskType.TIMED;
 
-		this.startDate = newstartDate;
-		this.endDate = newendDate;
+		this.startDate = newStartDate;
+		this.endDate = newEndDate;
 
 		this.deadline = INVALID_DATE_FIELD;
 
@@ -394,27 +338,27 @@ public class Task implements Comparable<Task> {
 		this.taskName = newName;
 	}
 
-	public void changeStartAndendDate(DateTime newstartDate, DateTime newendDate)	{
+	public void changeStartAndendDate(DateTime newStartDate, DateTime newEndDate)	{
 		
 		assert(this.type.equals(TaskType.TIMED));
-		assert(newstartDate != null);
-		assert(!newstartDate.equals(INVALID_DATE_FIELD));
+		assert(newStartDate != null);
+		assert(!newStartDate.equals(INVALID_DATE_FIELD));
 		
-		assert(newendDate != null);
-		assert(!newendDate.equals(INVALID_DATE_FIELD));
+		assert(newEndDate != null);
+		assert(!newEndDate.equals(INVALID_DATE_FIELD));
 		
-		assert(startDate.isBefore(newendDate) || startDate.isEqual(newendDate));
+		assert(newStartDate.isBefore(newEndDate) || newStartDate.isEqual(newEndDate));
 		
-		this.startDate = newstartDate;
-		this.endDate = newendDate;
+		this.startDate = newStartDate;
+		this.endDate = newEndDate;
 	}
 
 
 	public void changeDeadline(DateTime newDeadline) {
 		assert(this.type.equals(TaskType.DEADLINE));
 		
-		assert(deadline != null);
-		assert(!deadline.equals(INVALID_DATE_FIELD));
+		assert(newDeadline != null);
+		assert(!newDeadline.equals(INVALID_DATE_FIELD));
 		
 		this.deadline = newDeadline;
 	}
@@ -442,24 +386,8 @@ public class Task implements Comparable<Task> {
 			return COMPARETO_SMALLER;
 		}
 
-		DateTime currentTaskDate;
-		DateTime inputTaskDate;
-
-		if(this.isDeadlineTask()) {
-			currentTaskDate = this.getDeadline();
-		}
-		else {
-			currentTaskDate = this.getStartDate();
-		}
-
-
-		if(input.isDeadlineTask())	{
-			inputTaskDate = input.getDeadline();
-		}
-		else {
-			inputTaskDate = input.getStartDate();
-		}
-
+		DateTime currentTaskDate = comparisonDate(this);
+		DateTime inputTaskDate = comparisonDate(input);
 
 		return currentTaskDate.compareTo(inputTaskDate);
 
@@ -467,6 +395,7 @@ public class Task implements Comparable<Task> {
 
 	public boolean searchName(String term)	{
 		assert(term != null);
+		assert(term.length() != 0);
 		
 		String taskNameLowerCase = taskName.toLowerCase();
 		String termLowerCase = term.toLowerCase();
@@ -489,16 +418,10 @@ public class Task implements Comparable<Task> {
 		
 		assert(startRange.isBefore(endRange) || startRange.isEqual(endRange));
 		
-		
-		DateTime currentTaskDate;
-
-		if(this.isDeadlineTask()) {
-			currentTaskDate = this.getDeadline();
+		if(this.isFloatingTask()) {
+			return false;
 		}
-		else {
-			currentTaskDate = this.getStartDate();
-		}
-
+		DateTime currentTaskDate = comparisonDate(this);
 
 		if(currentTaskDate.isEqual(startRange)) {
 			return true;
@@ -515,6 +438,20 @@ public class Task implements Comparable<Task> {
 
 
 		return false;
+	}
+	
+	
+	private DateTime comparisonDate(Task dateCompare){
+		if(dateCompare.isFloatingTask()) {
+			return Task.INVALID_DATE_FIELD;
+		}
+		
+		if(dateCompare.isDeadlineTask()) {
+			return dateCompare.getDeadline();
+		}
+		else {
+			return dateCompare.getStartDate();
+		}
 	}
 	
 	
@@ -571,11 +508,15 @@ public class Task implements Comparable<Task> {
 
 		public int compare(Task o1, Task o2) {
 			
+			if(o1.isFloatingTask() && o2.isFloatingTask()) {
+				return COMPARETO_EQUAL;
+			}
+			
 			if(o1.isFloatingTask()) {
 				return COMPARETO_BIGGER;
 			}
 			
-			if(o1.isFloatingTask()) {
+			if(o2.isFloatingTask()) {
 				return COMPARETO_SMALLER;
 			}
 			
@@ -594,7 +535,6 @@ public class Task implements Comparable<Task> {
 				o2Start = o2.getDeadline();
 			}
 			
-			
 			return o1Start.compareTo(o2Start);
 		}
 	}
@@ -603,11 +543,15 @@ public class Task implements Comparable<Task> {
 
 		public int compare(Task o1, Task o2) {
 			
+			if(o1.isFloatingTask() && o2.isFloatingTask()) {
+				return COMPARETO_EQUAL;
+			}
+			
 			if(o1.isFloatingTask()) {
 				return COMPARETO_BIGGER;
 			}
 			
-			if(o1.isFloatingTask()) {
+			if(o2.isFloatingTask()) {
 				return COMPARETO_SMALLER;
 			}
 			
