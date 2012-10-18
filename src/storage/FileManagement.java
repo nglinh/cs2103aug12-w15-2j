@@ -142,6 +142,18 @@ public class FileManagement {
 		public FileStatus getFileAttributes()	{
 			return fileAttributes;
 		}
+		
+		public void closeFile(){
+			try {
+				databaseFileLock.release();
+				databaseChannel.close();
+		
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 
 		private void readFiletoDataBase(ArrayList<Task> storeInHere) throws IOException, DataFormatException {
