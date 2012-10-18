@@ -340,6 +340,8 @@ public class Task implements Comparable<Task> {
 
 
 	public void changetoFloating() {
+		assert(!this.type.equals(TaskType.FLOATING));
+		
 		this.type = TaskType.FLOATING;
 
 		this.deadline = INVALID_DATE_FIELD;
@@ -348,6 +350,8 @@ public class Task implements Comparable<Task> {
 	}
 
 	public void changetoDeadline(DateTime newDeadline)	{
+		assert(!this.type.equals(TaskType.DEADLINE));
+		
 		
 		assert(deadline != null);
 		assert(!deadline.equals(INVALID_DATE_FIELD));
@@ -362,6 +366,8 @@ public class Task implements Comparable<Task> {
 	}
 
 	public void changetoTimed(DateTime newstartDate, DateTime newendDate)	{
+		assert(!this.type.equals(TaskType.TIMED));
+		
 		assert(newstartDate != null);
 		assert(!newstartDate.equals(INVALID_DATE_FIELD));
 		
@@ -389,6 +395,8 @@ public class Task implements Comparable<Task> {
 	}
 
 	public void changeStartAndendDate(DateTime newstartDate, DateTime newendDate)	{
+		
+		assert(this.type.equals(TaskType.TIMED));
 		assert(newstartDate != null);
 		assert(!newstartDate.equals(INVALID_DATE_FIELD));
 		
@@ -403,6 +411,8 @@ public class Task implements Comparable<Task> {
 
 
 	public void changeDeadline(DateTime newDeadline) {
+		assert(this.type.equals(TaskType.DEADLINE));
+		
 		assert(deadline != null);
 		assert(!deadline.equals(INVALID_DATE_FIELD));
 		
