@@ -274,21 +274,27 @@ public class TaskTest {
 		
 		toBeTakenOver = new Task(name);
 		assertEquals(toBeTakenOver.showInfo(), name.showInfo());
+		assertEquals(toBeTakenOver.getSerial(), name.getSerial());
 		
 		toBeTakenOver = new Task(nameTrue);
 		assertEquals(toBeTakenOver.showInfo(), nameTrue.showInfo());
+		assertEquals(toBeTakenOver.getSerial(), nameTrue.getSerial());
 		
 		toBeTakenOver = new Task(nameDeadline);
 		assertEquals(toBeTakenOver.showInfo(), nameDeadline.showInfo());
+		assertEquals(toBeTakenOver.getSerial(), nameDeadline.getSerial());
 		
 		toBeTakenOver = new Task(nameDeadlineTrue);
 		assertEquals(toBeTakenOver.showInfo(), nameDeadlineTrue.showInfo());
+		assertEquals(toBeTakenOver.getSerial(), nameDeadlineTrue.getSerial());
 		
 		toBeTakenOver = new Task(nameTimed);
 		assertEquals(toBeTakenOver.showInfo(), nameTimed.showInfo());
+		assertEquals(toBeTakenOver.getSerial(), nameTimed.getSerial());
 		
 		toBeTakenOver = new Task(nameTimedFalse);
 		assertEquals(toBeTakenOver.showInfo(), nameTimedFalse.showInfo());
+		assertEquals(toBeTakenOver.getSerial(), nameTimedFalse.getSerial());
 		
 
 
