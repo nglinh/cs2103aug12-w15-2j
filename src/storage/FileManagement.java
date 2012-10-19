@@ -1,16 +1,18 @@
 package storage;
 /**  
  * FileManagement.java 
- * A class for managing all read and writes to disk
+ * A class for managing all read and writes to disk. Will lock the database file during the duration of the program run
  * @author  Yeo Kheng Meng
  */ 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.StringReader;
+
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+
 import java.util.ArrayList;
 import java.util.zip.DataFormatException;
 
@@ -24,8 +26,11 @@ import shared.Task.TaskType;
 
 public class FileManagement {
 
-	public static enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, FILE_UNUSABLE, 
-		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT};
+	
+
+
+	public static enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, 
+		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT, FILE_IS_LOCKED};
 
 
 
@@ -72,16 +77,30 @@ public class FileManagement {
 		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
 		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
+		private static final String LINE_END_OF_LINE = System.getProperty( "line.separator" );
+	
+		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
 		private final int ZERO_LENGTH_TASK_NAME = 0;
+		
+		private final int START_OF_FILE = 0;
 
-		private FileStatus fileAttributes;
+		private FileStatus fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 
+		File databaseFile = new File(filename);
+		FileLock databaseFileLock;
+		FileChannel databaseChannel;
+		RandomAccessFile randDatabaseAccess;
 
-		public FileManagement(ArrayList<Task> storeInHere)	{
-			assert(storeInHere != null);
+		public FileManagement()	{
+			prepareDatabaseFile();
 
-			fileAttributes = createAndCheckFileAttributes();
-
+		}
+		
+		public void readFileAndGetFileAttributes(ArrayList<Task> storeInHere) {
+			if(storeInHere == null) {
+				throw new IllegalArgumentException("null input");
+			}
+			
 			if((fileAttributes.equals(FileStatus.FILE_ALL_OK)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
 				try {
 					readFiletoDataBase(storeInHere);
@@ -90,18 +109,76 @@ public class FileManagement {
 				}
 			}
 		}
+		public void prepareDatabaseFile() {
+
+			boolean isRWLockSucessful = true;
+			//Open file as read and write
+			try {
+				randDatabaseAccess = new RandomAccessFile(databaseFile, "rws");
+				databaseChannel = randDatabaseAccess.getChannel();
+				databaseFileLock = databaseChannel.tryLock();
+				
+				if(databaseFileLock == null) {
+					fileAttributes = FileStatus.FILE_IS_LOCKED;
+					isRWLockSucessful = false;
+				} else {
+					fileAttributes = FileStatus.FILE_ALL_OK;
+				}
+			} catch (IOException e) {
+				isRWLockSucessful = false;
+			}
+
+			//If the above is successful, we end this method
+			if(isRWLockSucessful || fileAttributes.equals(FileStatus.FILE_IS_LOCKED)) {
+				return;
+			}
+
+			//Open File as read only
+			try {
+				randDatabaseAccess = new RandomAccessFile(databaseFile, "r");
+				databaseChannel = randDatabaseAccess.getChannel();
+				fileAttributes = FileStatus.FILE_READ_ONLY;
+			} catch (IOException e) {
+				fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
+			}
+
+		}
+
 		public FileStatus getFileAttributes()	{
 			return fileAttributes;
+		}
+		
+		public void closeFile(){
+			try {
+				if(databaseFileLock != null ){
+					databaseFileLock.release();
+				}
+				databaseChannel.close();
+				randDatabaseAccess.close();
+		
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 
 		private void readFiletoDataBase(ArrayList<Task> storeInHere) throws IOException, DataFormatException {
 
+			int fileSize = (int) databaseFile.length();
+			byte[] fileByteContents = new byte[fileSize];
+
+			randDatabaseAccess.seek(START_OF_FILE);
+			randDatabaseAccess.read(fileByteContents);
+
+			String fileInStringFormat = new String(fileByteContents);
+			BufferedReader fileStringReader = new BufferedReader(new StringReader(fileInStringFormat));
+
+
 			String lineFromInput;
 			String parsed[] = null;
 
-			BufferedReader inFile  = fileReading();
-			while((lineFromInput = inFile.readLine()) != null)	{
+			while((lineFromInput = fileStringReader.readLine()) != null)	{
 				if(lineFromInput.startsWith(LINE_IGNORE_CHARACTER)) continue;
 
 				parsed = lineFromInput.split(LINE_PARAM_DELIMITER_READ, LINE_NUM_FIELDS);
@@ -141,11 +218,11 @@ public class FileManagement {
 			if(startDate.isAfter(endDate)) {
 				throw new DataFormatException();
 			}
-			
+
 			return new Task(taskName, startDate, endDate, done);
 		}
-		
-		
+
+
 		private String parseTaskName(String taskName)
 				throws DataFormatException {
 
@@ -169,14 +246,14 @@ public class FileManagement {
 
 			String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);
 			boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
-			
+
 			return new Task(taskName, done);
 		}
-		
+
 		private boolean retrieveTaskDoneStatus(String parsed)
 				throws DataFormatException {
 			boolean done;
-			
+
 			if(parsed.equals(LINE_DONE)) {
 				done = true;
 			} else if(parsed.equals(LINE_UNDONE)){
@@ -202,8 +279,6 @@ public class FileManagement {
 
 
 		private String taskToDatabaseString(Task toBeConverted, int index) {	
-
-
 
 			String typeString;
 
@@ -247,108 +322,43 @@ public class FileManagement {
 		}
 
 
-
-		public boolean canWriteFile() {
-			try	{
-				BufferedWriter out = new BufferedWriter(new FileWriter(filename, true));
-				out.close();
-			}
-			catch(Exception e)	{
-				return false;
-			}
-
-			return true;
-		}
-
 		public void writeDataBaseToFile(ArrayList<Task> toBeWritten) throws IOException, WillNotWriteToCorruptFileException	{
-			assert(toBeWritten != null);
+			if(toBeWritten == null) {
+				throw new IllegalArgumentException("null input");
+			}
 
 			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
 				throw new WillNotWriteToCorruptFileException();
 			}
 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-
-			for(String helpline : filehelp)	{
-				out.write(helpline);
-				out.newLine();
+			if(randDatabaseAccess == null) {
+				throw new IOException();
 			}
 
-			int index = 1;
+			StringBuffer dataToBeWritten = new StringBuffer();
+
+			for(String helpline : filehelp)	{
+				dataToBeWritten.append(helpline + LINE_END_OF_LINE);
+			}
+
+			int index = 1; //Start index number from 1
 
 			for(Task temp : toBeWritten) {
-				out.write(taskToDatabaseString(temp, index));			
-				out.newLine();
+				dataToBeWritten.append(taskToDatabaseString(temp, index) + LINE_END_OF_LINE);
 				index++;
 			}
 
 			String currentTime = LINE_DATE_LONGER_FORMATTER.print(new DateTime());
 
-			out.write("#Last Modified: " + currentTime);
-			out.newLine();
+			String appendLastModified = String.format(LINE_LAST_MODIFIED, currentTime);
+			dataToBeWritten.append(appendLastModified + LINE_END_OF_LINE);
 
-			out.close();
+			String dataStringToBeWritten = dataToBeWritten.toString();
+
+			randDatabaseAccess.seek(START_OF_FILE);
+			randDatabaseAccess.writeBytes(dataStringToBeWritten);
+
 		}
 
 
-
-
-		private FileStatus createAndCheckFileAttributes() {
-
-			FileStatus attributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
-
-			File databaseFile = new File(filename);
-
-
-			try {
-
-				if(!databaseFile.exists()) {
-					databaseFile.createNewFile();
-				}
-
-
-				if(isFileReadable(databaseFile) && isFileWritable(databaseFile)) {
-					attributes = FileStatus.FILE_ALL_OK;
-				} else if(isFileReadable(databaseFile)){
-					attributes = FileStatus.FILE_READ_ONLY;
-				} else {
-					attributes = FileStatus.FILE_UNUSABLE;
-				}
-
-
-			} catch (IOException e) {
-				attributes = FileStatus.FILE_UNUSABLE;
-			} catch (SecurityException e) {
-				attributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
-			}
-
-			return attributes;
-		}
-
-		private static BufferedReader fileReading() throws FileNotFoundException {
-			return new BufferedReader(new FileReader(filename));
-		}
-
-		private boolean isFileWritable(File databaseFile) {
-			try	{
-				BufferedWriter out = new BufferedWriter(new FileWriter(filename,true));
-				out.close();
-				return true;
-			}
-			catch(Exception e) {
-				return false;
-			}
-		}
-
-		private boolean isFileReadable(File databaseFile) {
-			return databaseFile.canRead();
-		}
-
-		public boolean isFileCorrupt() {
-			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
-				return true;
-			} else {
-				return false;
-			}
-		}
 }
