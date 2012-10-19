@@ -14,11 +14,12 @@ import storage.WillNotWriteToCorruptFileException;
 public class FileManagementDriver {
 	public static void main(String args[])
 	{
-		ArrayList<Task> taskStoretest = new ArrayList<Task>();
+		ArrayList<Task> taskStoreTest = new ArrayList<Task>();
 		
 		
 		
-		FileManagement filemgr = new FileManagement(taskStoretest);
+		FileManagement filemgr = new FileManagement();
+		filemgr.readFileAndGetFileAttributes(taskStoreTest);
 		System.out.println(filemgr.getFileAttributes());
 		
 		Task floatingtask = new Task("Test Floating", true);
@@ -31,20 +32,20 @@ public class FileManagementDriver {
 		Task timedtask = new Task("Test Timed", new DateTime().minusDays(100), new DateTime(2013, 12, 31, 00, 00), true);
 		Task timedtask2 = new Task("Test Timed2", new DateTime(2011, 9, 5, 23,59), new DateTime(2013, 12, 31, 00, 00), false);
 		
-		taskStoretest.add(floatingtask);
-		taskStoretest.add(floatingtask2);
+		taskStoreTest.add(floatingtask);
+		taskStoreTest.add(floatingtask2);
 		
-		taskStoretest.add(deadlinetask);
-		taskStoretest.add(deadlinetask2);
+		taskStoreTest.add(deadlinetask);
+		taskStoreTest.add(deadlinetask2);
 		
-		taskStoretest.add(timedtask);
-		taskStoretest.add(timedtask2);
+		taskStoreTest.add(timedtask);
+		taskStoreTest.add(timedtask2);
 		
-		Collections.sort(taskStoretest);
+		Collections.sort(taskStoreTest);
 		
 		
 		try {
-			filemgr.writeDataBaseToFile(taskStoretest);
+			filemgr.writeDataBaseToFile(taskStoreTest);
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			System.out.println("Fail");
 			e.printStackTrace();
