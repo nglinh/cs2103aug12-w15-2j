@@ -77,10 +77,9 @@ public class FileManagement {
 		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
 		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
-		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
-		
 		private static final String LINE_END_OF_LINE = System.getProperty( "line.separator" );
 	
+		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
 		private final int ZERO_LENGTH_TASK_NAME = 0;
 		
 		private final int START_OF_FILE = 0;
@@ -92,11 +91,16 @@ public class FileManagement {
 		FileChannel databaseChannel;
 		RandomAccessFile randDatabaseAccess;
 
-		public FileManagement(ArrayList<Task> storeInHere)	{
-			assert(storeInHere != null);
-
+		public FileManagement()	{
 			prepareDatabaseFile();
 
+		}
+		
+		public void readFileAndGetFileAttributes(ArrayList<Task> storeInHere) {
+			if(storeInHere == null) {
+				throw new IllegalArgumentException("null input");
+			}
+			
 			if((fileAttributes.equals(FileStatus.FILE_ALL_OK)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
 				try {
 					readFiletoDataBase(storeInHere);
@@ -104,12 +108,11 @@ public class FileManagement {
 					fileAttributes = FileStatus.FILE_IS_CORRUPT;
 				}
 			}
-
-
 		}
 		public void prepareDatabaseFile() {
 
 			boolean isRWLockSucessful = true;
+			//Open file as read and write
 			try {
 				randDatabaseAccess = new RandomAccessFile(databaseFile, "rws");
 				databaseChannel = randDatabaseAccess.getChannel();
@@ -125,10 +128,12 @@ public class FileManagement {
 				isRWLockSucessful = false;
 			}
 
+			//If the above is successful, we end this method
 			if(isRWLockSucessful || fileAttributes.equals(FileStatus.FILE_IS_LOCKED)) {
 				return;
 			}
 
+			//Open File as read only
 			try {
 				randDatabaseAccess = new RandomAccessFile(databaseFile, "r");
 				databaseChannel = randDatabaseAccess.getChannel();
@@ -145,7 +150,9 @@ public class FileManagement {
 		
 		public void closeFile(){
 			try {
-				databaseFileLock.release();
+				if(databaseFileLock != null ){
+					databaseFileLock.release();
+				}
 				databaseChannel.close();
 				randDatabaseAccess.close();
 		
@@ -273,8 +280,6 @@ public class FileManagement {
 
 		private String taskToDatabaseString(Task toBeConverted, int index) {	
 
-
-
 			String typeString;
 
 			TaskType typeOfIncomingTask = toBeConverted.getType();
@@ -318,7 +323,9 @@ public class FileManagement {
 
 
 		public void writeDataBaseToFile(ArrayList<Task> toBeWritten) throws IOException, WillNotWriteToCorruptFileException	{
-			assert(toBeWritten != null);
+			if(toBeWritten == null) {
+				throw new IllegalArgumentException("null input");
+			}
 
 			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
 				throw new WillNotWriteToCorruptFileException();
