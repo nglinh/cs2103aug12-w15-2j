@@ -81,70 +81,30 @@ public class TaskTest {
 	}
 
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testTaskString() {
-		boolean fail;
-		try{
-			new Task("");
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
-			fail();
-		}
-
+		new Task("");
 	}
 
-	@Test
-	public void testTaskStringBoolean() {
-		boolean fail;
-		try{
-			new Task(null, true);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
-			fail();
-		}
-
-
-		try{
-			new Task("", false);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
-			fail();
-		}
-
-
+	@Test(expected = IllegalArgumentException.class)
+	public void testTaskStringBooleanString() {
+		new Task(null, true);
 	}
 
 	@Test
 	public void testTaskStringDateTime() {
-		boolean fail;
+
 		try{
 			new Task("test", null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 
 
 		try{
 			new Task("test", Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 
 	}
@@ -170,81 +130,54 @@ public class TaskTest {
 
 	@Test
 	public void testTaskStringDateTimeDateTime() {
-		boolean fail;
 		try{
 			new Task("test", new DateTime(), null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
+		} catch (IllegalArgumentException e) {
 		}
-		if (fail) {
-			fail();
-		}
-
 
 		try{
 			new Task("test", null, new DateTime());
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 
 		try{
 			new Task("test", new DateTime(), Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
 			new Task("test", Task.INVALID_DATE_FIELD, new DateTime());
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 
 		try{
 			new Task("test", null, null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		try{
 			new Task("test", Task.INVALID_DATE_FIELD, Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 
 		try{
 			new Task("test", TIMED_DONE_FALSE_START.plusHours(1), TIMED_DONE_FALSE_START.plusHours(1).minusSeconds(1));
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 
 		try{
 			new Task("test", new DateTime(1000), new DateTime(1000));
-		} catch (AssertionError e) {
+		} catch (IllegalArgumentException e) {
 			fail();
 		}
 
@@ -390,26 +323,19 @@ public class TaskTest {
 	
 	@Test
 	public void testChangeName() {
-		boolean fail;
 		try{
 			name.changeName(null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		try{
 			name.changeName("");
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		nameTimedFalse.changeName(NAME_ONLY);
 		assertEquals(nameTimedFalse.getTaskName(), NAME_ONLY);
@@ -419,26 +345,18 @@ public class TaskTest {
 
 	@Test
 	public void testChangetoFloating() {
-		boolean fail;
 		try{
 			name.changetoFloating();
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
 			nameTrue.changetoFloating();
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		nameDeadline.changeName(NAME_ONLY);
 		nameDeadline.changetoFloating();
@@ -452,115 +370,103 @@ public class TaskTest {
 
 	@Test
 	public void testChangeStartAndEndTime() {
-		boolean fail;
 		try{
-			nameTrue.changeStartAndendDate(TIMED_DONE_FALSE_START, TIMED_DONE_FALSE_END);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
+			nameTrue.changeStartAndEndDate(TIMED_DONE_FALSE_START, TIMED_DONE_FALSE_END);
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		try{
-			nameDeadlineTrue.changeStartAndendDate(TIMED_DONE_FALSE_START, TIMED_DONE_FALSE_END);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
+			nameDeadlineTrue.changeStartAndEndDate(TIMED_DONE_FALSE_START, TIMED_DONE_FALSE_END);
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		try{
-			nameTimed.changeStartAndendDate( TIMED_DONE_FALSE_END, TIMED_DONE_FALSE_START);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
+			nameTimed.changeStartAndEndDate( TIMED_DONE_FALSE_END, TIMED_DONE_FALSE_START);
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		try{
-			nameTimed.changeStartAndendDate(TIMED_DONE_FALSE_START, Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
+			nameTimed.changeStartAndEndDate(TIMED_DONE_FALSE_START, Task.INVALID_DATE_FIELD);
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		try{
-			nameTimed.changeStartAndendDate(Task.INVALID_DATE_FIELD, Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
+			nameTimed.changeStartAndEndDate(Task.INVALID_DATE_FIELD, Task.INVALID_DATE_FIELD);
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		
 		
 		try{
-			nameTimed.changeStartAndendDate( TIMED_DONE_FALSE_END, TIMED_DONE_FALSE_END);
-			fail = false;
-		} catch (AssertionError e) {
+			nameTimed.changeStartAndEndDate( TIMED_DONE_FALSE_END, TIMED_DONE_FALSE_END);
+		} catch (IllegalArgumentException e) {
 			fail();
 		}
 		
 		
 		
-		nameTimed.changeStartAndendDate(TIMED_DONE_FALSE_START, TIMED_DONE_FALSE_END);
+		nameTimed.changeStartAndEndDate(TIMED_DONE_FALSE_START, TIMED_DONE_FALSE_END);
 		assertEquals(nameTimed.getStartDate(), TIMED_DONE_FALSE_START);
 		assertEquals(nameTimed.getEndDate(), TIMED_DONE_FALSE_END);
 		
 	}
+	@Test
+	public void testchangetoDeadline() {
+		try{
+			nameDeadline.changetoDeadline(DEADLINE);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}	
+	}
+	
+	@Test
+	public void testchangeStartDateAndEndDate() {
+		try{
+			nameTimed.changeStartAndEndDate(null, TIMED_DONE_FALSE_END);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
+		
+		try{
+			nameTimed.changeStartAndEndDate(TIMED_DONE_FALSE_END, null);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}	
+	}
 
 	@Test
 	public void testChangeDeadline() {
-		boolean fail;
 		try{
 			nameTrue.changeDeadline(DEADLINE);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
 			nameTimedFalse.changeDeadline(DEADLINE);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
 			nameDeadline.changeDeadline(null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
 			nameDeadline.changeDeadline(Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		nameDeadline.changeDeadline(DEADLINE_TRUE);
@@ -571,15 +477,10 @@ public class TaskTest {
 
 	@Test
 	public void testCompareTo() {
-		boolean fail;
 		try{
 			name.compareTo(null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		
@@ -600,25 +501,17 @@ public class TaskTest {
 
 	@Test
 	public void testSearchName() {
-		boolean fail;
 		try{
 			name.searchName(null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+
 		
 		try{
 			name.searchName("");
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 		
 		assertTrue(nameDeadline.searchName("name"));
@@ -627,47 +520,54 @@ public class TaskTest {
 
 	@Test
 	public void testSearchDateRange() {
-		boolean fail;
 		try{
 			nameTimed.searchDateRange(null, null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 
 
 		try{
 			nameTimedFalse.searchDateRange(Task.INVALID_DATE_FIELD, null);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
-			fail();
+		} catch (IllegalArgumentException e) {
 		}
 
 		try{
 			nameTimed.searchDateRange(null, Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
 
 		try{
 			nameTimedFalse.searchDateRange(Task.INVALID_DATE_FIELD, Task.INVALID_DATE_FIELD);
-			fail = true;
-		} catch (AssertionError e) {
-			fail = false;
-		}
-		if (fail) {
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
+		
+		try{
+			nameTimed.searchDateRange(TIMED_START, null);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
+		
+		try{
+			nameTimed.searchDateRange(null, TIMED_END);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
+		
+		try{
+			nameTimed.searchDateRange(TIMED_START, Task.INVALID_DATE_FIELD);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
+		
+		try{
+			nameTimed.searchDateRange(TIMED_END, TIMED_START);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
+
 		
 		
 		assertFalse(nameTrue.searchDateRange(TIMED_START, TIMED_END));
@@ -681,7 +581,7 @@ public class TaskTest {
 	}
 	
 	@Test
-	public void testComparatortype() {
+	public void testComparatorType() {
 		Collections.sort(listing, new Task.SortByType());
 
 		boolean fail = false;
