@@ -24,8 +24,8 @@ import shared.Task;
 
 public class Database {
 
-	public static enum DB_File_Status {	FILE_ALL_OK, FILE_READ_ONLY, FILE_UNUSABLE, 
-		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT};
+	public static enum DB_File_Status {	FILE_ALL_OK, FILE_READ_ONLY, 
+		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT, FILE_IS_LOCKED};
 
 
 		private ArrayList<Task> taskStore = new ArrayList<Task>();
@@ -44,7 +44,8 @@ public class Database {
 		 */
 
 		public Database() {
-			diskFile = new FileManagement(taskStore);
+			diskFile = new FileManagement();
+			diskFile.readFileAndGetFileAttributes(taskStore);
 			fileAttributes = parseFileAttributes(diskFile);
 		}
 
@@ -252,7 +253,7 @@ public class Database {
 
 			assert(newTask != null);
 
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -297,7 +298,7 @@ public class Database {
 		public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException{
 			assert(updated != null);
 
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -322,22 +323,19 @@ public class Database {
 
 		}
 
-		private void verifyFileAttributes() throws IOException,
-				WillNotWriteToCorruptFileException {
+		private void verifyFileWritingAbility() throws IOException,
+		WillNotWriteToCorruptFileException {
 			if(fileAttributes.equals(DB_File_Status.FILE_PERMISSIONS_UNKNOWN)
-					|| fileAttributes.equals(DB_File_Status.FILE_UNUSABLE)) {
+					|| fileAttributes.equals(DB_File_Status.FILE_READ_ONLY)
+					|| fileAttributes.equals(DB_File_Status.FILE_IS_LOCKED)) {
 				throw new IOException();
 			}
-			
+
+
 			if(fileAttributes.equals(DB_File_Status.FILE_IS_CORRUPT)) {
 				throw new WillNotWriteToCorruptFileException();
 			}
-				
-			if(diskFile.canWriteFile() == false) {
-				fileAttributes = DB_File_Status.FILE_READ_ONLY;
-				throw new IOException();
-			}
-			
+
 			fileAttributes = DB_File_Status.FILE_ALL_OK;
 
 		}
@@ -354,8 +352,8 @@ public class Database {
 
 		public void delete(int serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
 
-			verifyFileAttributes();
-			
+			verifyFileWritingAbility();
+
 			cloneDatabase();
 
 			boolean isOriginalTaskFound = false;
@@ -394,7 +392,7 @@ public class Database {
 
 
 		public void deleteAll() throws IOException, WillNotWriteToCorruptFileException {
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 			taskStore.clear();
@@ -409,7 +407,7 @@ public class Database {
 		 */
 
 		public void deleteDone() throws IOException, WillNotWriteToCorruptFileException {
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -436,7 +434,7 @@ public class Database {
 		 */
 
 		public void deleteOver() throws IOException, WillNotWriteToCorruptFileException {
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 			cloneDatabase();
 
@@ -490,7 +488,7 @@ public class Database {
 
 		public void undo() throws IOException, NoMoreUndoStepsException, WillNotWriteToCorruptFileException {
 
-			verifyFileAttributes();
+			verifyFileWritingAbility();
 
 
 			if(undoOperations.isEmpty()) {
@@ -512,9 +510,9 @@ public class Database {
 		 * <p>
 		 * DB_File_Status.FILE_ALL_OK
 		 * DB_File_Status.FILE_READ_ONLY
-		 * DB_File_Status.FILE_UNUSABLE
 		 * DB_File_Status.FILE_PERMISSIONS_UNKNOWN
 		 * DB_File_Status.FILE_IS_CORRUPT
+		 * DB_File_Status.FILE_IS_LOCKED
 		 * 
 		 * @return return Status in this format Database.DB_File_Status.FILE_ALL_OK
 
@@ -546,12 +544,12 @@ public class Database {
 				return DB_File_Status.FILE_READ_ONLY;
 			}
 
-			if(diskFile.getFileAttributes().equals(FileStatus.FILE_IS_CORRUPT)) {
-				return DB_File_Status.FILE_IS_CORRUPT;
+			if(diskFile.getFileAttributes().equals(FileStatus.FILE_IS_LOCKED)) {
+				return DB_File_Status.FILE_IS_LOCKED;
 			}
 
-			if(diskFile.getFileAttributes().equals(FileStatus.FILE_UNUSABLE))	{
-				return DB_File_Status.FILE_UNUSABLE;
+			if(diskFile.getFileAttributes().equals(FileStatus.FILE_IS_CORRUPT)) {
+				return DB_File_Status.FILE_IS_CORRUPT;
 			}
 
 			if(diskFile.getFileAttributes().equals(FileStatus.FILE_PERMISSIONS_UNKNOWN)) {

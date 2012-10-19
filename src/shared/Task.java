@@ -16,11 +16,11 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class Task implements Comparable<Task> {
 	public static enum TaskType{FLOATING,DEADLINE,TIMED};
-	
+
 	public static final DateTime INVALID_DATE_FIELD = new DateTime(Long.MAX_VALUE);
 
 	public static final int SERIAL_NUMBER_START = 0;
-	
+
 	private static final int COMPARETO_SMALLER = -1;
 	private static final int COMPARETO_EQUAL = 0;
 	private static final int COMPARETO_BIGGER = 1;
@@ -46,12 +46,13 @@ public class Task implements Comparable<Task> {
 	 *
 	 * @param name the task description
 	 */
-	
+
 	public Task(String name) {
-		
-		assert(name != null);
-		assert(name.length() != 0);
-		
+
+		if((name == null) || (name.length() == 0)) {
+			throw new IllegalArgumentException();
+		}
+
 		this.type = TaskType.FLOATING;
 		this.taskName = name;
 
@@ -67,16 +68,10 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public Task(String name, boolean done)	{
-		
-		assert(name != null);
-		assert(name.length() != 0);
 
-		this.type = TaskType.FLOATING;
-		this.taskName = name;
-		this.isCompleted = done;
-
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name);
+		newTask.done(done);
+		this.updateOrClone(newTask);
 	}
 
 	/**
@@ -87,19 +82,10 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public Task(String name, DateTime deadline) {
-		
-		assert(name != null);
-		assert(name.length() != 0);
-		
-		assert(deadline != null);
-		assert(!deadline.equals(INVALID_DATE_FIELD));
-		
-		this.type = TaskType.DEADLINE;
-		this.taskName = name;
-		this.deadline = deadline; 
 
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name);
+		newTask.changetoDeadline(deadline);
+		this.updateOrClone(newTask);
 
 	}
 
@@ -112,24 +98,13 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public Task(String name, DateTime deadline, boolean done) {
-		
-		assert(name != null);
-		assert(name.length() != 0);
-		
-		assert(deadline != null);
-		assert(!deadline.isEqual(INVALID_DATE_FIELD));
-		
-		
-		this.type = TaskType.DEADLINE;
-		this.taskName = name;
-		this.deadline = deadline; 
-		this.isCompleted = done;
 
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name, deadline);
+		newTask.done(done);
+		this.updateOrClone(newTask);
 
 	}
-	
+
 	/**
 	 * To instantiate an undone timed task.
 	 * <p>
@@ -141,25 +116,10 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public Task(String name, DateTime startDate, DateTime endDate) {
-		
-		assert(name != null);
-		assert(name.length() != 0);
-		
-		assert(startDate != null);
-		assert(!startDate.equals(INVALID_DATE_FIELD));
-		
-		assert(endDate != null);
-		assert(!endDate.equals(INVALID_DATE_FIELD));
-		
-		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
-		
-		this.type = TaskType.TIMED;
-		this.taskName = name;
-		this.startDate = startDate;
-		this.endDate = endDate;
 
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name);
+		newTask.changetoTimed(startDate, endDate);
+		this.updateOrClone(newTask);
 	}
 
 	/**
@@ -174,36 +134,22 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public Task(String name, DateTime startDate, DateTime endDate, boolean done) {
-		assert(name != null);
-		assert(name.length() != 0);
-		
-		assert(startDate != null);
-		assert(!startDate.equals(INVALID_DATE_FIELD));
-		
-		assert(endDate != null);
-		assert(!endDate.equals(INVALID_DATE_FIELD));
-		
-		assert(startDate.isBefore(endDate) || startDate.isEqual(endDate));
-		
-		this.type = TaskType.TIMED;
-		this.taskName = name;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.isCompleted = done;
-
-		serial = nextSerial;
-		nextSerial++;
+		Task newTask = new Task(name, startDate, endDate);
+		newTask.done(done);
+		this.updateOrClone(newTask);
 	}
-	
-	
+
+
 	/**
 	 * To clone the incoming task of all details including serial number      
 	 *
 	 * @param toBeCloned the new task to be cloned
 	 */
 	public Task(Task toBeCloned) {
-		assert(toBeCloned != null);
-		
+		if(toBeCloned == null) {
+			throw new IllegalArgumentException();
+		}
+
 		this.updateOrClone(toBeCloned);
 	}
 
@@ -218,8 +164,10 @@ public class Task implements Comparable<Task> {
 	 */
 
 	public void updateOrClone(Task updated) {
-		
-		assert(updated != null);
+
+		if(updated == null) {
+			throw new IllegalArgumentException();
+		}
 
 		this.type = updated.getType();
 		this.taskName = updated.getTaskName();
@@ -303,7 +251,7 @@ public class Task implements Comparable<Task> {
 	public DateTime getStartDate()	{
 		return startDate;
 	}
-	
+
 	/**
 	 * Get end time of timed task                           
 	 *
@@ -315,7 +263,7 @@ public class Task implements Comparable<Task> {
 	public DateTime getEndDate(){
 		return endDate;
 	}
-	
+
 	/**
 	 * Get deadline of deadline task                           
 	 *
@@ -326,7 +274,7 @@ public class Task implements Comparable<Task> {
 	public DateTime getDeadline(){
 		return deadline;
 	}
-	
+
 	/**
 	 * Sets done status for the task                           
 	 *
@@ -340,6 +288,10 @@ public class Task implements Comparable<Task> {
 
 
 	public void changetoFloating() {
+		if(this.type.equals(TaskType.FLOATING)) {
+			throw new IllegalArgumentException();
+		}
+
 		this.type = TaskType.FLOATING;
 
 		this.deadline = INVALID_DATE_FIELD;
@@ -348,10 +300,13 @@ public class Task implements Comparable<Task> {
 	}
 
 	public void changetoDeadline(DateTime newDeadline)	{
-		
-		assert(deadline != null);
-		assert(!deadline.equals(INVALID_DATE_FIELD));
-		
+		if((this.type.equals(TaskType.DEADLINE))
+				|| (newDeadline == null) 
+				|| (newDeadline.equals(INVALID_DATE_FIELD))) {
+			throw new IllegalArgumentException();
+		}
+
+
 		this.type = TaskType.DEADLINE;
 
 		this.deadline = newDeadline;
@@ -361,18 +316,20 @@ public class Task implements Comparable<Task> {
 
 	}
 
-	public void changetoTimed(DateTime newstartDate, DateTime newendDate)	{
-		assert(newstartDate != null);
-		assert(!newstartDate.equals(INVALID_DATE_FIELD));
-		
-		assert(newendDate != null);
-		assert(!newendDate.equals(INVALID_DATE_FIELD));
-		
-		
+	public void changetoTimed(DateTime newStartDate, DateTime newEndDate)	{
+
+		if((newStartDate == null) 
+				|| (newStartDate.equals(INVALID_DATE_FIELD))
+				|| (newEndDate == null) 
+				|| (newEndDate.equals(INVALID_DATE_FIELD))
+				|| (newStartDate.isAfter(newEndDate))) {
+			throw new IllegalArgumentException();
+		}
+
 		this.type = TaskType.TIMED;
 
-		this.startDate = newstartDate;
-		this.endDate = newendDate;
+		this.startDate = newStartDate;
+		this.endDate = newEndDate;
 
 		this.deadline = INVALID_DATE_FIELD;
 
@@ -382,42 +339,58 @@ public class Task implements Comparable<Task> {
 
 
 	public void changeName(String newName)	{
-		assert(newName != null);
-		assert(newName.length() != 0);
-		
+		if((newName == null) || (newName.length() == 0)) {
+			throw new IllegalArgumentException();
+		}
+
 		this.taskName = newName;
 	}
 
-	public void changeStartAndendDate(DateTime newstartDate, DateTime newendDate)	{
-		assert(newstartDate != null);
-		assert(!newstartDate.equals(INVALID_DATE_FIELD));
-		
-		assert(newendDate != null);
-		assert(!newendDate.equals(INVALID_DATE_FIELD));
-		
-		assert(startDate.isBefore(newendDate) || startDate.isEqual(newendDate));
-		
-		this.startDate = newstartDate;
-		this.endDate = newendDate;
+	public void changeStartAndEndDate(DateTime newStartDate, DateTime newEndDate)	{
+
+		if((!this.type.equals(TaskType.TIMED))
+				|| (newStartDate == null) 
+				|| (newStartDate.equals(INVALID_DATE_FIELD))
+				|| (newEndDate == null) 
+				|| (newEndDate.equals(INVALID_DATE_FIELD))
+				|| (newStartDate.isAfter(newEndDate))) {
+			throw new IllegalArgumentException();
+		}
+
+		this.startDate = newStartDate;
+		this.endDate = newEndDate;
 	}
 
 
 	public void changeDeadline(DateTime newDeadline) {
-		assert(deadline != null);
-		assert(!deadline.equals(INVALID_DATE_FIELD));
-		
+		if(!this.type.equals(TaskType.DEADLINE)
+			|| (newDeadline == null)
+			|| (newDeadline.equals(INVALID_DATE_FIELD))){
+				throw new IllegalArgumentException();
+			}
+
 		this.deadline = newDeadline;
 	}
 
 
 
-
+	/**
+	 * To compare this task with the incoming task based on dates     
+	 * <p>
+	 * Floating Task will always appear at the bottom.
+	 *  The time to use for timed tasks will be start dates.
+	 *
+	 * @param toBeCloned the new task to be cloned
+	 * @return -1 if receiving object is smaller, 0 if they are equal and 1 if the recieving object is bigger
+	 */
 
 	@Override
 	public int compareTo(Task input) {
 
-		assert(input != null);
-		
+		if(input == null) {
+			throw new IllegalArgumentException();
+		}
+
 		if(this.isFloatingTask() && input.isFloatingTask()) {
 			return COMPARETO_EQUAL;
 		}
@@ -432,35 +405,21 @@ public class Task implements Comparable<Task> {
 			return COMPARETO_SMALLER;
 		}
 
-		DateTime currentTaskDate;
-		DateTime inputTaskDate;
-
-		if(this.isDeadlineTask()) {
-			currentTaskDate = this.getDeadline();
-		}
-		else {
-			currentTaskDate = this.getStartDate();
-		}
-
-
-		if(input.isDeadlineTask())	{
-			inputTaskDate = input.getDeadline();
-		}
-		else {
-			inputTaskDate = input.getStartDate();
-		}
-
+		DateTime currentTaskDate = comparisonDate(this);
+		DateTime inputTaskDate = comparisonDate(input);
 
 		return currentTaskDate.compareTo(inputTaskDate);
 
 	}
 
 	public boolean searchName(String term)	{
-		assert(term != null);
-		
+		if((term == null) || (term.length() == 0)) {
+			throw new IllegalArgumentException();
+		}
+
 		String taskNameLowerCase = taskName.toLowerCase();
 		String termLowerCase = term.toLowerCase();
-		
+
 		if(taskNameLowerCase.contains(termLowerCase))	{
 			return true;
 		} else {
@@ -470,25 +429,19 @@ public class Task implements Comparable<Task> {
 
 
 	public boolean searchDateRange(DateTime startRange, DateTime endRange) {
-
-		assert(startRange != null);
-		assert(!startRange.equals(INVALID_DATE_FIELD));
 		
-		assert(endRange != null);
-		assert(!endRange.equals(INVALID_DATE_FIELD));
-		
-		assert(startRange.isBefore(endRange) || startRange.isEqual(endRange));
-		
-		
-		DateTime currentTaskDate;
-
-		if(this.isDeadlineTask()) {
-			currentTaskDate = this.getDeadline();
-		}
-		else {
-			currentTaskDate = this.getStartDate();
+		if((startRange == null) 
+				|| (startRange.equals(INVALID_DATE_FIELD))
+				|| (endRange == null) 
+				|| (endRange.equals(INVALID_DATE_FIELD))
+				|| (startRange.isAfter(endRange))) {
+			throw new IllegalArgumentException();
 		}
 
+		if(this.isFloatingTask()) {
+			return false;
+		}
+		DateTime currentTaskDate = comparisonDate(this);
 
 		if(currentTaskDate.isEqual(startRange)) {
 			return true;
@@ -506,49 +459,63 @@ public class Task implements Comparable<Task> {
 
 		return false;
 	}
-	
-	
-	
+
+
+	private DateTime comparisonDate(Task dateCompare){
+		if(dateCompare.isFloatingTask()) {
+			return Task.INVALID_DATE_FIELD;
+		}
+
+		if(dateCompare.isDeadlineTask()) {
+			return dateCompare.getDeadline();
+		}
+		else {
+			return dateCompare.getStartDate();
+		}
+	}
+
+
+
 	public static class SortByType implements Comparator<Task> {
 		//Order of priority to be shown is Deadline, Timed and Floating.
-		
+
 		public int compare(Task o1, Task o2) {
-			
+
 			TaskType o1Type = o1.getType();
 			TaskType o2Type = o2.getType();
-			
+
 			if(o1Type.equals(o2Type)) {
 				return COMPARETO_EQUAL;
 			}
-			
+
 			if(o1Type.equals(TaskType.FLOATING)) {
 				return COMPARETO_BIGGER;
 			}
-			
+
 			if(o2Type.equals(TaskType.FLOATING)) {
 				return COMPARETO_SMALLER;
 			}
-			
+
 			if(o1Type.equals(TaskType.DEADLINE) && o2Type.equals(TaskType.TIMED)){
 				return COMPARETO_SMALLER;
 			} else {
 				return COMPARETO_BIGGER;
 			}
-			
+
 		}
 	}
-	
+
 	public static class SortByDone implements Comparator<Task> {
 
 		public int compare(Task o1, Task o2) {
-			
+
 			boolean o1Done = o1.isDone();
 			boolean o2Done = o2.isDone();
-			
+
 			if(o1Done == o2Done) {
 				return COMPARETO_EQUAL;
 			}
-			
+
 			if((o1Done == true) && (o2Done == false)) {
 				return COMPARETO_BIGGER;
 			} else {
@@ -556,81 +523,88 @@ public class Task implements Comparable<Task> {
 			}
 		}
 	}
-	
+
 	public static class SortByStartDate implements Comparator<Task> {
 
 		public int compare(Task o1, Task o2) {
-			
+
+			if(o1.isFloatingTask() && o2.isFloatingTask()) {
+				return COMPARETO_EQUAL;
+			}
+
 			if(o1.isFloatingTask()) {
 				return COMPARETO_BIGGER;
 			}
-			
-			if(o1.isFloatingTask()) {
+
+			if(o2.isFloatingTask()) {
 				return COMPARETO_SMALLER;
 			}
-			
+
 			DateTime o1Start;
 			DateTime o2Start;
-			
+
 			if(o1.isTimedTask()) {
 				o1Start = o1.getStartDate();
 			} else {
 				o1Start = o1.getDeadline();
 			}
-			
+
 			if(o2.isTimedTask()) {
 				o2Start = o2.getStartDate();
 			} else {
 				o2Start = o2.getDeadline();
 			}
-			
-			
+
 			return o1Start.compareTo(o2Start);
 		}
 	}
-	
+
 	public static class SortByEndDate implements Comparator<Task> {
 
 		public int compare(Task o1, Task o2) {
-			
+
+			if(o1.isFloatingTask() && o2.isFloatingTask()) {
+				return COMPARETO_EQUAL;
+			}
+
 			if(o1.isFloatingTask()) {
 				return COMPARETO_BIGGER;
 			}
-			
-			if(o1.isFloatingTask()) {
+
+			if(o2.isFloatingTask()) {
 				return COMPARETO_SMALLER;
 			}
-			
+
 			DateTime o1End;
 			DateTime o2End;
-			
+
 			if(o1.isTimedTask()) {
 				o1End = o1.getEndDate();
 			} else {
 				o1End = o1.getDeadline();
 			}
-			
+
 			if(o2.isTimedTask()) {
 				o2End = o2.getEndDate();
 			} else {
 				o2End = o2.getDeadline();
 			}
-			
+
 			return o1End.compareTo(o2End);
 		}
 	}
-	
+
 	public static class SortByName implements Comparator<Task> {
 
 		public int compare(Task o1, Task o2) {
 			String o1Name = o1.getTaskName();
 			String o2Name = o2.getTaskName();
-			
+
 			return o1Name.compareToIgnoreCase(o2Name);
 		}
 	}
-	
-	
+
+
 
 	/**
 	 * DO NOT USE for production. Debugging and testing only. Show Task info in file format
@@ -649,13 +623,13 @@ public class Task implements Comparable<Task> {
 		String TYPE_FLOATING = "F";
 		String TYPE_DEADLINE = "D";
 		String TYPE_TIMED = "T";
-	
+
 		String DONE = "D";
 		String UNDONE = "U";
-		
+
 		String typeString;
 		String doneString;
-		
+
 		if(this.getType().equals(TaskType.TIMED)) {
 			typeString = TYPE_TIMED;
 		} else if(this.getType().equals(TaskType.DEADLINE)) {
@@ -663,14 +637,14 @@ public class Task implements Comparable<Task> {
 		} else {
 			typeString = TYPE_FLOATING;
 		}
-		
-		
+
+
 		if(this.isDone()) {
 			doneString = DONE;
 		} else {
 			doneString = UNDONE;
 		}
-		
+
 
 
 		String dead;
