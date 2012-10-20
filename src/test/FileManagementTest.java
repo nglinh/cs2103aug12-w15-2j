@@ -288,9 +288,12 @@ public class FileManagementTest {
 		}
 
 		FileManagement fileMgmt = new FileManagement();
+		assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_READ_ONLY);
+		
+		fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
 		fileMgmt.closeFile();
 		assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_READ_ONLY);
-
+		
 		dbFile.setWritable(true);
 
 	}
