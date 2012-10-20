@@ -45,7 +45,7 @@ public class Database {
 
 		public Database() {
 			diskFile = new FileManagement();
-			diskFile.readFileAndGetFileAttributes(taskStore);
+			diskFile.readFileAndDetectCorruption(taskStore);
 			fileAttributes = parseFileAttributes(diskFile);
 		}
 

@@ -96,7 +96,7 @@ public class FileManagement {
 
 		}
 		
-		public void readFileAndGetFileAttributes(ArrayList<Task> storeInHere) {
+		public void readFileAndDetectCorruption(ArrayList<Task> storeInHere) {
 			if(storeInHere == null) {
 				throw new IllegalArgumentException("null input");
 			}
