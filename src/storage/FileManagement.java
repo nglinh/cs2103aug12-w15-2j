@@ -82,7 +82,7 @@ public class FileManagement {
 		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
 		private final int ZERO_LENGTH_TASK_NAME = 0;
 		
-		private final int START_OF_FILE = 0;
+		private final long START_OF_FILE = 0;
 
 		private FileStatus fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 
@@ -355,6 +355,8 @@ public class FileManagement {
 
 			String dataStringToBeWritten = dataToBeWritten.toString();
 
+			//Truncate the file to 0 size to clear the old database file before writing
+			randDatabaseAccess.setLength(0);
 			randDatabaseAccess.seek(START_OF_FILE);
 			randDatabaseAccess.writeBytes(dataStringToBeWritten);
 
