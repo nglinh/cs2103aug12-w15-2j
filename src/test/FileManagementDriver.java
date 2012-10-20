@@ -19,7 +19,7 @@ public class FileManagementDriver {
 		
 		
 		FileManagement filemgr = new FileManagement();
-		filemgr.readFileAndGetFileAttributes(taskStoreTest);
+		filemgr.readFileAndDetectCorruption(taskStoreTest);
 		System.out.println(filemgr.getFileAttributes());
 		
 		Task floatingtask = new Task("Test Floating", true);
