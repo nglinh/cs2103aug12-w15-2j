@@ -127,7 +127,6 @@ public class AddParser {
 		char[] tempCharArray = argument.toCharArray();
 		for(int i =0;i<matchingPosition;++i)
 			result = result+tempCharArray[i];
-		result = result.trim();
 		String[] tempStringArray = result.split(" ");
 		if(tempStringArray[tempStringArray.length-1].compareTo("from")==0||
 				tempStringArray[tempStringArray.length-1].compareTo("by")==0||
@@ -138,7 +137,6 @@ public class AddParser {
 			result = "";
 			for(int i=0;i<tempStringArray.length;++i)
 				result = result + tempStringArray[i]+" ";
-			result = result.trim();
 		}
 		for(int i = endDateStringPosition;i<argument.length();i++){
 			result+= tempCharArray[i];
