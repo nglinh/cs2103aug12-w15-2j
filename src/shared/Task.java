@@ -412,7 +412,7 @@ public class Task implements Comparable<Task> {
 
 	}
 
-	public boolean searchName(String term)	{
+	public boolean containsTerm(String term)	{
 		if((term == null) || (term.length() == 0)) {
 			throw new IllegalArgumentException();
 		}
@@ -428,7 +428,7 @@ public class Task implements Comparable<Task> {
 	}
 
 
-	public boolean searchDateRange(DateTime startRange, DateTime endRange) {
+	public boolean isWithinDateRange(DateTime startRange, DateTime endRange) {
 		
 		if((startRange == null) 
 				|| (startRange.equals(INVALID_DATE_FIELD))

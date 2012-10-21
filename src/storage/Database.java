@@ -172,7 +172,7 @@ public class Database {
 
 			for(String word : keywordList)	{
 
-				if(!currentEntry.searchName(word))	{
+				if(!currentEntry.containsTerm(word))	{
 					match = false;
 				}
 			}
