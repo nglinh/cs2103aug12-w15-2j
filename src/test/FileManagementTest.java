@@ -71,6 +71,7 @@ public class FileManagementTest {
 	Task nameTimed;
 	Task nameTimedFalse;
 	ArrayList<Task> filledListing;
+	ArrayList<Task> shortListing;
 	ArrayList<Task> initialClearListing;
 
 
@@ -97,6 +98,12 @@ public class FileManagementTest {
 
 		filledListing.add(nameTimed);
 		filledListing.add(name);
+		
+		
+		shortListing = new ArrayList<Task>();
+		shortListing.add(nameDeadline);
+		shortListing.add(nameTimedFalse);
+		
 
 		initialClearListing = new ArrayList<Task>();
 
@@ -110,13 +117,15 @@ public class FileManagementTest {
 
 	}
 
-
+	
+	
 	@Test
 	public void readAndWriteFunctionalityTest() {
 
 		FileManagement fileMgmt = new FileManagement();
 
 		try {
+			
 			fileMgmt.writeDataBaseToFile(new ArrayList<Task>());
 			fileMgmt.readFileAndDetectCorruption(initialClearListing);
 
@@ -128,12 +137,29 @@ public class FileManagementTest {
 			fileMgmt.writeDataBaseToFile(filledListing);
 			fileMgmt.readFileAndDetectCorruption(initialClearListing);
 
+			//Check every bit of info written down is read back correctly
 			for(int i = 0; i < filledListing.size(); i++){
 				Task fromDisk = initialClearListing.get(i);
 				Task original = filledListing.get(i);
 
 				assertEquals(fromDisk.showInfo(), original.showInfo());
 			}
+			
+			//Write a shortened file, to ensure no remnants of previous database remain on disk
+			initialClearListing = new ArrayList<Task>();
+			fileMgmt.writeDataBaseToFile(shortListing);
+			fileMgmt.readFileAndDetectCorruption(initialClearListing);
+			assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_ALL_OK);
+			
+			//Check every bit of info written down is read back correctly
+			for(int i = 0; i < shortListing.size(); i++){
+				Task fromDisk = initialClearListing.get(i);
+				Task original = shortListing.get(i);
+
+				assertEquals(fromDisk.showInfo(), original.showInfo());
+			}
+			
+			
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		}
