@@ -12,6 +12,7 @@ import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
 public class AddParser {
+	private String taskDescription;
 	private List<DateGroup> groups;
 	private Parser parser;
 	private String argument;
@@ -20,7 +21,13 @@ public class AddParser {
 	private int endDateStringPosition;
 	public AddParser(String str){
 		argument = str;
-		String dateString = removeTriggerWord(argument);
+		String dateString;
+		if(hasApostrophePair()){
+			dateString = removeDescription(argument);
+		}
+		else{
+			dateString = removeTriggerWord(argument);
+		}
 		matchingPosition1 = 0;
 		endDateStringPosition = 0;
 		parser = new Parser(TimeZone.getDefault());
@@ -55,6 +62,21 @@ public class AddParser {
 
 			//adjustTimeBasedOnTriggerWords();
 		}
+	}
+	private String removeDescription(String argument2) {
+		String result = "";
+		for(int i =argument2.indexOf("\"");i<=argument2.lastIndexOf("\"");++i)
+			result+= " ";
+		if(argument2.lastIndexOf("\"")<argument2.length()-1){
+			for(int i = argument2.lastIndexOf("\"")+1;i<argument2.length();++i)
+				result+= argument2.toCharArray()[i];
+		}
+		return result;
+	}
+	private boolean hasApostrophePair() {
+		if(argument.indexOf("\"")==argument.lastIndexOf("\""))
+			return false;
+		return true;
 	}
 	private void determineEndOfDateString() {
 		if(this.getTaskType()!=TaskType.FLOATING){
@@ -116,11 +138,36 @@ public class AddParser {
 		return taskType;
 	}
 	public String getTaskDescription(){
-		if(taskType == TaskType.FLOATING)
-			return argument;
-		else{
-			return buildString(argument,this.matchingPosition1);
+		if(!hasApostrophePair()){
+			if(taskType == TaskType.FLOATING)
+				return argument;
+			else{
+				return buildString(argument,this.matchingPosition1);
+			}
 		}
+		else{
+			int temp1 = argument.indexOf("\"");
+			int temp2 = argument.lastIndexOf("\"");
+			if(temp1 == temp2){
+				if(taskType == TaskType.FLOATING)
+					return argument;
+				else{
+					return buildString(argument,this.matchingPosition1);
+				}
+			}
+			else{
+				return getTaskDescriptionInsideApostrophe(temp1, temp2);
+			}
+
+		}
+	}
+	private String getTaskDescriptionInsideApostrophe(int temp1, int temp2) {
+		String result = "";
+		for(int i =temp1+1;i<=temp2+1;++i){
+			result+= argument.toCharArray()[i];
+		}
+		result.trim();
+		return result;
 	}
 	private String buildString(String argument, int matchingPosition) {
 		String result = "";
