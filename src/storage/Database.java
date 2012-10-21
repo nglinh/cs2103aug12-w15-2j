@@ -45,7 +45,7 @@ public class Database {
 
 		public Database() {
 			diskFile = new FileManagement();
-			diskFile.readFileAndGetFileAttributes(taskStore);
+			diskFile.readFileAndDetectCorruption(taskStore);
 			fileAttributes = parseFileAttributes(diskFile);
 		}
 
@@ -251,7 +251,9 @@ public class Database {
 
 		public void add(Task newTask) throws IOException, WillNotWriteToCorruptFileException {
 
-			assert(newTask != null);
+			if(newTask == null){
+				throw new IllegalArgumentException();
+			}
 
 			verifyFileWritingAbility();
 
@@ -296,7 +298,9 @@ public class Database {
 		 */
 
 		public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException{
-			assert(updated != null);
+			if(updated == null) {
+				throw new IllegalArgumentException();
+			}
 
 			verifyFileWritingAbility();
 
