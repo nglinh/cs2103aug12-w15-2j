@@ -502,81 +502,81 @@ public class TaskTest {
 	@Test
 	public void testSearchName() {
 		try{
-			name.searchName(null);
+			name.containsTerm(null);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
 		
 		try{
-			name.searchName("");
+			name.containsTerm("");
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 		
-		assertTrue(nameDeadline.searchName("name"));
-		assertFalse(nameDeadline.searchName("rubbish"));
+		assertTrue(nameDeadline.containsTerm("name"));
+		assertFalse(nameDeadline.containsTerm("rubbish"));
 	}
 
 	@Test
 	public void testSearchDateRange() {
 		try{
-			nameTimed.searchDateRange(null, null);
+			nameTimed.isWithinDateRange(null, null);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
 
 		try{
-			nameTimedFalse.searchDateRange(Task.INVALID_DATE_FIELD, null);
+			nameTimedFalse.isWithinDateRange(Task.INVALID_DATE_FIELD, null);
 		} catch (IllegalArgumentException e) {
 		}
 
 		try{
-			nameTimed.searchDateRange(null, Task.INVALID_DATE_FIELD);
+			nameTimed.isWithinDateRange(null, Task.INVALID_DATE_FIELD);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
 		try{
-			nameTimedFalse.searchDateRange(Task.INVALID_DATE_FIELD, Task.INVALID_DATE_FIELD);
+			nameTimedFalse.isWithinDateRange(Task.INVALID_DATE_FIELD, Task.INVALID_DATE_FIELD);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
-			nameTimed.searchDateRange(TIMED_START, null);
+			nameTimed.isWithinDateRange(TIMED_START, null);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
-			nameTimed.searchDateRange(null, TIMED_END);
+			nameTimed.isWithinDateRange(null, TIMED_END);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
-			nameTimed.searchDateRange(TIMED_START, Task.INVALID_DATE_FIELD);
+			nameTimed.isWithinDateRange(TIMED_START, Task.INVALID_DATE_FIELD);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 		
 		try{
-			nameTimed.searchDateRange(TIMED_END, TIMED_START);
+			nameTimed.isWithinDateRange(TIMED_END, TIMED_START);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
 		
 		
-		assertFalse(nameTrue.searchDateRange(TIMED_START, TIMED_END));
-		assertTrue(nameDeadline.searchDateRange(DEADLINE, DEADLINE.plus(1)));
-		assertTrue(nameDeadlineTrue.searchDateRange(DEADLINE_TRUE.minus(1), DEADLINE_TRUE));
+		assertFalse(nameTrue.isWithinDateRange(TIMED_START, TIMED_END));
+		assertTrue(nameDeadline.isWithinDateRange(DEADLINE, DEADLINE.plus(1)));
+		assertTrue(nameDeadlineTrue.isWithinDateRange(DEADLINE_TRUE.minus(1), DEADLINE_TRUE));
 		
-		assertTrue(nameTimed.searchDateRange(TIMED_START.minus(1), TIMED_END.plus(1)));
-		assertFalse(nameTimed.searchDateRange(TIMED_START.minus(100), TIMED_START.minus(90)));
-		assertFalse(nameTimedFalse.searchDateRange(TIMED_DONE_FALSE_START.plus(1), TIMED_DONE_FALSE_END.minus(1)));
+		assertTrue(nameTimed.isWithinDateRange(TIMED_START.minus(1), TIMED_END.plus(1)));
+		assertFalse(nameTimed.isWithinDateRange(TIMED_START.minus(100), TIMED_START.minus(90)));
+		assertFalse(nameTimedFalse.isWithinDateRange(TIMED_DONE_FALSE_START.plus(1), TIMED_DONE_FALSE_END.minus(1)));
 	
 	}
 	
