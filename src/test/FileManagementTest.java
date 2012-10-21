@@ -170,9 +170,9 @@ public class FileManagementTest {
 		} catch (IOException e) {
 			fail();
 		}
-
-		//Continuing the corrupt file from above
-
+		
+		
+		boolean catchCorruptException = false;
 		FileManagement fileMgmt = new FileManagement();
 		try {
 			fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
@@ -181,11 +181,12 @@ public class FileManagementTest {
 		} catch (IOException e) {
 			fail();
 		} catch (WillNotWriteToCorruptFileException e) {
-			//Pass
+			catchCorruptException = true;
 		} finally {
 			fileMgmt.closeFile();
 		}
 
+		assertTrue(catchCorruptException);
 
 	}
 
@@ -224,42 +225,6 @@ public class FileManagementTest {
 
 	}
 
-
-	@Test
-	public void writeDbaseCorruptExceptionTest() {
-
-
-		BufferedWriter writeFile;
-		FileManagement fileMgmt = null;
-		try {
-			writeFile = new BufferedWriter(new FileWriter(FileManagement.filename));
-			writeFile.write(corruptStrings[0]);
-			writeFile.close();
-
-			fileMgmt = new FileManagement();
-			fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
-
-			//Ensure the file is corrupt, before continuing
-			assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_IS_CORRUPT);
-
-			//Attempt to write to a corrupt file
-			fileMgmt.writeDataBaseToFile(new ArrayList<Task>());
-			fail();
-
-			fileMgmt.closeFile();
-		} catch (IOException e) {
-			fail();
-		} catch (IllegalArgumentException e) {
-			fileMgmt.closeFile();
-			fail();
-		} catch (WillNotWriteToCorruptFileException e) {
-			fileMgmt.closeFile();
-			//Pass
-		} 
-
-
-
-	}
 	@Test
 	public void readFileAndDetectCorruptionExceptionTest() {
 		FileManagement fileMgmt = null;
