@@ -12,7 +12,6 @@ import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
 public class AddParser {
-	private String taskDescription;
 	private List<DateGroup> groups;
 	private Parser parser;
 	private String argument;
@@ -137,7 +136,7 @@ public class AddParser {
 			taskType = TaskType.TIMED;
 		return taskType;
 	}
-	public String getTaskDescription(){
+	public String getTaskDescription() throws EmptyDescriptionException{
 		if(!hasApostrophePair()){
 			if(taskType == TaskType.FLOATING)
 				return argument;
@@ -163,13 +162,13 @@ public class AddParser {
 	}
 	private String getTaskDescriptionInsideApostrophe(int temp1, int temp2) {
 		String result = "";
-		for(int i =temp1+1;i<=temp2+1;++i){
+		for(int i =temp1+1;i<=temp2-1;++i){
 			result+= argument.toCharArray()[i];
 		}
 		result.trim();
 		return result;
 	}
-	private String buildString(String argument, int matchingPosition) {
+	private String buildString(String argument, int matchingPosition) throws EmptyDescriptionException {
 		String result = "";
 		char[] tempCharArray = argument.toCharArray();
 		for(int i =0;i<matchingPosition;++i)
@@ -189,7 +188,10 @@ public class AddParser {
 			result+= tempCharArray[i];
 		}
 		result = result.trim();
-		return result;
+		if(result.compareTo("")==0)
+			throw new EmptyDescriptionException();
+		else
+			return result;
 	}
 	public DateTime getBeginTime(){
 		Date st = this.getGroups().get(0).getDates().get(0);

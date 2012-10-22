@@ -25,8 +25,14 @@ import shared.Task;
 import storage.Database.DB_File_Status;
 
 public class Logic {
+	private static final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check the permission"
+			+ "for the file";
+	private static final String ERROR_FILE_CORRUPTED = "File is corrupted. Please check :(.";
+
+
+
 	public static enum CommandType {
-		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT
+		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT
 	};
 
 
@@ -110,6 +116,10 @@ public class Logic {
 			return CommandType.DONE;
 		case "undone" :
 			return CommandType.UNDONE;
+		case "edit":
+
+		case "update":
+			return CommandType.EDIT;
 		default:
 			throw new NoSuchCommandException();
 		}
@@ -142,8 +152,81 @@ public class Logic {
 			return done(arguments, false);
 		case SORT:
 			return sort(arguments);
+		case EDIT:
+			return edit(arguments);
 		default:
 			return null;
+		}
+	}
+
+	private static LogicToUi edit(String arguments) {
+		try{
+			int index;
+			index = Integer.parseInt(arguments.split(" ")[0]);
+			arguments = arguments.replaceFirst(arguments.trim().split(" ")[0], "").trim();
+			index--; //Since arraylist index starts from 0
+
+			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {
+				throw new NoSuchElementException();
+			}
+
+			int serial = lastShownToUI.get(index).getSerial();
+
+			Task toBeEdited = dataBase.locateATask(serial);
+			EditParser editParser = new EditParser(arguments);
+			if(editParser.willChangeDeadline){
+				if(toBeEdited.getType()!= TaskType.DEADLINE){
+					toBeEdited.changetoDeadline(editParser.getNewDeadline());
+				}
+				else{
+					toBeEdited.changeDeadline(editParser.getNewDeadline());
+				}
+			}
+			if(editParser.willChangeName){
+				toBeEdited.changeName(editParser.getNewName());
+			}
+			if(editParser.willChangeStartTime){
+				if(toBeEdited.getType()!=TaskType.TIMED){
+					if(!editParser.willChangeEndTime){
+						return new LogicToUi("In order to change to timed task, you need to specify" +
+								"both start time and end time.");
+					}
+					else{
+						toBeEdited.changetoTimed(editParser.getNewStartTime(), editParser.getNewEndTime());
+					}
+				}
+				else{
+					toBeEdited.changeStartAndEndDate(editParser.getNewStartTime(), toBeEdited.getEndDate());
+				}
+			}
+			if(editParser.willChangeEndTime){
+				if(toBeEdited.getType()!=TaskType.TIMED){
+					if(!editParser.willChangeStartTime){
+						return new LogicToUi("In order to change to timed task, you need to specify" +
+								"both start time and end time.");
+					}
+					else{
+						toBeEdited.changetoTimed(editParser.getNewStartTime(), editParser.getNewEndTime());
+					}
+				}
+				else{
+					toBeEdited.changeStartAndEndDate(toBeEdited.getStartDate(), editParser.getNewEndTime());
+				}
+			}
+			if(editParser.willChangeType){
+				toBeEdited.changetoFloating();
+			}
+			dataBase.update(serial, toBeEdited);
+			pushCommandToUndoHistoryStack();
+			return new LogicToUi(taskToString(toBeEdited) + " updated.");
+		}catch (NoSuchElementException | NumberFormatException e) {
+			return new LogicToUi(
+					"Sorry this index number or parameter you provided is not valid. " +
+					"Please try again with a correct number or refresh the list.");
+		} catch (IOException e) {
+			return new LogicToUi(ERROR_IO);
+		} catch (WillNotWriteToCorruptFileException e) {
+			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		}
 	}
 
@@ -266,10 +349,9 @@ public class Logic {
 					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
 		} catch (IOException e) {
 			return new LogicToUi(
-					"Something is wrong with the file. I cannot write to it. Please check the permission"
-							+ "for the file");
+					ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
-			return new LogicToUi("File is corrupted. Please check :(.");
+			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		}
 	}
 
@@ -326,10 +408,9 @@ public class Logic {
 			return new LogicToUi("You don't have any more undo steps left");
 		} catch (IOException e) {
 			return new LogicToUi(
-					"Something is wrong with the file. I cannot write to it. Please check the permission"
-							+ "for the file");
+					ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
-			return new LogicToUi("File is corrupted. Please check :(.");
+			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		}
 
 	}
@@ -513,10 +594,9 @@ public class Logic {
 					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
 		} catch (IOException e) {
 			return new LogicToUi(
-					"Something is wrong with the file. I cannot write to it. Please check the permission"
-							+ "for the file");
+					ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
-			return new LogicToUi("File is corrupted. Please check :(.");
+			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		}
 
 
@@ -546,51 +626,44 @@ public class Logic {
 			Task newTask;
 			AddParser argParser = new AddParser(arguments);
 			TaskType taskType = argParser.getTaskType();
-			switch (taskType) {
+			switch (taskType){
 			case FLOATING:
-				try {
-					newTask = new Task(arguments);
-					dataBase.add(newTask);
-					pushCommandToUndoHistoryStack();
-				} catch (WillNotWriteToCorruptFileException e) {
-					return new LogicToUi(
-							"File corrupted. Please fix this first :(");
-				}
+				newTask = new Task(argParser.getTaskDescription());
+				dataBase.add(newTask);
+				pushCommandToUndoHistoryStack();
 				return new LogicToUi(  taskToString(newTask)+ " added");
 			case DEADLINE:
 				DateTime dt = argParser.getBeginTime();
 				String taskName = argParser.getTaskDescription();
-				try {
-					newTask = new Task(taskName,dt);
-					dataBase.add(newTask);
-					pushCommandToUndoHistoryStack();
-					return new LogicToUi(taskToString(newTask) + " added");
-				} catch (WillNotWriteToCorruptFileException e) {
-					return new LogicToUi("File is corrupted. Please check :(.");
-				}
+				newTask = new Task(taskName,dt);
+				dataBase.add(newTask);
+				pushCommandToUndoHistoryStack();
+				return new LogicToUi(taskToString(newTask) + " added");
 
 			case TIMED:
 				DateTime st = argParser.getBeginTime();
 				DateTime et = argParser.getEndTime();
 				String newTaskName = argParser.getTaskDescription();
-				try {
-					newTask = new Task(newTaskName, st, et);
-					dataBase.add(newTask);
-					pushCommandToUndoHistoryStack();
-					return new LogicToUi(taskToString(newTask) +" added");
-				} 
-				catch(WillNotWriteToCorruptFileException e){
-					return new LogicToUi("File is corrupted. Please check :(.");
-				}
-			}
-		} catch (IOException e) {
-			return new LogicToUi(
-					"Something is wrong with the file. I cannot write to it. Please check the permission"
-							+ "for the file");
+				newTask = new Task(newTaskName, st, et);
+				dataBase.add(newTask);
+				pushCommandToUndoHistoryStack();
+				return new LogicToUi(taskToString(newTask) +" added");
+			default:
+				return new LogicToUi(
+						"I could not determine the type of your event. Can you be more specific?");
+
+			} 
+		} 
+		catch (WillNotWriteToCorruptFileException e){
+			return null;
 		}
-		return new LogicToUi(
-				"I could not determine the type of your event. Can you be more specific?");
-		// TODO Auto-generated method stub
+		catch( EmptyDescriptionException e) {
+			return new LogicToUi("Task description cannot be empty");
+		}
+		catch (IOException e) {
+			return new LogicToUi(
+					ERROR_IO);
+		}
 
 	}
 
