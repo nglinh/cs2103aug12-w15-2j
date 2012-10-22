@@ -83,6 +83,7 @@ public class FileManagement {
 		private final int ZERO_LENGTH_TASK_NAME = 0;
 		
 		private final long START_OF_FILE = 0;
+		private final long INITIAL_FILE_SIZE = 0;
 
 		private FileStatus fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 
@@ -355,8 +356,8 @@ public class FileManagement {
 
 			String dataStringToBeWritten = dataToBeWritten.toString();
 
-			//Truncate the file to 0 size to clear the old database file before writing
-			randDatabaseAccess.setLength(0);
+			//Truncate the file to 0 or INITIAL_FILE_SIZE size to clear the old database file before writing
+			randDatabaseAccess.setLength(INITIAL_FILE_SIZE);
 			randDatabaseAccess.seek(START_OF_FILE);
 			randDatabaseAccess.writeBytes(dataStringToBeWritten);
 
