@@ -34,7 +34,7 @@ public class FileManagement {
 
 
 
-		public static String filename = "database.txt";
+		public static final String filename = "database.txt";
 
 		private static final String LINE_IGNORE_CHARACTER = "#";
 		private static final String LINE_PARAM_DELIMITER_READ = " \\| ";
@@ -74,16 +74,16 @@ public class FileManagement {
 		private static final String LINE_DONE = "D";
 		private static final String LINE_UNDONE = "U";
 
-		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
-		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
+		private static final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
+		private static final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
 		private static final String LINE_END_OF_LINE = System.getProperty( "line.separator" );
 	
 		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
-		private final int ZERO_LENGTH_TASK_NAME = 0;
+		private static final int ZERO_LENGTH_TASK_NAME = 0;
 		
-		private final long START_OF_FILE = 0;
-		private final long INITIAL_FILE_SIZE = 0;
+		private static final long START_OF_FILE = 0;
+		private static final long INITIAL_FILE_SIZE = 0;
 
 		private FileStatus fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 
@@ -103,7 +103,6 @@ public class FileManagement {
 		}
 
 		private FileManagement()	{
-			prepareDatabaseFile();
 
 		}
 		
