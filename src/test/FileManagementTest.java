@@ -73,6 +73,8 @@ public class FileManagementTest {
 	ArrayList<Task> filledListing;
 	ArrayList<Task> shortListing;
 	ArrayList<Task> initialClearListing;
+	
+	FileManagement fileMgmt = null;
 
 
 	@Before
@@ -114,6 +116,9 @@ public class FileManagementTest {
 		} catch (IOException e) {
 			fail();
 		}
+		
+		fileMgmt = FileManagement.getInstance();
+		fileMgmt.prepareDatabaseFile();
 
 	}
 
@@ -122,7 +127,6 @@ public class FileManagementTest {
 	@Test
 	public void readAndWriteFunctionalityTest() {
 
-		FileManagement fileMgmt = new FileManagement();
 
 		try {
 			
@@ -187,7 +191,6 @@ public class FileManagementTest {
 				writeFile.write(spoiltString);
 				writeFile.close();
 
-				FileManagement fileMgmt = new FileManagement();
 				fileMgmt.readFileAndDetectCorruption(initialClearListing);
 				fileMgmt.closeFile();
 
@@ -199,7 +202,6 @@ public class FileManagementTest {
 		
 		
 		boolean catchCorruptException = false;
-		FileManagement fileMgmt = new FileManagement();
 		try {
 			fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
 			fileMgmt.writeDataBaseToFile(new ArrayList<Task>());
@@ -223,14 +225,12 @@ public class FileManagementTest {
 
 		BufferedWriter writeFile;
 
-		FileManagement fileMgmt = null;
 		boolean catchIllegalArgument = false;
 		try {
 			writeFile = new BufferedWriter(new FileWriter(FileManagement.filename));
 			writeFile.write(FILE_GOOD_STRING);
 			writeFile.close();
 
-			fileMgmt = new FileManagement();
 			//Ensure the file is ok
 			assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_ALL_OK);
 
@@ -253,11 +253,9 @@ public class FileManagementTest {
 
 	@Test
 	public void readFileAndDetectCorruptionExceptionTest() {
-		FileManagement fileMgmt = null;
 		boolean catchIllegalArgument = false;
 
 		try{
-			fileMgmt = new FileManagement();
 			fileMgmt.readFileAndDetectCorruption(null);
 			fail();
 		} catch (IllegalArgumentException e){
@@ -278,7 +276,7 @@ public class FileManagementTest {
 			dbFile.setReadOnly();
 		}
 
-		FileManagement fileMgmt = new FileManagement();
+
 		assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_READ_ONLY);
 		
 		fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
