@@ -26,7 +26,7 @@ import shared.Task.TaskType;
 
 public class FileManagement {
 
-	
+
 
 
 	public static enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, 
@@ -46,7 +46,7 @@ public class FileManagement {
 
 		private static final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
 
-//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
+		//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
 		private static final int LINE_POSITION_TASKTYPE = 1;
 		private static final int LINE_POSITION_DONE = 2;
 		private static final int LINE_POSITION_DEADLINE_DATE = 3;
@@ -78,43 +78,40 @@ public class FileManagement {
 		private static final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
 		private static final String LINE_END_OF_LINE = System.getProperty( "line.separator" );
-	
+
 		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
 		private static final int ZERO_LENGTH_TASK_NAME = 0;
-		
+
 		private static final long START_OF_FILE = 0;
 		private static final long INITIAL_FILE_SIZE = 0;
 
 		private FileStatus fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 
-		File databaseFile = new File(filename);
-		FileLock databaseFileLock;
-		FileChannel databaseChannel;
-		RandomAccessFile randDatabaseAccess;
-		
+		private File databaseFile = new File(filename);
+		private FileLock databaseFileLock = null;
+		private FileChannel databaseChannel = null;
+		private RandomAccessFile randDatabaseAccess = null;
+
 		private static FileManagement theOne = null;
-		
+
 		public static FileManagement getInstance(){
 			if(theOne == null){
 				theOne = new FileManagement();
 			}
-			
+
 			return theOne;
 		}
 
 		private FileManagement()	{
 
 		}
-		
 
-		
 
-		
 		public void readFileAndDetectCorruption(ArrayList<Task> storeInHere) {
 			if(storeInHere == null) {
 				throw new IllegalArgumentException("null input");
 			}
-			
+
 			if((fileAttributes.equals(FileStatus.FILE_ALL_OK)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
 				try {
 					readFiletoDataBase(storeInHere);
@@ -131,7 +128,7 @@ public class FileManagement {
 				randDatabaseAccess = new RandomAccessFile(databaseFile, "rws");
 				databaseChannel = randDatabaseAccess.getChannel();
 				databaseFileLock = databaseChannel.tryLock();
-				
+
 				if(databaseFileLock == null) {
 					fileAttributes = FileStatus.FILE_IS_LOCKED;
 					isRWLockSucessful = false;
@@ -161,18 +158,24 @@ public class FileManagement {
 		public FileStatus getFileAttributes()	{
 			return fileAttributes;
 		}
-		
+
 		public void closeFile(){
 			try {
 				if(databaseFileLock != null ){
 					databaseFileLock.release();
+					databaseFileLock = null;
 				}
-				databaseChannel.close();
-				randDatabaseAccess.close();
-		
+				if(databaseChannel != null){
+					databaseChannel.close();
+					databaseChannel = null;
+				}
+
+				if (randDatabaseAccess != null) {
+					randDatabaseAccess.close();
+				}
+				randDatabaseAccess = null;
+
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 
