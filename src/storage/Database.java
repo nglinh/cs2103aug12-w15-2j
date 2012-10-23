@@ -36,6 +36,16 @@ public class Database {
 		private DB_File_Status fileAttributes;
 
 		private int undoStepsLeft = 0;
+		
+		private static Database theOne = null;
+		
+		public static Database getInstance(){
+			if(theOne == null){
+				theOne = new Database();
+			}
+			
+			return theOne;
+		}
 
 		/**
 		 * To instantiate a database                       
@@ -43,11 +53,14 @@ public class Database {
 		 * 
 		 */
 
-		public Database() {
-			diskFile = new FileManagement();
+		private Database() {
+			diskFile = FileManagement.getInstance();
 			diskFile.readFileAndDetectCorruption(taskStore);
 			fileAttributes = parseFileAttributes(diskFile);
 		}
+		
+		
+		
 
 		/**
 		 * To give the results based on a search term.

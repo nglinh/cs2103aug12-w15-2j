@@ -25,30 +25,40 @@ import shared.Task;
 import storage.Database.DB_File_Status;
 
 public class Logic {
-	private static final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check the permission"
+	private final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check the permission"
 			+ "for the file";
-	private static final String ERROR_FILE_CORRUPTED = "File is corrupted. Please check :(.";
+	private final String ERROR_FILE_CORRUPTED = "File is corrupted. Please check :(.";
 
 
 
-	public static enum CommandType {
+	public enum CommandType {
 		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT
 	};
 
 
-	public static Database dataBase = new Database();
-	private static ArrayList<Task> lastShownToUI = new ArrayList<Task>();
-	private static String latestRefreshCommandForUI = "list";
+	public Database dataBase = null;
+	private ArrayList<Task> lastShownToUI = new ArrayList<Task>();
+	private String latestRefreshCommandForUI = "list";
 
-	private static String latestCommandFromUI = null;
-	private static Stack<String> undoHistory = new Stack<String>();
+	private String latestCommandFromUI = null;
+	private Stack<String> undoHistory = new Stack<String>();
 
-	private static Comparator<Task> latestSorter = new SortByStartDate();
-	private static SortStatus latestSorting =  SortStatus.START;
-	private static String latestSortCommand = "sort start";
+	private Comparator<Task> latestSorter = new SortByStartDate();
+	private SortStatus latestSorting =  SortStatus.START;
+	private String latestSortCommand = "sort start";
+	
+	private static Logic theOne = null;
+	
+	public static Logic getInstance(){
+		if(theOne == null){
+			theOne = new Logic();
+		}
+		
+		return theOne;
+	}
 
 
-	public static LogicToUi uiCommunicator(String command) {
+	public LogicToUi uiCommunicator(String command) {
 		LogicToUi feedback;
 		try {
 
@@ -64,7 +74,7 @@ public class Logic {
 		return feedback;
 	}
 
-	private static CommandType parseCommand(String command)
+	private CommandType parseCommand(String command)
 			throws NoSuchCommandException {
 		String commandSyntax = command.trim().split(" ")[0];
 
@@ -72,7 +82,7 @@ public class Logic {
 		return typeOfCommand;
 	}
 
-	private static CommandType determineCommandType(String string)
+	private CommandType determineCommandType(String string)
 			throws NoSuchCommandException {
 
 
@@ -125,7 +135,7 @@ public class Logic {
 		}
 	}
 
-	private static LogicToUi executeCommand(CommandType commandType,
+	private LogicToUi executeCommand(CommandType commandType,
 			String arguments) {
 
 
@@ -159,7 +169,7 @@ public class Logic {
 		}
 	}
 
-	private static LogicToUi edit(String arguments) {
+	private LogicToUi edit(String arguments) {
 		try{
 			int index;
 			index = Integer.parseInt(arguments.split(" ")[0]);
@@ -230,7 +240,7 @@ public class Logic {
 		}
 	}
 
-	private static LogicToUi sort(String arguments) {
+	private LogicToUi sort(String arguments) {
 
 		if(arguments.length() == 0) {			
 			arguments = "start";
@@ -244,7 +254,7 @@ public class Logic {
 		Comparator<Task> sorter = null;
 
 		//Refresh the list first before sorting
-		LogicToUi fromListCommand = uiCommunicator(latestRefreshCommandForUI);
+		LogicToUi fromListCommand = this.uiCommunicator(latestRefreshCommandForUI);
 		SearchTerms searchFilters = fromListCommand.getFilters();
 		String listStatusMsg = fromListCommand.getString();
 
@@ -301,14 +311,14 @@ public class Logic {
 		}
 	}
 
-	private static void pushCommandToUndoHistoryStack() {
+	private void pushCommandToUndoHistoryStack() {
 		if(latestCommandFromUI == null) {
 			return;
 		}
 
 		undoHistory.push(latestCommandFromUI);
 	}
-	private static LogicToUi done(String arguments, boolean newDoneStatus) {
+	private LogicToUi done(String arguments, boolean newDoneStatus) {
 		if(arguments.length() == 0) {
 			return new LogicToUi(
 					"Sorry this index number you provided is not valid. Please try again with a correct number or refresh the list.");
@@ -355,13 +365,13 @@ public class Logic {
 		}
 	}
 
-	private static LogicToUi refresh() {
+	private LogicToUi refresh() {
 
 		return uiCommunicator(latestSortCommand);
 	}
 
 	//Can only search by keywords for now
-	private static LogicToUi search(String arguments) {
+	private LogicToUi search(String arguments) {
 
 		LogicToUi toBeSent = searchPartial(arguments);
 
@@ -372,7 +382,7 @@ public class Logic {
 	}
 
 	//Can only search by keywords for now, allow GUI to show suggestions without affecting state
-	private static LogicToUi searchPartial(String arguments) {
+	private LogicToUi searchPartial(String arguments) {
 
 		if(arguments.length() == 0) {
 			return new LogicToUi(
@@ -392,7 +402,7 @@ public class Logic {
 		return new LogicToUi(results, statusMsg, terms);
 	}
 
-	private static LogicToUi undo() {
+	private LogicToUi undo() {
 
 
 		try {
@@ -415,7 +425,7 @@ public class Logic {
 
 	}
 
-	private static LogicToUi checkFileStatus() {
+	private LogicToUi checkFileStatus() {
 		DB_File_Status status = dataBase.getFileAttributes();
 
 		if(status.equals(DB_File_Status.FILE_ALL_OK)) {
@@ -431,7 +441,7 @@ public class Logic {
 		}
 	}
 
-	private static LogicToUi list(String arguments) {
+	private LogicToUi list(String arguments) {
 
 		if(arguments.length() == 0) {
 
@@ -545,7 +555,7 @@ public class Logic {
 		return new LogicToUi(results, statusMsg, filter);
 	}
 
-	private static LogicToUi deleteTask(String arguments){
+	private LogicToUi deleteTask(String arguments){
 		if(arguments.length() == 0) {
 			return new LogicToUi(
 					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
@@ -602,7 +612,7 @@ public class Logic {
 
 	}
 
-	private static String taskToString(Task toBeConverted) {
+	private String taskToString(Task toBeConverted) {
 
 		if(toBeConverted.isTimedTask()) {
 			return("Timed task " + "\"" + toBeConverted.getTaskName() + "\"" + " from " + dateToString(toBeConverted.getStartDate()) + " to " + dateToString(toBeConverted.getEndDate()));
@@ -613,13 +623,13 @@ public class Logic {
 		}
 
 	}
-	private static String dateToString(DateTime inputDate){
+	private String dateToString(DateTime inputDate){
 		String LINE_DATE_FORMAT = "EEE dd MMM yyyy h:mma";
 		DateTimeFormatter LINE_DATE_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_FORMAT);
 		return LINE_DATE_FORMATTER.print(inputDate);
 	}
 
-	private static LogicToUi addTask(String arguments) {
+	private LogicToUi addTask(String arguments) {
 		if(arguments.length()==0)
 			return new LogicToUi("Cannot add a task with empty description.");
 		try {
@@ -669,8 +679,8 @@ public class Logic {
 
 
 
-	public Logic(){
-		dataBase = new Database();
+	private Logic(){
+		dataBase = Database.getInstance();
 
 	}
 

@@ -91,11 +91,25 @@ public class FileManagement {
 		FileLock databaseFileLock;
 		FileChannel databaseChannel;
 		RandomAccessFile randDatabaseAccess;
+		
+		private static FileManagement theOne = null;
+		
+		public static FileManagement getInstance(){
+			if(theOne == null){
+				theOne = new FileManagement();
+			}
+			
+			return theOne;
+		}
 
-		public FileManagement()	{
+		private FileManagement()	{
 			prepareDatabaseFile();
 
 		}
+		
+
+		
+
 		
 		public void readFileAndDetectCorruption(ArrayList<Task> storeInHere) {
 			if(storeInHere == null) {
