@@ -18,7 +18,7 @@ public class FileManagementDriver {
 		
 		
 		
-		FileManagement filemgr = new FileManagement();
+		FileManagement filemgr = FileManagement.getInstance();
 		filemgr.readFileAndDetectCorruption(taskStoreTest);
 		System.out.println(filemgr.getFileAttributes());
 		
