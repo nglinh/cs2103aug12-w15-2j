@@ -5,7 +5,9 @@ package test;
  * This test does not have complete branch coverage as some aspects 
  * 	like file locking cannot be simulated in the test.
  * 
- * Warning: Database file will be cleared during and after the test
+ * Warning1: Database file will be cleared during and after the test
+ * Warning2: If the read-only test fails, the database file attributes/permissions may remain at read only in the File System.
+ * Subsequent tests may fail till you change it back.
  * @author  Yeo Kheng Meng
  */ 
 
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,8 +76,8 @@ public class FileManagementTest {
 	ArrayList<Task> filledListing;
 	ArrayList<Task> shortListing;
 	ArrayList<Task> initialClearListing;
-	
-	FileManagement fileMgmt = null;
+
+	FileManagement fileMgmt = FileManagement.getInstance();
 
 
 	@Before
@@ -100,12 +103,12 @@ public class FileManagementTest {
 
 		filledListing.add(nameTimed);
 		filledListing.add(name);
-		
-		
+
+
 		shortListing = new ArrayList<Task>();
 		shortListing.add(nameDeadline);
 		shortListing.add(nameTimedFalse);
-		
+
 
 		initialClearListing = new ArrayList<Task>();
 
@@ -116,20 +119,24 @@ public class FileManagementTest {
 		} catch (IOException e) {
 			fail();
 		}
-		
-		fileMgmt = FileManagement.getInstance();
-		fileMgmt.prepareDatabaseFile();
+
+
+
 
 	}
 
-	
-	
+	@After
+	public void runAfterEveryTest() {
+		fileMgmt.closeFile();
+	}
+
+
 	@Test
 	public void readAndWriteFunctionalityTest() {
-
+		fileMgmt.prepareDatabaseFile();
 
 		try {
-			
+
 			fileMgmt.writeDataBaseToFile(new ArrayList<Task>());
 			fileMgmt.readFileAndDetectCorruption(initialClearListing);
 
@@ -148,13 +155,13 @@ public class FileManagementTest {
 
 				assertEquals(fromDisk.showInfo(), original.showInfo());
 			}
-			
+
 			//Write a shortened file, to ensure no remnants of previous database remain on disk
 			initialClearListing = new ArrayList<Task>();
 			fileMgmt.writeDataBaseToFile(shortListing);
 			fileMgmt.readFileAndDetectCorruption(initialClearListing);
 			assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_ALL_OK);
-			
+
 			//Check every bit of info written down is read back correctly
 			for(int i = 0; i < shortListing.size(); i++){
 				Task fromDisk = initialClearListing.get(i);
@@ -162,13 +169,11 @@ public class FileManagementTest {
 
 				assertEquals(fromDisk.showInfo(), original.showInfo());
 			}
-			
-			
+
+
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		}
-
-		fileMgmt.closeFile();
 
 
 	}
@@ -191,6 +196,7 @@ public class FileManagementTest {
 				writeFile.write(spoiltString);
 				writeFile.close();
 
+				fileMgmt.prepareDatabaseFile();
 				fileMgmt.readFileAndDetectCorruption(initialClearListing);
 				fileMgmt.closeFile();
 
@@ -199,8 +205,8 @@ public class FileManagementTest {
 		} catch (IOException e) {
 			fail();
 		}
-		
-		
+
+
 		boolean catchCorruptException = false;
 		try {
 			fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
@@ -215,13 +221,13 @@ public class FileManagementTest {
 		}
 
 		assertTrue(catchCorruptException);
+		fileMgmt.closeFile();
 
 	}
 
 
 	@Test
 	public void writeDbaseIllegalArgumenttExceptionTest() {
-
 
 		BufferedWriter writeFile;
 
@@ -230,6 +236,8 @@ public class FileManagementTest {
 			writeFile = new BufferedWriter(new FileWriter(FileManagement.filename));
 			writeFile.write(FILE_GOOD_STRING);
 			writeFile.close();
+
+			fileMgmt.prepareDatabaseFile();
 
 			//Ensure the file is ok
 			assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_ALL_OK);
@@ -253,6 +261,8 @@ public class FileManagementTest {
 
 	@Test
 	public void readFileAndDetectCorruptionExceptionTest() {
+
+		fileMgmt.prepareDatabaseFile();
 		boolean catchIllegalArgument = false;
 
 		try{
@@ -269,6 +279,7 @@ public class FileManagementTest {
 	@Test
 	public void readOnlyTest()
 	{
+
 		File dbFile = new File(FileManagement.filename);
 
 		//Set the file to read only to test
@@ -276,13 +287,14 @@ public class FileManagementTest {
 			dbFile.setReadOnly();
 		}
 
+		fileMgmt.prepareDatabaseFile();
 
 		assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_READ_ONLY);
-		
+
 		fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
 		fileMgmt.closeFile();
 		assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_READ_ONLY);
-		
+
 		dbFile.setWritable(true);
 
 	}
