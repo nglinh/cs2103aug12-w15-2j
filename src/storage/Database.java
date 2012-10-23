@@ -55,6 +55,7 @@ public class Database {
 
 		private Database() {
 			diskFile = FileManagement.getInstance();
+			diskFile.prepareDatabaseFile();
 			diskFile.readFileAndDetectCorruption(taskStore);
 			fileAttributes = parseFileAttributes(diskFile);
 		}
