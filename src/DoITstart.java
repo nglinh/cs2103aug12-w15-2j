@@ -12,6 +12,7 @@
 import ui.Cli;
 import ui.CliWithJline;
 import ui.GuiMain;
+import ui.GuiTrayIcon;
 import ui.UI;
 
 
@@ -23,7 +24,7 @@ public class DoITstart {
 		UI doITUi;
 		
 		if (args.length == 0) {
-			doITUi = new GuiMain();
+			doITUi = new GuiTrayIcon();
 			
 		} else if (args[0].equals("-cli") && isConsoleAttached()) {
 			doITUi = new CliWithJline();
