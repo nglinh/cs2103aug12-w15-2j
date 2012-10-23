@@ -102,7 +102,8 @@ public class AddParser {
 		String result = "";
 		String[] tempStringArray = argument2.split(" ");
 		for (int i =0;i<tempStringArray.length;++i){
-			if(tempStringArray[i].compareTo("from")==0 )
+			if(tempStringArray[i].compareTo("from")==0 || 
+					tempStringArray[i].compareTo("this")==0)
 				result = result + "    ";
 			else if(tempStringArray[i].compareTo("by")==0)
 				result = result + "   ";
@@ -179,9 +180,8 @@ public class AddParser {
 				tempStringArray[tempStringArray.length-1].compareTo("before")==0||
 				tempStringArray[tempStringArray.length-1].compareTo("on")==0||
 				tempStringArray[tempStringArray.length-1].compareTo("at")==0){
-			tempStringArray[tempStringArray.length-1] = "";
 			result = "";
-			for(int i=0;i<tempStringArray.length;++i)
+			for(int i=0;i<tempStringArray.length-1;++i)
 				result = result + tempStringArray[i]+" ";
 		}
 		for(int i = endDateStringPosition;i<argument.length();i++){
