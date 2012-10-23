@@ -28,7 +28,7 @@ public class DatabaseDriver
 		}
 		
 		
-		Database myDB = new Database();
+		Database myDB = Database.getInstance();
 		System.out.println(myDB.getFileAttributes());
 		
 		

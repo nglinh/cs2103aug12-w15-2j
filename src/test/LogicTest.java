@@ -7,6 +7,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class LogicTest {
+	
+	Logic logic = Logic.getInstance();
 
 	@Test
 	public void testAddTimedTask() {
@@ -16,25 +18,25 @@ public class LogicTest {
 		// Add normal timed task with starting and ending time and date
 		command = "add My New Task from 25 Sep 2012 8pm to 26 Sep 2012 9pm";
 		expectedResponse = timedTaskResponse("My New Task", "Tue 25 Sep 2012 8:00PM", "Wed 26 Sep 2012 9:00PM");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 
 		// Add normal timed task with starting and ending date but no time.
 		// Assume 12:00am for start time and 23:59pm for end time.
 		command = "add My New Task from 25 Sep 2012 to 26 Sep 2012";
 		expectedResponse = timedTaskResponse("My New Task", "Tue 25 Sep 2012 12:00AM", "Wed 26 Sep 2012 11:59PM");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add normal timed task with starting and ending time and date
 		// but with "from" inside the text
 		command = "add Pick up groceries from supermarket from 25 Sep 2012 8pm to 26 Sep 2012 9pm";
 		expectedResponse = timedTaskResponse("Pick up groceries from supermarket", "Tue 25 Sep 2012 8:00PM", "Wed 26 Sep 2012 9:00PM");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add normal timed task with starting and ending time and date
 		// but with "to" inside the text
 		command = "add Go to supermarket from 25 Sep 2012 8pm to 26 Sep 2012 9pm";
 		expectedResponse = timedTaskResponse("Go to supermarket", "Tue 25 Sep 2012 8:00PM", "Wed 26 Sep 2012 9:00PM");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 	}
 	
 	public String timedTaskResponse(String taskName, String startDate, String endDate){
@@ -48,19 +50,19 @@ public class LogicTest {
 		// Add normal deadline task with ending time and date
 		command = "add Do homework by 26 Sep 2012 9pm";
 		expectedResponse = deadlineTaskResponse("Do homework", "Wed 26 Sep 2012 9:00PM");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 
 		// Add normal deadline task with ending date but no time.
 		// Assume 11:59pm for time.
 		command = "add Do homework by 26 Sep 2012";
 		expectedResponse = deadlineTaskResponse("Do homework", "Wed 26 Sep 2012 11:59PM");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add normal deadline task with starting and ending time and date
 		// but with "by" inside the text
 		command = "add Read book by Steven by 26 Sep 2012 9pm";
 		expectedResponse = deadlineTaskResponse("Read book by Steven", "Wed 26 Sep 2012 9:00PM");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add deadline task with the word "at"
 		command = "add go to meeting at 15 Oct 2012 noon";
@@ -86,27 +88,27 @@ public class LogicTest {
 		// Add normal floating task
 		command = "add Just a normal floating task";
 		expectedResponse = floatingTaskResponse("Just a normal floating task");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 
 		// Add floating task with tricky words "from"
 		command = "add Print photos from Alan";
 		expectedResponse = floatingTaskResponse("Print photos from Alan");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add floating task with tricky words "by"
 		command = "add Print photos taken by Alan";
 		expectedResponse = floatingTaskResponse("Print photos taken by Alan");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add floating task with tricky words "to"
 		command = "add Bring photos to printing shop";
 		expectedResponse = floatingTaskResponse("Bring photos to printing shop");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 		
 		// Add floating task with tricky words "market" (starts with mar = march)
 		command = "add Go to market";
 		expectedResponse = floatingTaskResponse("Go to market");
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 	}
 	
 	public String floatingTaskResponse(String taskName){
@@ -119,27 +121,27 @@ public class LogicTest {
 
 		String command, expectedResponse;
 
-		Logic.uiCommunicator("list");
+		logic.uiCommunicator("list");
 
 		// Delete valid task
 		command = "delete 1";
 		expectedResponse = "Timed task \"My New Task\" from 25 Sep 2012 8:00pm to 26 Sep 2012 9:00pm deleted";
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 
 		// Delete invalid task
 		command = "delete 9999";
 		expectedResponse = "9999 is an invalid index number";
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 
 		// Delete invalid task
 		command = "delete 0";
 		expectedResponse = "0 is an invalid index number";
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 
 		// Delete invalid task
 		command = "delete -1";
 		expectedResponse = "-1 is an invalid index number";
-		assertEquals(Logic.uiCommunicator(command).getString(), expectedResponse);
+		assertEquals(logic.uiCommunicator(command).getString(), expectedResponse);
 	}
 	
 	@Test
@@ -149,7 +151,7 @@ public class LogicTest {
 
 		// Delete valid task
 		command = "list";
-		assertTrue(Logic.uiCommunicator(command).getList().size() > 0);
+		assertTrue(logic.uiCommunicator(command).getList().size() > 0);
 	}
 
 
