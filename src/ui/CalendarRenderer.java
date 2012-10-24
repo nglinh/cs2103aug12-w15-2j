@@ -8,11 +8,15 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 
 public class CalendarRenderer implements HyperlinkListener{
+	
+	DateTime dt;
+	
+	public CalendarRenderer(DateTime dt){
+		this.dt = dt;
+	}
+	
 
 	public String render(){
-		
-		DateTime dt = new DateTime();
-		dt = dt.withMonthOfYear(12);
 		
 		int month = dt.getMonthOfYear();
 		int year = dt.getYear();
@@ -26,7 +30,10 @@ public class CalendarRenderer implements HyperlinkListener{
 		
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("<table width=100%><tr><td width=1>&lt;</td><td align=center>"+DateTimeFormat.forPattern("MMMM yyyy").print(dt)+"</td><td width=1>&gt;</td></tr></table>");
+		sb.append("<table width=100%><tr>");
+		sb.append("<td width=1><a href=\"http://doit/gotoMonth/"+DateTimeFormat.forPattern("yyyy-M").print(dt.minusMonths(1))+"\">&lt;</a></td>");
+		sb.append("<td align=center>"+DateTimeFormat.forPattern("MMMM yyyy").print(dt)+"</td>");
+		sb.append("<td width=1><a href=\"http://doit/gotoMonth/"+DateTimeFormat.forPattern("yyyy-M").print(dt.plusMonths(1))+"\">&gt;</a></td></tr></table>");
 		sb.append("<table width=100% class=calendar cellpadding=1 cellspacing=1>");
 		sb.append("<tr><td>S</td><td>M</td><td>T</td><td>W</td><td>T</td><td>F</td><td>S</td></tr>");
 		sb.append("<tr>");
@@ -38,7 +45,7 @@ public class CalendarRenderer implements HyperlinkListener{
 				sb.append("</tr><tr>");
 			}
 			System.out.println(currentDay + " " + startingDay.plusMonths(1));
-			sb.append("<td align=right>"+currentDay.getDayOfMonth()+"</td>");
+			sb.append("<td align=right><a href=\"http://doit/showTasksForDay/"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\">"+currentDay.getDayOfMonth()+"</a></td>");
 			currentDay = currentDay.plusDays(1);
 		}		
 		sb.append("</tr>");

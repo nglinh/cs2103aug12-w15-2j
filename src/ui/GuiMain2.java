@@ -18,11 +18,18 @@ import shared.Task;
 
 import java.awt.Component;
 import javax.swing.JPanel;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
+
+import org.joda.time.DateTime;
 
 public class GuiMain2 extends UI{
 
 	private JFrame frame;
 	private JTextField textField;
+	JEditorPane txtDatedTasks;
+	JEditorPane txtUndatedTasks;
+	JEditorPane txtCalendar;
 	
 	private static GuiMain2 theOne = null;
 	public static GuiMain2 getInstance(){
@@ -77,7 +84,11 @@ public class GuiMain2 extends UI{
 		JScrollPane scrollPane = new JScrollPane();
 		splitPane.setLeftComponent(scrollPane);
 		
-		JEditorPane txtDatedTasks = new JEditorPane();
+		txtDatedTasks = new JEditorPane();
+		txtDatedTasks.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+			}
+		});
 		txtDatedTasks.setContentType("text/html");
 		txtDatedTasks.setText("<html>\r\n<table>\r\n<tr>\r\n<td width=\"50\"><font face=\"Segoe UI\" size=1>TUE<br>SEP<br> <font size=\"4\">20</font><br> 2012</font></td>\r\n<td>\r\nBy 2:00pm<br>\r\nTask ABCD\r\n</td>\r\n</tr>\r\n</table>");
 		txtDatedTasks.setEditable(false);
@@ -112,7 +123,7 @@ public class GuiMain2 extends UI{
 		JScrollPane scrollPane_1 = new JScrollPane();
 		panel.add(scrollPane_1);		
 		
-		JEditorPane txtUndatedTasks = new JEditorPane();
+		txtUndatedTasks = new JEditorPane();
 		txtUndatedTasks.setContentType("text/html");
 		txtUndatedTasks.setEditable(false);
 		scrollPane_1.setViewportView(txtUndatedTasks);
@@ -124,7 +135,29 @@ public class GuiMain2 extends UI{
 		txtUndatedTasks.setText(udtr.render());
 		
 		// Calendar
-		JEditorPane txtCalendar = new JEditorPane();
+		txtCalendar = new JEditorPane();
+		txtCalendar.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					System.out.println(e.getURL().getPath());
+					if(e.getURL().getPath().startsWith("/gotoMonth/")){
+						String monthToShow = e.getURL().getPath().split("/")[2];
+						int year = Integer.parseInt(monthToShow.split("-")[0]);
+						int month = Integer.parseInt(monthToShow.split("-")[1]);						
+						
+						CalendarRenderer calr= new CalendarRenderer(new DateTime(year, month, 1,0,0));
+						txtCalendar.setText(calr.render());
+					}else if(e.getURL().getPath().startsWith("/showTasksForDay/")){
+						String monthToShow = e.getURL().getPath().split("/")[2];
+						int year = Integer.parseInt(monthToShow.split("-")[0]);
+						int month = Integer.parseInt(monthToShow.split("-")[1]);
+						int day = Integer.parseInt(monthToShow.split("-")[2]);
+						
+						txtDatedTasks.scrollToReference("date-"+year+"-"+month+"-"+day);
+					}
+				}
+			}
+		});
 		txtCalendar.setEditable(false);
 		txtCalendar.setContentType("text/html");
 		panel.add(txtCalendar, BorderLayout.SOUTH);
@@ -135,9 +168,8 @@ public class GuiMain2 extends UI{
         Document doc3 = kit.createDefaultDocument();
         txtCalendar.setDocument(doc3);
 		
-		CalendarRenderer calr= new CalendarRenderer();
+		CalendarRenderer calr = new CalendarRenderer(new DateTime());
 		txtCalendar.setText(calr.render());
-		txtCalendar.addHyperlinkListener(calr);
 		
 	}
 
