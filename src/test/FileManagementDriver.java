@@ -18,9 +18,10 @@ public class FileManagementDriver {
 		
 		
 		
-		FileManagement filemgr = FileManagement.getInstance();
-		filemgr.readFileAndDetectCorruption(taskStoreTest);
-		System.out.println(filemgr.getFileAttributes());
+		FileManagement fileMgr = FileManagement.getInstance();
+		fileMgr.prepareDatabaseFile();
+		fileMgr.readFileAndDetectCorruption(taskStoreTest);
+		System.out.println(fileMgr.getFileAttributes());
 		
 		Task floatingtask = new Task("Test Floating", true);
 		Task floatingtask2 = new Task("Test Floating2", false);
@@ -45,7 +46,7 @@ public class FileManagementDriver {
 		
 		
 		try {
-			filemgr.writeDataBaseToFile(taskStoreTest);
+			fileMgr.writeDataBaseToFile(taskStoreTest);
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			System.out.println("Fail");
 			e.printStackTrace();

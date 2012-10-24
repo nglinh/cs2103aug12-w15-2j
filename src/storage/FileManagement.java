@@ -39,7 +39,7 @@ public class FileManagement {
 		private static final String LINE_IGNORE_CHARACTER = "#";
 		private static final String LINE_PARAM_DELIMITER_READ = " \\| ";
 		private static final String LINE_PARAM_DELIMITER_WRITE = " | ";
-		private static final String LINE_EMPTY_DATE = "----------------";
+		private static final String LINE_EMPTY_DATE = "----------------------";
 
 		private static final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm Z";
 		private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern(LINE_DATE_TIME_FORMAT);
@@ -58,21 +58,21 @@ public class FileManagement {
 
 
 		private static final String[] filehelp = {
-			"##############################################################################################################################################" ,
-			"# Ref| Type | Done |     Deadline     |       Start      |       End        |                                  Task                          #" ,
-			"#  1 |  D   |   D  | 01-Jan-2012 0600 | ---------------- | ---------------- | An undone deadline task by 0600 1st Jan 2012                   #" ,
-			"#  2 |  T   |   U  | ---------------- | 31-Dec-2012 2359 | 28-Feb-2013 2248 | An undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #" , 
-			"#  3 |  F   |   D  | ---------------- | ---------------- | ---------------- | A done floating task                                           #" ,
-			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                       #" ,
-			"##############################################################################################################################################"	
+			"################################################################################################################################################################" ,
+			"# Ref| Type | Done |        Deadline        |          Start         |          End           |                                  Task                          #" ,
+			"#  1 |  D   |   *  | 01-Jan-2012 0600 +0800 | ---------------------- | ---------------------- | An undone deadline task by 0600 1st Jan 2012                   #" ,
+			"#  2 |  T   |   -  | ---------------------- | 31-Dec-2012 2359 +0800 | 28-Feb-2013 2248 +0800 | An undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #" , 
+			"#  3 |  F   |   *  | ---------------------- | ---------------------- | ---------------------- | A done floating task                                           #" ,
+			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                                         #" ,
+			"################################################################################################################################################################"	
 		};
 
 		private static final String LINE_FLOATING = "F";
 		private static final String LINE_DEADLINE = "D";
 		private static final String LINE_TIMED = "T";
 
-		private static final String LINE_DONE = "D";
-		private static final String LINE_UNDONE = "U";
+		private static final String LINE_DONE = "*";
+		private static final String LINE_UNDONE = "-";
 
 		private static final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma Z";
 		private static final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
