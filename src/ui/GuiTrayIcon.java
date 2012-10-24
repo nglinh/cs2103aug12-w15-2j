@@ -5,7 +5,6 @@ import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,6 +73,12 @@ public class GuiTrayIcon extends UI {
 		        }
 		    };
 		    
+		    ActionListener mainWindow2Listener = new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+		        	GuiMain2.getInstance().runUI();
+		        }
+		    };
+		    
 		    ActionListener quickAddWindowListener = new ActionListener() {
 		        public void actionPerformed(ActionEvent e) {
 		        	GuiQuickAdd.getInstance().runUI();
@@ -83,11 +88,14 @@ public class GuiTrayIcon extends UI {
 		    PopupMenu popup = new PopupMenu();
 		    MenuItem mainWindowItem = new MenuItem("Main Window");
 		    mainWindowItem.addActionListener(mainWindowListener);
+		    MenuItem mainWindow2Item = new MenuItem("Main Window ver 2");
+		    mainWindow2Item.addActionListener(mainWindow2Listener);
 		    MenuItem quickAddWindowItem = new MenuItem("Quick Add");
 		    quickAddWindowItem.addActionListener(quickAddWindowListener);
 		    MenuItem exitItem = new MenuItem("Exit");
 		    exitItem.addActionListener(exitListener);
 		    popup.add(mainWindowItem);
+		    popup.add(mainWindow2Item);
 		    popup.add(quickAddWindowItem);
 		    popup.add(exitItem);
 
