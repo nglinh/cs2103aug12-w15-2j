@@ -145,7 +145,7 @@ public class GuiMain2 extends UI{
 						int year = Integer.parseInt(monthToShow.split("-")[0]);
 						int month = Integer.parseInt(monthToShow.split("-")[1]);						
 						
-						CalendarRenderer calr= new CalendarRenderer(new DateTime(year, month, 1,0,0));
+						CalendarRenderer calr= new CalendarRenderer(new DateTime(year, month, 1,0,0), sendCommandToLogic("list").getList());
 						txtCalendar.setText(calr.render());
 					}else if(e.getURL().getPath().startsWith("/showTasksForDay/")){
 						String monthToShow = e.getURL().getPath().split("/")[2];
@@ -168,7 +168,7 @@ public class GuiMain2 extends UI{
         Document doc3 = kit.createDefaultDocument();
         txtCalendar.setDocument(doc3);
 		
-		CalendarRenderer calr = new CalendarRenderer(new DateTime());
+		CalendarRenderer calr = new CalendarRenderer(new DateTime(), sendCommandToLogic("list").getList());
 		txtCalendar.setText(calr.render());
 		
 	}

@@ -1,5 +1,10 @@
 package ui;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -7,16 +12,23 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 
-public class CalendarRenderer implements HyperlinkListener{
+import shared.Task;
+
+public class CalendarRenderer{
 	
-	DateTime dt;
+	private List<Task> taskList;
+	private DateTime dt;
+	private TreeMap<DateTime, List<Task>> datesWithTasks;
 	
-	public CalendarRenderer(DateTime dt){
+	public CalendarRenderer(DateTime dt, List<Task> taskList){
 		this.dt = dt;
+		this.taskList = taskList;
 	}
 	
 
 	public String render(){
+		
+		generateDatesWithTasks();
 		
 		int month = dt.getMonthOfYear();
 		int year = dt.getYear();
@@ -45,7 +57,12 @@ public class CalendarRenderer implements HyperlinkListener{
 				sb.append("</tr><tr>");
 			}
 			System.out.println(currentDay + " " + startingDay.plusMonths(1));
-			sb.append("<td align=right><a href=\"http://doit/showTasksForDay/"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\">"+currentDay.getDayOfMonth()+"</a></td>");
+			if(datesWithTasks.containsKey(currentDay.withTimeAtStartOfDay())){
+				sb.append("<td align=right><a href=\"http://doit/showTasksForDay/"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\">"+currentDay.getDayOfMonth()+"</a></td>");
+			}else{
+				sb.append("<td align=right>"+currentDay.getDayOfMonth()+"</td>");
+			}
+
 			currentDay = currentDay.plusDays(1);
 		}		
 		sb.append("</tr>");
@@ -53,11 +70,43 @@ public class CalendarRenderer implements HyperlinkListener{
 		return sb.toString();		
 		
 	}
+	
+	public void generateDatesWithTasks(){		
 
-	@Override
-	public void hyperlinkUpdate(HyperlinkEvent e) {
-		// TODO Auto-generated method stub
+		// We collect a list of ALL the dates that the tasks occur on
+		// And we add the tasks occurring on that day to a list
+		datesWithTasks = new TreeMap<DateTime, List<Task>>();
+		for(Task task : taskList){
+			if (task.getType() == Task.TaskType.TIMED){
+				DateTime currentDay = task.getStartDate().withTimeAtStartOfDay();
+				addTaskToMap(currentDay, task);
+				
+				while(task.getEndDate().withTimeAtStartOfDay().isAfter(currentDay)){
+					currentDay = currentDay.plusDays(1).withTimeAtStartOfDay();
+					addTaskToMap(currentDay, task);
+				}
+			}
+			else if (task.getType() == Task.TaskType.DEADLINE){
+				addTaskToMap(task.getDeadline().withTimeAtStartOfDay(), task);
+			}
+		}
 		
+		for(Map.Entry<DateTime, List<Task>> entry : datesWithTasks.entrySet()){
+			System.out.println(entry.getKey());
+			for (Task t : entry.getValue()){
+				System.out.println(t.getTaskName());
+			}
+			System.out.println("");
+		}
+	}
+	
+	public void addTaskToMap(DateTime dateTime, Task task){
+		if(datesWithTasks.containsKey(dateTime)){
+			datesWithTasks.get(dateTime).add(task);
+		}else{
+			datesWithTasks.put(dateTime, new LinkedList<Task>());
+			datesWithTasks.get(dateTime).add(task);
+		}
 	}
 	
 }
