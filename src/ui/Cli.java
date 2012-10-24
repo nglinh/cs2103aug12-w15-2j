@@ -38,7 +38,7 @@ public class Cli extends UI{
 	protected static final String TABLE_DESCRIPTION_PAD = "%-" + TABLE_DESCRIPTION_ALLOWANCE + "s";
 
 	protected static final String TABLE_ENTRY_UNDONE = "-";
-	protected static final String TABLE_ENTRY_DONE = "D";
+	protected static final String TABLE_ENTRY_DONE = "*";
 	protected static final String TABLE_EMPTY_DATE_FIELD = "        -        ";
 
 
