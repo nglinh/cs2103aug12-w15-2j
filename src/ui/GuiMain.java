@@ -55,6 +55,8 @@ public class GuiMain extends UI{
 	
 	private List<String> commandHistory;
 	private ListIterator<String> commandHistoryIterator;
+	
+	private static GuiMain theOne = null;
 
 	/**
 	 * Launch the application.
@@ -62,11 +64,18 @@ public class GuiMain extends UI{
 	public static void main(String[] args) {
 		new GuiMain().runUI();
 	}
-
+	
+	public static GuiMain getInstance() {
+		if (theOne == null) {
+			theOne = new GuiMain();
+		}
+		return theOne;
+	}
+	
 	/**
 	 * Create the application.
 	 */
-	public GuiMain() {
+	private GuiMain() {
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (ClassNotFoundException | InstantiationException
@@ -85,7 +94,6 @@ public class GuiMain extends UI{
 		frmDoit = new JFrame();
 		frmDoit.setTitle("DoIt!");
 		frmDoit.setBounds(100, 100, 700, 400);
-		frmDoit.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JMenuBar menuBar = new JMenuBar();
 		frmDoit.setJMenuBar(menuBar);
@@ -231,7 +239,7 @@ public class GuiMain extends UI{
 
 	@Override
 	public void runUI() {
-		EventQueue.invokeLater(new Runnable() {
+		/*EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					GuiMain window = new GuiMain();
@@ -240,7 +248,8 @@ public class GuiMain extends UI{
 					e.printStackTrace();
 				}
 			}
-		});
+		});*/
+		frmDoit.setVisible(true);
 	}
 
 	class MyTableModel extends AbstractTableModel {
@@ -420,6 +429,11 @@ public class GuiMain extends UI{
 				.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\"><font size=\"4\">"
 						+ status
 						+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a></font></td></tr></table></html>");
+	}
+
+	public void update() {
+		executeCommand("refresh");
+		
 	}
 
 }
