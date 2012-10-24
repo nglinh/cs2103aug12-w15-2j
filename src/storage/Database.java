@@ -10,8 +10,8 @@ package storage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 
 import org.joda.time.DateTime;
 
@@ -27,15 +27,15 @@ public class Database {
 	public static enum DB_File_Status {	FILE_ALL_OK, FILE_READ_ONLY, 
 		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT, FILE_IS_LOCKED};
 
+		public static final int MAX_UNDO_STEPS = 1000;
 
 		private ArrayList<Task> taskStore = new ArrayList<Task>();
 
-		private Stack<ArrayList<Task>> undoOperations = new Stack<ArrayList<Task>>();
+		private LinkedList<ArrayList<Task>> undoOperations = new LinkedList<ArrayList<Task>>();
 
 		private FileManagement diskFile;
 		private DB_File_Status fileAttributes;
 
-		private int undoStepsLeft = 0;
 		
 		private static Database theOne = null;
 		
@@ -335,7 +335,6 @@ public class Database {
 				diskFile.writeDataBaseToFile(taskStore);
 			} else	{
 				undoOperations.pop();
-				undoStepsLeft--;
 				throw new NoSuchElementException();
 			}
 
@@ -394,7 +393,6 @@ public class Database {
 				diskFile.writeDataBaseToFile(taskStore);
 			} else	{
 				undoOperations.pop();
-				undoStepsLeft--;
 				throw new NoSuchElementException();
 			}
 
@@ -491,8 +489,11 @@ public class Database {
 				newCopy.add(new Task(currentTask));
 			}
 
+			while(undoOperations.size() >= MAX_UNDO_STEPS) {
+				undoOperations.removeFirst();
+			}
+			
 			undoOperations.push(newCopy);
-			undoStepsLeft++;
 
 		}
 
@@ -513,7 +514,6 @@ public class Database {
 				throw new NoMoreUndoStepsException();
 			} else {
 				taskStore = undoOperations.pop();
-				undoStepsLeft--;
 				diskFile.writeDataBaseToFile(taskStore);
 			}
 
@@ -548,7 +548,7 @@ public class Database {
 		 */
 
 		public int getUndoStepsLeft() {
-			return undoStepsLeft;
+			return undoOperations.size();
 		}
 
 
