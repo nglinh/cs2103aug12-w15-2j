@@ -4,12 +4,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import com.joestelmach.natty.CalendarSource;
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 
 import shared.LogicToUi;
 import shared.LogicToUi.SortStatus;
@@ -32,7 +38,7 @@ public class Logic {
 
 
 	public enum CommandType {
-		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT
+		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE
 	};
 
 
@@ -46,15 +52,15 @@ public class Logic {
 	private Comparator<Task> latestSorter = new SortByStartDate();
 	private SortStatus latestSorting =  SortStatus.START;
 	private String latestSortCommand = "sort start";
-	
+
 	private static Logic theOne = null;
-	
+
 	public static Logic getInstance(){
 		if(theOne == null){
 			theOne = new Logic();
 			//TODO: Instantiate Natty here
 		}
-		
+
 		return theOne;
 	}
 
@@ -131,6 +137,8 @@ public class Logic {
 
 		case "update":
 			return CommandType.EDIT;
+		case "postpone":
+			return CommandType.POSTPONE;
 		default:
 			throw new NoSuchCommandException();
 		}
@@ -165,10 +173,112 @@ public class Logic {
 			return sort(arguments);
 		case EDIT:
 			return edit(arguments);
+		case POSTPONE:
+			return postpone(arguments);
 		default:
 			return null;
 		}
 	}
+
+	private LogicToUi postpone(String arguments) {
+
+		//TODO:
+		try {
+
+			String[] parameters = arguments.split(" ", 2);
+
+			int index = Integer.parseInt(parameters[0]);
+			
+
+			
+			index--; //Since arraylist index starts from 0
+
+			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {
+				throw new NoSuchElementException();
+			}
+
+			int serial = lastShownToUI.get(index).getSerial();
+
+			Task toBePostponed = dataBase.locateATask(serial);
+			if(toBePostponed.isFloatingTask()) {
+				return new LogicToUi("Cannot postpone a floating task");
+			}
+			
+			if(parameters.length == 1){
+				throw new NumberFormatException();
+		}
+
+			String oldTaskDesc = taskToString(toBePostponed);
+
+			Parser ppParser = new Parser();
+
+
+			if(toBePostponed.isDeadlineTask()){
+				DateTime toPostpone = toBePostponed.getDeadline();
+
+				CalendarSource.setBaseDate(toPostpone.toDate());
+				List<DateGroup> groups = ppParser.parse(parameters[1]);
+				if(groups.size() == 0) {
+					throw new NumberFormatException();
+				}
+				
+				Date newDeadline = groups.get(0).getDates().get(0);
+				DateTime newDeadlineJoda = new DateTime(newDeadline);
+
+				toBePostponed.changeDeadline(newDeadlineJoda);
+
+				dataBase.update(toBePostponed.getSerial(), toBePostponed);
+				pushCommandToUndoHistoryStack();
+				return new LogicToUi(oldTaskDesc + " has been postponed to " + dateToString(newDeadlineJoda));
+
+			}
+
+			else if(toBePostponed.isTimedTask()) {
+
+
+				DateTime startTimeToPostpone = toBePostponed.getStartDate();
+				CalendarSource.setBaseDate(startTimeToPostpone.toDate());
+				List<DateGroup> startGroups = ppParser.parse(parameters[1]);
+				
+				if(startGroups.size() == 0) {
+					throw new NumberFormatException();
+				}
+				Date newStartTime = startGroups.get(0).getDates().get(0);
+				DateTime newStartTimeJoda = new DateTime(newStartTime);
+
+
+				DateTime endTimeToPostpone = toBePostponed.getEndDate();
+				CalendarSource.setBaseDate(endTimeToPostpone.toDate());
+				List<DateGroup> endGroups = ppParser.parse(parameters[1]);
+				
+				if(endGroups.size() == 0) {
+					throw new NumberFormatException();
+				}
+				Date newEndTime = endGroups.get(0).getDates().get(0);
+				DateTime newEndTimeJoda = new DateTime(newEndTime);
+
+				toBePostponed.changeStartAndEndDate(newStartTimeJoda, newEndTimeJoda);
+
+				dataBase.update(toBePostponed.getSerial(), toBePostponed);
+				pushCommandToUndoHistoryStack();
+				return new LogicToUi(oldTaskDesc + " has been postponed to " + dateToString(newStartTimeJoda) + " to " + dateToString(newEndTimeJoda));
+
+			}else {
+				return new LogicToUi("Unknown error in postpone command");
+			}
+
+		}catch (NoSuchElementException | NumberFormatException e) {
+			return new LogicToUi(
+					"Sorry this index number or parameter you provided is not valid. " +
+					"Please try again with a correct number or refresh the list.");
+		} catch (IOException e) {
+			return new LogicToUi(ERROR_IO);
+		} catch (WillNotWriteToCorruptFileException e) {
+			return new LogicToUi(ERROR_FILE_CORRUPTED);
+		}
+
+	}
+
 
 	private LogicToUi edit(String arguments) {
 		try{
