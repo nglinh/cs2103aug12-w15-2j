@@ -52,6 +52,7 @@ public class Logic {
 	public static Logic getInstance(){
 		if(theOne == null){
 			theOne = new Logic();
+			//TODO: Instantiate Natty here
 		}
 		
 		return theOne;

@@ -459,6 +459,54 @@ public class Task implements Comparable<Task> {
 
 		return false;
 	}
+	
+	public boolean clashesWithRange(DateTime startRange, DateTime endRange) {
+		if((startRange == null) 
+				|| (startRange.equals(INVALID_DATE_FIELD))
+				|| (endRange == null) 
+				|| (endRange.equals(INVALID_DATE_FIELD))
+				|| (startRange.isAfter(endRange))) {
+			throw new IllegalArgumentException();
+		}
+		
+		
+		if(this.isFloatingTask()) {
+			return false;
+		}
+		
+		if(this.isDeadlineTask()) {
+			if(deadline.isEqual(startRange) || deadline.isEqual(endRange)) {
+				return true;
+			}
+
+			if(startRange.isBefore(deadline) && deadline.isBefore(endRange))	{
+				return true;
+			}
+		}
+		
+		if(this.isTimedTask()) {
+			if(startDate.equals(startRange)
+					|| startDate.equals(endRange)
+					|| endDate.equals(startRange)
+					|| endDate.equals(endRange)){
+				return true;
+			}
+			
+			if(startDate.isBefore(startRange) && endDate.isAfter(startRange)){
+				return true;
+			}
+			
+			if(startDate.isAfter(startRange) && startDate.isBefore(endRange)) {
+				return true;
+			}
+
+		}
+		
+		
+		
+		return false;
+		
+	}
 
 
 	private DateTime comparisonDate(Task dateCompare){
@@ -680,6 +728,10 @@ public class Task implements Comparable<Task> {
 
 		return String.format(FILE_LINE_FORMAT, typeString, doneString, dead, start, end, task);
 	}
+
+
+
+
 
 
 
