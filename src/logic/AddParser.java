@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 
 import shared.Task.TaskType;
 
+import com.joestelmach.natty.CalendarSource;
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
@@ -30,6 +31,7 @@ public class AddParser {
 		matchingPosition1 = 0;
 		endDateStringPosition = 0;
 		parser = new Parser(TimeZone.getDefault());
+		CalendarSource.setBaseDate(new DateTime().withTime(23,59,00,00).toDate());
 		groups = parser.parse(dateString);
 		if(this.getTaskType()!= TaskType.FLOATING){
 			int location = groups.get(0).getPosition();
