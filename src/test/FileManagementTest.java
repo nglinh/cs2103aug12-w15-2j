@@ -31,7 +31,7 @@ import storage.FileManagement;
 import storage.WillNotWriteToCorruptFileException;
 
 public class FileManagementTest {
-	private static final String NAME_ONLY = "name only";
+	private static final String NAME_ONLY = "name only super long super long super long super long super long super long super long super long super long super long super long super long super long super long";
 	private static final String NAME_TRUE = "name true";
 	private static final String NAME_1MONTH = "name +1month";
 	private static final String NAME_1MONTH_TRUE = "name -1month true";
