@@ -429,7 +429,7 @@ public class TaskTest {
 	}
 	
 	@Test
-	public void testchangeStartDateAndEndDate() {
+	public void testChangeStartDateAndEndDate() {
 		try{
 			nameTimed.changeStartAndEndDate(null, TIMED_DONE_FALSE_END);
 			fail();
@@ -519,7 +519,7 @@ public class TaskTest {
 	}
 
 	@Test
-	public void testSearchDateRange() {
+	public void testIsWithinDateRange() {
 		try{
 			nameTimed.isWithinDateRange(null, null);
 			fail();
@@ -578,6 +578,26 @@ public class TaskTest {
 		assertFalse(nameTimed.isWithinDateRange(TIMED_START.minus(100), TIMED_START.minus(90)));
 		assertFalse(nameTimedFalse.isWithinDateRange(TIMED_DONE_FALSE_START.plus(1), TIMED_DONE_FALSE_END.minus(1)));
 	
+	}
+	
+	
+
+	
+	@Test
+	public void testClashesWithRange(){
+		//Use Task name
+		//Use Task nameDeadline + 1month
+		//Use Task nameTimed minus 1day to plus 1 day
+		
+		DateTime start = new DateTime().minusMonths(1);
+		DateTime end = new DateTime().minusMonths(1).plusMinutes(1);
+		
+		assertFalse(name.clashesWithRange(start, end));
+		assertTrue(name.clashesWithRange(start, end));
+		
+		//TODO:
+		
+		
 	}
 	
 	@Test
