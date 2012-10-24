@@ -46,22 +46,27 @@ public class FileManagementTest {
 	private static final DateTime TIMED_DONE_FALSE_END = TIMED_DONE_FALSE_START.plusDays(1).withTimeAtStartOfDay();
 
 
-	private static final String FILE_CORRUPT_DATE = 		"  1 | D | U | 21-O12 1729      | ---------------- | ---------------- | event";
-	private static final String FILE_MISSING_EVENT = 		"  2 | D | U | 21-Oct-2012 1729 | ---------------- | ---------------- | ";
-	private static final String FILE_WRONG_TYPE = 			"  3 | C | U | 21-Oct-2012 1729 | ---------------- | ---------------- | event";
-	private static final String FILE_NOT_DONE_OR_UNDONE = 	"  4 | D | X | ---------------- | 21-Oct-2012 1729 | 21-Oct-2012 1729 | event";
-	private static final String FILE_MISSING_DELIMITER = 		"  5 | D | U | 21-Oct-2012 1729  ---------------- | ---------------- | event";
-	private static final String FILE_MISSING_FIELD = 		"  6 | D | U | 21-Oct-2012 1729 | ----------------  | event";
-	private static final String FILE_START_DATE_AFTER_END = "  3 | T | U | ---------------- | 22-Oct-2012 1729 | 21-Oct-2012 1729 | event";
-
-	private static final String FILE_GOOD_STRING = "  1 | T | D | ---------------- | 22-Oct-2012 1729 | 23-Oct-2013 1800 | event";
+	private static final String FILE_CORRUPT_DATE = 		"  1 | D | - | 21-O12 1729 +0800 | ---------------------- | ---------------------- | event";
+	private static final String FILE_MISSING_EVENT = 		"  2 | D | - | 21-Oct-2012 1729 +0800 | ---------------------- | ---------------------- | ";
+	private static final String FILE_WRONG_TYPE = 			"  3 | C | - | 21-Oct-2012 1729 +0800 | ---------------------- | ---------------------- | event";
+	private static final String FILE_NOT_DONE_OR_UNDONE = 	"  4 | D | X | ---------------- | 21-Oct-2012 1729 +0800 | 21-Oct-2012 1729 +0800 | event";
+	private static final String FILE_MISSING_DELIMITER = 		"  5 | * | U | 21-Oct-2012 1729 +0800  ---------------------- | ---------------------- | event";
+	private static final String FILE_MISSING_FIELD = 		"  6 | D | * | 21-Oct-2012 1729 +0800 | ----------------------  | event";
+	private static final String FILE_START_DATE_AFTER_END = "  7 | T | - | ---------------------- | 22-Oct-2012 1729 +0800 | 21-Oct-2012 1729 +0800 | event";
+	private static final String FILE_MISSING_TIMEZONE =   "8 | D | * | 24-Oct-2012 2248 | ---------------------- | ---------------------- | Test deadline";
+	private static final String FILE_NO_SIGN_TIMEZONE =   "9 | D | * | 24-Oct-2012 2248 0600 | ---------------------- | ---------------------- | Test deadline";
+	private static final String FILE_WRONG_SIGN_TIMEZONE =   "10 | D | * | 24-Oct-2012 2248 A0600 | ---------------------- | ---------------------- | Test deadline";
+	private static final String FILE_WRONG_TIMEZONE =   "11 | D | * | 24-Oct-2012 2248 89 | ---------------------- | ---------------------- | Test deadline";
+	
+	private static final String FILE_GOOD_STRING = "0 | T | * | ---------------- | 22-Oct-2012 1729 -1100 | 23-Oct-2013 1800 +1100 | event";
 
 	private static final String[] corruptStrings = 
 		{ 
 		FILE_CORRUPT_DATE, FILE_MISSING_EVENT, FILE_WRONG_TYPE,  
 		FILE_NOT_DONE_OR_UNDONE,FILE_MISSING_DELIMITER, FILE_MISSING_FIELD,
-		FILE_START_DATE_AFTER_END
-
+		FILE_START_DATE_AFTER_END, FILE_MISSING_TIMEZONE,  FILE_NO_SIGN_TIMEZONE, 
+		FILE_WRONG_SIGN_TIMEZONE, FILE_WRONG_TIMEZONE
+		
 		};
 
 
@@ -186,9 +191,12 @@ public class FileManagementTest {
 		BufferedWriter writeFile;
 
 		//Test that every corrupt String is caught
+		String lastString = null;
 		try {
+			
 			for(String spoiltString : corruptStrings)
 			{
+				lastString = spoiltString;
 				writeFile = new BufferedWriter(new FileWriter(FileManagement.filename));
 				writeFile.close();
 
@@ -200,9 +208,11 @@ public class FileManagementTest {
 				fileMgmt.readFileAndDetectCorruption(initialClearListing);
 				fileMgmt.closeFile();
 
+				System.out.println("Corrupt Strings: " + lastString);
 				assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_IS_CORRUPT);
 			}
 		} catch (IOException e) {
+
 			fail();
 		}
 
