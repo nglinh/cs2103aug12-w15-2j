@@ -41,7 +41,7 @@ public class FileManagement {
 		private static final String LINE_PARAM_DELIMITER_WRITE = " | ";
 		private static final String LINE_EMPTY_DATE = "----------------";
 
-		private static final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm";
+		private static final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm Z";
 		private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern(LINE_DATE_TIME_FORMAT);
 
 		private static final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
@@ -74,7 +74,7 @@ public class FileManagement {
 		private static final String LINE_DONE = "D";
 		private static final String LINE_UNDONE = "U";
 
-		private static final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
+		private static final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma Z";
 		private static final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
 		private static final String LINE_END_OF_LINE = System.getProperty( "line.separator" );
