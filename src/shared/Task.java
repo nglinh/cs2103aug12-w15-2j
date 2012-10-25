@@ -662,9 +662,9 @@ public class Task implements Comparable<Task> {
 	 */
 	public String showInfo() {	
 
-		String FILE_EMPTY_DATE = "----------------";
+		String FILE_EMPTY_DATE = "----------------------";
 
-		DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern("dd-MMM-yyyy HHmm");
+		DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern("dd-MMM-yyyy HHmm Z");
 		String FILE_PARAM_DELIMITER = " | ";
 		String FILE_LINE_FORMAT = "%1$s" + FILE_PARAM_DELIMITER + "%2$s" + FILE_PARAM_DELIMITER + "%3$s" + FILE_PARAM_DELIMITER + "%4$s" + FILE_PARAM_DELIMITER + "%5$s" + FILE_PARAM_DELIMITER + "%6$s";
 
@@ -672,8 +672,8 @@ public class Task implements Comparable<Task> {
 		String TYPE_DEADLINE = "D";
 		String TYPE_TIMED = "T";
 
-		String DONE = "D";
-		String UNDONE = "U";
+		String DONE = "*";
+		String UNDONE = "-";
 
 		String typeString;
 		String doneString;
