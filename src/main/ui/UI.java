@@ -24,7 +24,11 @@ public abstract class UI {
 	protected static final String COMMAND_CHECK_FILE_PERMISSIONS = "fileStatus";
 
 	
-	Logic logic = Logic.getInstance();
+	private Logic logic = Logic.getInstance();
+	private Hint hint = Hint.getInstance();
+	
+	//This is the first method that will run the UI after it is constructed. DoITstart will run this.
+	public abstract void runUI();
 	
 	protected LogicToUi sendCommandToLogic(String command) {
 		return logic.uiCommunicator(command);
@@ -47,9 +51,21 @@ public abstract class UI {
 		LogicToUi filePermissions = sendCommandToLogic(COMMAND_CHECK_FILE_PERMISSIONS);
 		return filePermissions.getString();
 	}
+	
+	
+	protected String getHTMLHelp(String command){
+		return hint.helpForThisCommandHTML(command);
+	}
+	
+	protected String getNoHTMLHelp(String command){
+		return hint.helpForThisCommandNoHTML(command);
+	}
+	
+	protected void exit(){
+		System.exit(0);
+	}
 
-	//This is the first method that will run the UI after it is constructed. DoITstart will run this.
-	public abstract void runUI();
+
 
 
 }
