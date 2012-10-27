@@ -11,15 +11,21 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class Hint {
 
+	private static final String PATH_TO_HINT_XML = "/resource/help.xml";
+	private static final String TAG_COMMAND = "command";
+	private static final String TAG_NAME = "name";
+	private static final String TAG_SUMMARY = "summary";
+	private static final String TAG_USAGE = "usage";
+	private static final String TAG_EXTRA = "extra";
+
 	boolean hintReady = true;
 
-	private DocumentBuilderFactory dbf;
-	private DocumentBuilder db;
+	private DocumentBuilderFactory docBuilderFactInst;
+	private DocumentBuilder docBuilder;
 	private Document doc;
 	private HashMap<String, CmdHint> helpStore = new HashMap<String, CmdHint>();
 
@@ -36,11 +42,11 @@ public class Hint {
 
 	private Hint(){
 		try{
-			dbf = DocumentBuilderFactory.newInstance();
-			db = dbf.newDocumentBuilder();
-			doc = db.parse(new InputSource("src\\main\\resource\\help.xml"));
+			docBuilderFactInst = DocumentBuilderFactory.newInstance();
+			docBuilder = docBuilderFactInst.newDocumentBuilder();
+			doc = docBuilder.parse(getClass().getResourceAsStream(PATH_TO_HINT_XML));
 			doc.getDocumentElement().normalize();
-	//		readHelpFile();
+			readHelpFile();
 
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			hintReady = false;
@@ -50,54 +56,40 @@ public class Hint {
 
 
 	private void readHelpFile() {
-		NodeList listOfCommands = doc.getElementsByTagName("command");
+		NodeList listOfCommands = doc.getElementsByTagName(TAG_COMMAND);
 		for (int i = 0; i < listOfCommands.getLength(); i++) {
 
 			Element eachCommand = (Element) listOfCommands.item(i);
 
-			NodeList dataForEachParam;
-			String name;
-			String summary;
-
-			dataForEachParam = getNodeList(eachCommand, "name");
-			name =  dataForEachParam.item(0).getNodeValue();
-
-			dataForEachParam = getNodeList(eachCommand, "summary");
-			summary = dataForEachParam.item(0).getNodeValue();
+			String name =  getNodeValue(eachCommand, TAG_NAME, 0);
+			String summary = getNodeValue(eachCommand, TAG_SUMMARY, 0);
 
 			CmdHint helpPack = new CmdHint(name, summary);
 
-			dataForEachParam = getNodeList(eachCommand, "usage");
-
-
-			for(int j = 0; j < dataForEachParam.getLength(); j++){
-				String usage = dataForEachParam.item(j).getNodeValue();
+			for(int j = 0; j < eachCommand.getElementsByTagName(TAG_USAGE).getLength(); j++){
+				String usage = getNodeValue(eachCommand, TAG_USAGE, j);
 				helpPack.addUsage(usage);
 			}
 
-
-			dataForEachParam = getNodeList(eachCommand, "extra");
-
-			for(int j = 0; j < dataForEachParam.getLength(); j++){
-				String extra = dataForEachParam.item(j).getNodeValue();
+			for(int j = 0; j < eachCommand.getElementsByTagName(TAG_EXTRA).getLength(); j++){
+				String extra = getNodeValue(eachCommand, TAG_EXTRA, j);
 				helpPack.addExtra(extra);
 			}
+			
+			//To finalise the string creation in help package
+			helpPack.getHTMLHelp();
+			helpPack.getNoHTMLHelp();
 
-			helpStore.put(name.toLowerCase(), helpPack);
+			helpStore.put(CmdHint.stripHTML(name.toLowerCase()), helpPack);
 		}
 
 
 
 	}
 
-	private NodeList getNodeList(Element eachCommand, String tag){
-		NodeList itemNode = eachCommand.getElementsByTagName(tag);
 
-		if(itemNode.getLength() == 0) {
-			return null;
-		} else {
-			return eachCommand.getElementsByTagName(tag).item(0).getChildNodes();
-		}
+	private String getNodeValue(Element eachCommand, String tag, int position){
+		return eachCommand.getElementsByTagName(tag).item(position).getChildNodes().item(0).getNodeValue();
 	}
 
 	public String helpForThisCommandHTML(String needHelp){
@@ -133,14 +125,27 @@ class CmdHint {
 	private String name;
 	private String summary;
 	private LinkedList<String> usage = new LinkedList<String>();
-	private LinkedList<String> extra =  new LinkedList<String>();
+	private LinkedList<String> extra = new LinkedList<String>();
 
+	private String nameHTML;
+	private String summaryHTML;
 	private LinkedList<String> usageHTML = new LinkedList<String>();
 	private LinkedList<String> extraHTML =  new LinkedList<String>();
 
+	private static final String END_OF_LINE = System.getProperty("line.separator");
+	private static final String EXAMPLE_HTML_HEADING = "<h2>Usage\\Examples :</h2> ";
+	private static final String EXAMPLE_NO_HTML_HEADING = stripHTML(EXAMPLE_HTML_HEADING);
+
+	private String returnHTML = null;
+	private String returnNoHTML = null;
+
+
 	public CmdHint(String name, String summary){
-		this.name = name;
-		this.summary = summary;
+		this.nameHTML = name;
+		this.summaryHTML = summary;
+
+		this.name = stripHTML(name);
+		this.summary = stripHTML(summary);
 	}
 
 	public void addUsage(String usageHTML){
@@ -154,36 +159,53 @@ class CmdHint {
 	}
 
 
-	private String stripHTML(String input){
+	public static String stripHTML(String input){
 		return input.replaceAll("\\<.*?>","");
 	}
 
 	public String getNoHTMLHelp(){
-		String output = name + "\n";
-		output += summary + "\n";
-		for(String use : usage){
-			output += use + "\n";
-		}
 
-		for(String ext : extra){
-			output += ext + "\n";
-		}
+		if(returnNoHTML == null)
+		{
+			String output = name + END_OF_LINE;
+			output += summary + END_OF_LINE + END_OF_LINE;
 
-		return output;
+			output += EXAMPLE_NO_HTML_HEADING + END_OF_LINE;
+			for(String use : usage){
+				output += use + END_OF_LINE;
+			}
+
+			output += END_OF_LINE;
+			
+			for(String ext : extra){
+				output += ext + END_OF_LINE;
+			}
+			returnNoHTML = output;
+		}
+		return returnNoHTML;
 	}
 
 	public String getHTMLHelp(){
-		String output = name + "\n";
-		output += summary + "\n";
-		for(String use : usageHTML){
-			output += use + "\n";
-		}
 
-		for(String ext : extraHTML){
-			output += ext + "\n";
-		}
+		if(returnHTML == null)
+		{
+			String output = nameHTML +END_OF_LINE;
+			output += summaryHTML + END_OF_LINE + END_OF_LINE;
+			output += EXAMPLE_HTML_HEADING + END_OF_LINE + END_OF_LINE;
 
-		return output;
+			for(String use : usageHTML){
+				output += use + END_OF_LINE;
+			}
+			
+			output += END_OF_LINE;
+
+			for(String ext : extraHTML){
+				output += ext + END_OF_LINE;
+			}
+
+			returnHTML = output;
+		}
+		return returnHTML;
 	}
 }
 
