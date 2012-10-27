@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<hint>
+	<command>
+		<name>Help</name>
+		<summary>Type "help [command]" for detailed usage for "command"</summary>		
+		<usage>add</usage>
+		<usage>list</usage>
+		<usage>edit</usage>
+		<usage>delete</usage>
+		<usage>done</usage>
+		<usage>undone</usage>
+		<usage>undo</usage>
+		<usage>refresh</usage>
+		<usage>sort</usage>
+	</command>
+	<command>
+		<name>Undo</name>
+		<summary>Undos the last change you made. (Only database modification can be undone)</summary>
+		<usage>&lt;b&gt;undo&lt;/b&gt;</usage>
+		<extra>For command-line users, you are advised to call a list/refresh operation after every change to database.</extra>
+	</command>
+	<command>
+		<name>Done</name>
+		<summary>Marks the task specified by index as done.</summary>
+		<usage>&lt;b&gt;done&lt;/b&gt; [index]</usage>
+		<extra>Obtain the "index" number from the list. "index" will be based on last shown list.</extra>
+	</command>
+	<command>
+		<name>Undone</name>
+		<summary>Marks the task specified by index as undone.</summary>
+		<usage>&lt;b&gt;undone&lt;/b&gt; [index]</usage>
+		<extra>Obtain the "index" number from the list. "index" will be based on last shown list.</extra>
+	</command>
+	<command>
+		<name>Add</name>
+		<summary>Adds a task to database</summary>
+		<usage>&lt;b&gt;add&lt;/b&gt; read a book</usage>
+		<usage>&lt;b&gt;add&lt;/b&gt; hand in homework &lt;b&gt;by&lt;/b&gt; Monday 6pm</usage>
+		<usage>&lt;b&gt;add&lt;/b&gt; school camp &lt;b&gt;from&lt;/b&gt; 3pm today &lt;b&gt;to&lt;/b&gt; 5pm tomorrow</usage>
+		<extra>If DoIt misinterprets, use &lt;b&gt;&quot;&quot;&lt;/b&gt;: add &lt;b&gt;&quot;&lt;/b&gt;read book from page 1000 to 1100&lt;b&gt;&quot;&lt;/b&gt; by Friday.</extra>
+	</command>
+
+</hint>
