@@ -155,6 +155,9 @@ public class GuiMain extends UI{
 								//popupCmdHint.setPopupSize(500, 300);
 								popupCmdHint.setPopupSize(500, (int) txtCmdHint.getPreferredSize().getHeight() + 20);
 								popupCmdHint.show(textCmd, 5, textCmd.getHeight());
+								if(popupCmdHint.getLocationOnScreen().getY() < textCmd.getLocationOnScreen().getY()){
+									popupCmdHint.show(textCmd, 5, -1 * popupCmdHint.getHeight());
+								}
 								textCmd.requestFocus();
 								isCommand = true;
 							} 
