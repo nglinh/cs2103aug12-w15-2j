@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -31,6 +32,9 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import org.joda.time.DateTime;
 
@@ -142,17 +146,20 @@ public class GuiMain extends UI{
 					}
 
 					private void showHint() {
-						if (textCmd.getText().startsWith("add")) {
-							txtCmdHint.setText("<html>\r\n<font face=\"Tahoma, Arial, Sans-serif\">\r\n<font size=\"4\">\r\n<b>add</b><br>\r\nAdds a new task<br>\r\n<br>\r\nExamples:<br>\r\n</font>\r\n<font size=\"3\">\r\n<b>add</b> Meeting <b>from</b> 2pm 25/9 <b>to</b> 3pm 25/9<br>\r\n<b>add</b> Complete report <b>by</b> 5pm 25/9<br>\r\n<b>add</b> Search for document<br>\r\n</font>\r\n</font>\r\n</html>");
-							popupCmdHint.setPopupSize(200, 120);
-							popupCmdHint.show(textCmd, 5, textCmd.getHeight());
-							textCmd.requestFocus();
-						} else if (textCmd.getText().startsWith("list")) {
-							txtCmdHint.setText("<html>\r\n<font face=\"Tahoma, Arial, Sans-serif\">\r\n<font size=\"4\">\r\n<b>list</b><br>\r\nList tasks<br>\r\n<br>\r\nExamples:<br>\r\n</font>\r\n<font size=\"3\">\r\n<b>list</b><br><b>list all</b><br><b>list done</b><br><b>list etc.</b>\r\n</font>\r\n</font>\r\n</html>");
-							popupCmdHint.setPopupSize(200, 140);
-							popupCmdHint.show(textCmd, 5, textCmd.getHeight());
-							textCmd.requestFocus();
-						} else {
+						List<String> commands = Hint.getInstance().getCommands();
+						boolean isCommand = false;
+						for (String command : commands){
+							if (textCmd.getText().startsWith(command)) {
+								System.out.println(Hint.getInstance().helpForThisCommandHTML(command));
+								txtCmdHint.setText("<html>"+Hint.getInstance().helpForThisCommandHTML(command)+"</html>");
+								//popupCmdHint.setPopupSize(500, 300);
+								popupCmdHint.setPopupSize(500, (int) txtCmdHint.getPreferredSize().getHeight() + 20);
+								popupCmdHint.show(textCmd, 5, textCmd.getHeight());
+								textCmd.requestFocus();
+								isCommand = true;
+							} 
+						}
+						if(isCommand == false){
 							popupCmdHint.setVisible(false);
 						}
 					}
@@ -167,6 +174,19 @@ public class GuiMain extends UI{
 		txtCmdHint.setContentType("text/html");
 		txtCmdHint.setBackground(new Color(0, 0, 0, 0));
 		txtCmdHint.setOpaque(false);
+		
+		HTMLEditorKit kit = new HTMLEditorKit();
+		txtCmdHint.setEditorKit(kit);
+
+        StyleSheet styleSheet = kit.getStyleSheet();
+        styleSheet.addRule("body, p {font-family:Segoe UI;}");
+        styleSheet.addRule("h1 {font-family:Segoe UI; margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
+        styleSheet.addRule("h2 {font-family:Segoe UI; margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
+        styleSheet.addRule("p {margin-top:5px;}");
+        
+        Document doc = kit.createDefaultDocument();
+        txtCmdHint.setDocument(doc);
+		
 		popupCmdHint.add(txtCmdHint);
 
 		txtStatus = new JEditorPane();
@@ -423,19 +443,30 @@ public class GuiMain extends UI{
 			fireTableCellUpdated(row, col);
 		}
 	}
+	
+	public int getContentWidth(String content) {
+	    JLabel dummylabel = new JLabel();
+	    //dummyEditorPane.setSize(1, Short.MAX_VALUE);
+	    dummylabel.setText(content);
+	    return dummylabel.getPreferredSize().width;
+	}
 
-	public void showTasksList(List<Task> taskList){		
+	public void showTasksList(List<Task> taskList){
+		
+		int indexNumberColumnWidth = getContentWidth("9999") + 10;
+		int checkboxColumnWidth = 20;
+		int dateColumnWidth = getContentWidth("WMW 00 MWM 0000 23:59pm") + 10;
 
 		table.setModel(new MyTableModel(taskList));
-		table.getColumnModel().getColumn(0).setMinWidth(25);
-		table.getColumnModel().getColumn(0).setMaxWidth(25);
-		table.getColumnModel().getColumn(1).setMinWidth(20);
-		table.getColumnModel().getColumn(1).setMaxWidth(20);
+		table.getColumnModel().getColumn(0).setMinWidth(indexNumberColumnWidth);
+		table.getColumnModel().getColumn(0).setMaxWidth(indexNumberColumnWidth);
+		table.getColumnModel().getColumn(1).setMinWidth(checkboxColumnWidth);
+		table.getColumnModel().getColumn(1).setMaxWidth(checkboxColumnWidth);
 		// Give more space to date: Test with 27 May 2009 10am to 27 May 2009 10pm
-		table.getColumnModel().getColumn(2).setMinWidth(170);
-		table.getColumnModel().getColumn(2).setMaxWidth(170);
-		table.getColumnModel().getColumn(3).setMinWidth(170);
-		table.getColumnModel().getColumn(3).setMaxWidth(170);
+		table.getColumnModel().getColumn(2).setMinWidth(dateColumnWidth);
+		table.getColumnModel().getColumn(2).setMaxWidth(dateColumnWidth);
+		table.getColumnModel().getColumn(3).setMinWidth(dateColumnWidth);
+		table.getColumnModel().getColumn(3).setMaxWidth(dateColumnWidth);
 		//table.getColumnModel().getColumn(4).setPreferredWidth(160);
 		
 		table.getModel().addTableModelListener(new TableModelListener() {
