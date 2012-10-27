@@ -27,13 +27,13 @@ public class CliWithJline extends Cli{
 	private static final Completer helpArguments = baseCommandList;
 	
 	private static final Completer listCommand = new StringsCompleter (new String [] {"list", "ls", "l"});
-	private static final Completer listArguments = new StringsCompleter (new String [] {"done", "undone", "timed", "deadline", "floating" , "today", "tomorrow", "overdue", "thisweek", "nextweek"});
+	private static final Completer listArguments = new StringsCompleter (new String [] {"done", "undone", "timed", "deadline", "floating" , "today", "tomorrow", "overdue"});
 	
 	private static final Completer delCommand = new StringsCompleter (new String [] {"del", "delete", "de"});
-	private static final Completer delArguments = new StringsCompleter (new String [] {"all", "over", "done", "completed"});
+	private static final Completer delArguments = new StringsCompleter (new String [] {"all", "over", "done"});
 
 	private static final Completer sortCommand = new StringsCompleter (new String [] {"sort"});
-	private static final Completer sortArguments = new StringsCompleter (new String [] {"type", "done", "start", "end", "name"});
+	private static final Completer sortArguments = new StringsCompleter (new String [] {"type", "done", "start", "end", "name", "reverse"});
 	
 	List<Completer> listSet = new ArrayList<Completer>();
 	ArgumentCompleter listArgCmp;
