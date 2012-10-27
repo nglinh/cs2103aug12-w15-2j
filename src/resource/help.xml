@@ -27,8 +27,8 @@
 		<summary>Adds a task to database</summary>
 		<usage><![CDATA[<b>add</b> read a book]]></usage>
 		<usage><![CDATA[<b>add</b> school camp <b>from</b> 3pm today <b>to</b> 5pm tomorrow]]></usage>
-		<usage><![CDATA[<b>a</b> hand in homework <b>by</b> Monday 6pm]]></usage>
-		<extra><![CDATA[If DoIt misinterprets you, just use the inverted commas <b>"name"</b>:]]></extra>
+		<usage><![CDATA[<b>a</b> hand in homework <b>by</b> Monday 6pm (<b>a</b> is a shortcut for add)]]></usage>
+		<extra><![CDATA[If DoIt misinterprets the task name as the time, put inverted commas around <b>"task name"</b>:]]></extra>
 		<extra><![CDATA[add <b>"</b>read book from page 1000 to 1100<b>"</b> by Friday.]]></extra>	
 	</command>
 	<command>

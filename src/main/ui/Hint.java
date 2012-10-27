@@ -1,8 +1,10 @@
 package main.ui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -113,6 +115,10 @@ public class Hint {
 			return hintPack.getNoHTMLHelp();
 		}
 	}
+	
+	public List<String> getCommands(){
+		return new ArrayList<String>(helpStore.keySet());
+	}
 
 }
 
@@ -132,8 +138,8 @@ class CmdHint {
 	private LinkedList<String> usageHTML = new LinkedList<String>();
 	private LinkedList<String> extraHTML =  new LinkedList<String>();
 
-	private static final String END_OF_LINE = System.getProperty("line.separator");
-	private static final String EXAMPLE_HTML_HEADING = "<h2>Usage\\Examples :</h2> ";
+	private static String END_OF_LINE = System.getProperty("line.separator");
+	private static final String EXAMPLE_HTML_HEADING = "<h2>Usage/Examples :</h2> ";
 	private static final String EXAMPLE_NO_HTML_HEADING = stripHTML(EXAMPLE_HTML_HEADING);
 
 	private String returnHTML = null;
@@ -189,19 +195,23 @@ class CmdHint {
 
 		if(returnHTML == null)
 		{
-			String output = nameHTML +END_OF_LINE;
-			output += summaryHTML + END_OF_LINE + END_OF_LINE;
-			output += EXAMPLE_HTML_HEADING + END_OF_LINE + END_OF_LINE;
+			END_OF_LINE = "<br>";
+			
+			String output = nameHTML;
+			output += "<p>" + summaryHTML + "</p>";
+			output += EXAMPLE_HTML_HEADING;
 
+			output += "<p>";
 			for(String use : usageHTML){
 				output += use + END_OF_LINE;
 			}
-			
-			output += END_OF_LINE;
+			output += "</p>";
 
+			output += "<p>";
 			for(String ext : extraHTML){
 				output += ext + END_OF_LINE;
 			}
+			output += "</p>";
 
 			returnHTML = output;
 		}
