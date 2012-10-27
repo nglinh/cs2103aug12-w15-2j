@@ -303,7 +303,7 @@ public class Task implements Comparable<Task> {
 		if((this.type.equals(TaskType.DEADLINE))
 				|| (newDeadline == null) 
 				|| (newDeadline.equals(INVALID_DATE_FIELD))) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Illegal date to change to deadline: " + newDeadline);
 		}
 
 
@@ -323,7 +323,7 @@ public class Task implements Comparable<Task> {
 				|| (newEndDate == null) 
 				|| (newEndDate.equals(INVALID_DATE_FIELD))
 				|| (newStartDate.isAfter(newEndDate))) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid start: "+newStartDate+", end: " + newEndDate);
 		}
 
 		this.type = TaskType.TIMED;

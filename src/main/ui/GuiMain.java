@@ -1,41 +1,46 @@
 package main.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import java.awt.BorderLayout;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JMenu;
-import javax.swing.JEditorPane;
+
+import org.joda.time.DateTime;
+
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.ParseLocation;
+import com.joestelmach.natty.Parser;
 
 import main.shared.LogicToUi;
 import main.shared.Task;
 import main.shared.Task.TaskType;
-
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
-import javax.swing.JPanel;
-
-import javax.swing.event.HyperlinkListener;
-import javax.swing.event.HyperlinkEvent;
 
 public class GuiMain extends UI{
 
@@ -322,7 +327,7 @@ public class GuiMain extends UI{
 		public boolean isCellEditable(int row, int col) {
 			//Note that the data/cell address is constant,
 			//no matter where the cell appears on-screen.
-			if (col != COL_DONE) {
+			if (col == COL_INDEX) {
 				return false;
 			} else {
 				return true;
@@ -334,9 +339,14 @@ public class GuiMain extends UI{
 		 * data can change.
 		 */
 		public void setValueAt(Object value, int row, int col) {
-			// TODO: must handle cell updated to tell the logic task has been marked as done!
 
 			Task task = data.get(row);
+			
+			Parser parser = null;
+			List<DateGroup> groups = null;
+			DateTime date;
+			
+			try{
 
 			switch (col) {
 			case COL_INDEX:
@@ -344,14 +354,70 @@ public class GuiMain extends UI{
 				break;
 			case COL_DONE:
 				task.done((boolean) value);
+				break;
 			case COL_START:
+				parser = new Parser();
+				groups = parser.parse(((String) value).replace("-", " "));
+				date = null;
+
+				if (groups != null && !groups.isEmpty()) {
+					date = new DateTime(groups.get(0).getDates().get(0));
+				}
+
+				if (date != null) {
+					// Managed to parse out a date
+					if (task.getType() == TaskType.TIMED) {
+						task.changeStartAndEndDate(date, task.getEndDate());
+					} else if (task.getType() == TaskType.DEADLINE) {
+						task.changeDeadline(date);
+					} else if (task.getType() == TaskType.FLOATING) {
+						task.changetoDeadline(date);
+					}
+
+				} else {
+					// Did not manage to parse out a date
+					if (task.getType() == TaskType.TIMED) {
+						task.changetoDeadline(task.getEndDate());
+					} else if (task.getType() == TaskType.DEADLINE) {
+						task.changetoFloating();
+					}
+				}
 				break;
 			case COL_END:
+				parser = new Parser();
+				groups = parser.parse(((String) value).replace("-", " "));
+				date = null;
+
+				if (groups != null && !groups.isEmpty()) {
+					date = new DateTime(groups.get(0).getDates().get(0));
+				}
+
+				if (date != null) {
+					// Managed to parse out a date
+					if (task.getType() == TaskType.TIMED) {
+						task.changeStartAndEndDate(task.getStartDate(), date);
+					} else if (task.getType() == TaskType.DEADLINE) {
+						task.changetoTimed(task.getDeadline(), date);
+					} else if (task.getType() == TaskType.FLOATING) {
+						task.changetoDeadline(date);
+					}
+				} else {
+					// Did not manage to parse out a date
+					if (task.getType() == TaskType.TIMED) {
+						task.changetoDeadline(task.getStartDate());
+					}
+				}
+
 				break;
 			case COL_TASKNAME:
+				task.changeName((String) value);
 				break;
 			default:
 				assert false;
+			}
+			
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 
 			fireTableCellUpdated(row, col);
@@ -388,12 +454,75 @@ public class GuiMain extends UI{
 						executeCommand("undone " + index);
 					}
 				}
+				if (column == MyTableModel.COL_START) {
+					String startTime = (String) model.getValueAt(row, column);
+					startTime = startTime.trim();
+					String endTime = (String) model.getValueAt(row, MyTableModel.COL_END);
+					endTime = endTime.trim();
+					int index = row + 1;
+					
+					try{
+						if(startTime.isEmpty() && endTime.isEmpty()){
+							// Floating task
+							executeCommand("update " + index +" -tofloating");
+						}else if(startTime.isEmpty() || endTime.isEmpty()){
+							// Deadline task
+							String deadline;
+							if(startTime.isEmpty()){
+								deadline = endTime;
+							}else{
+								deadline = startTime;
+							}
+							
+							executeCommand("update " + index +" -deadline " + deadline.replace("-", " "));
+						}else{
+							// Timed task
+							executeCommand("update " + index +" -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
+						}
+					}catch(Exception ex){
+						ex.printStackTrace();
+					}
+				}
+				if (column == MyTableModel.COL_END) {
+					String endTime = (String) model.getValueAt(row, column);
+					String startTime = (String) model.getValueAt(row, MyTableModel.COL_START);
+					int index = row + 1;
+					
+					try{
+						if(startTime.isEmpty() && endTime.isEmpty()){
+							// Floating task
+							executeCommand("update " + index +" -tofloating");
+						}else if(startTime.isEmpty() || endTime.isEmpty()){
+							// Deadline task
+							String deadline;
+							if(startTime.isEmpty()){
+								deadline = endTime;
+							}else{
+								deadline = startTime;
+							}
+							
+							executeCommand("update " + index +" -deadline " + deadline.replace("-", " "));
+						} else {
+							// Timed task
+							executeCommand("update " + index + " -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
+						}
+					}catch(Exception ex){
+						ex.printStackTrace();
+					}
+				}
+				if (column == MyTableModel.COL_TASKNAME) {
+					String newTaskName = (String) model.getValueAt(row, column);
+					int index = row + 1;
+					executeCommand("update " + index +" -name " + newTaskName);
+				}
 			}
 
 		});
 	}
 
 	public void executeCommand(String text) {
+		
+		System.out.println(text);
 
 		// Call command parser
 		LogicToUi returnValue = sendCommandToLogic(text);
