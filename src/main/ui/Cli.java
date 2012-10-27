@@ -16,7 +16,7 @@ import main.shared.LogicToUi;
 public class Cli extends UI{
 
 	protected static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT!";
-	private static final String MESSAGE_CLI_CUSTOM = "(Fail-Safe) No command history and Tab completion";
+	private static final String MESSAGE_CLI_CUSTOM = "(Fail-Safe) No Tab-completion";
 	protected static final String MESSAGE_INITIAL_HELP_OFFER = "Type \"help\" for a list of commands.";
 	protected static final String MESSAGE_NEXT_COMMAND = "Command: ";
 
@@ -33,7 +33,7 @@ public class Cli extends UI{
 	protected static final String TABLE_ENTRY_FORMAT = TABLE_LINE_PARAM_DELIMITER + "%1$3d" + TABLE_LINE_PARAM_DELIMITER + "%2$s" + TABLE_LINE_PARAM_DELIMITER +  " %3$s " + TABLE_LINE_PARAM_DELIMITER +  " %4$s " + TABLE_LINE_PARAM_DELIMITER +  " %5$s " + TABLE_LINE_PARAM_DELIMITER;
 
 	protected static final String TABLE_ENTRY_OVERFLOW_FORMAT = TABLE_LINE_PARAM_DELIMITER + "   " + TABLE_LINE_PARAM_DELIMITER + " "  + TABLE_LINE_PARAM_DELIMITER + "                   "  +   TABLE_LINE_PARAM_DELIMITER + "                   " +  TABLE_LINE_PARAM_DELIMITER + " %1$s " + TABLE_LINE_PARAM_DELIMITER;
-	
+
 	protected static final int    TABLE_DESCRIPTION_ALLOWANCE = 29;
 	protected static final String TABLE_DESCRIPTION_PAD = "%-" + TABLE_DESCRIPTION_ALLOWANCE + "s";
 
@@ -41,9 +41,6 @@ public class Cli extends UI{
 	protected static final String TABLE_ENTRY_DONE = "*";
 	protected static final String TABLE_EMPTY_DATE_FIELD = "        -        ";
 
-
-
-	CliHelpText cliHelp = new CliHelpText();
 	Scanner scan = new Scanner(System.in);
 
 	public void runUI(){
@@ -81,20 +78,20 @@ public class Cli extends UI{
 		lineFromInput = lineFromInput.trim();
 		String outputLine = "";
 		String lineFromInputLowerCase = lineFromInput.toLowerCase();
-		String[] commandKeyword = lineFromInputLowerCase.split(COMMAND_GAPS);
+		String[] command = lineFromInputLowerCase.split(COMMAND_GAPS, 2);
 
-		switch (commandKeyword[0]) {
+		switch (command[0]) {
 
 		case COMMAND_EXIT :
 			//Fallthrough
 		case COMMAND_QUIT :
 		{
 			scan.close();
-			System.exit(0);
+			exit();
 		}
 		break;
 		case COMMAND_HELP :
-			outputLine = parseHelp(commandKeyword);
+			outputLine = parseHelp(command);
 			break;
 		default :
 			outputLine = passMessageToLogic(lineFromInput);
@@ -224,16 +221,14 @@ public class Cli extends UI{
 		return returnEntry.toString();
 	}
 
-	protected String parseHelp(String[] separated) {
-		String text = null;
-		final int FIRST_PARAMETER = 1;
-
-		if(separated.length == 1) {
-			text = cliHelp.help();
+	protected String parseHelp(String[] command) {
+		String text;
+		
+		if(command.length == 1){
+			 text = getNoHTMLHelp("help");
 		} else {
-			text = cliHelp.detailedCommandHelp(separated[FIRST_PARAMETER]);
+			text = getNoHTMLHelp(command[1]);
 		}
-
 		return text;
 	}
 
