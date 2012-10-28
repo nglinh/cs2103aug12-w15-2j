@@ -49,7 +49,7 @@ public class Task implements Comparable<Task> {
 
 	public Task(String name) {
 
-		if((name == null) || (name.length() == 0)) {
+		if((name == null) || (name.isEmpty())) {
 			throw new IllegalArgumentException();
 		}
 
@@ -288,9 +288,6 @@ public class Task implements Comparable<Task> {
 
 
 	public void changetoFloating() {
-		if(this.type.equals(TaskType.FLOATING)) {
-			throw new IllegalArgumentException();
-		}
 
 		this.type = TaskType.FLOATING;
 
@@ -300,8 +297,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	public void changetoDeadline(DateTime newDeadline)	{
-		if((this.type.equals(TaskType.DEADLINE))
-				|| (newDeadline == null) 
+		if((newDeadline == null) 
 				|| (newDeadline.equals(INVALID_DATE_FIELD))) {
 			throw new IllegalArgumentException("Illegal date to change to deadline: " + newDeadline);
 		}
@@ -339,7 +335,7 @@ public class Task implements Comparable<Task> {
 
 
 	public void changeName(String newName)	{
-		if((newName == null) || (newName.length() == 0)) {
+		if((newName == null) || (newName.isEmpty())) {
 			throw new IllegalArgumentException();
 		}
 

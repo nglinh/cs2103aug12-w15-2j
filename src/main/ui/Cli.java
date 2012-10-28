@@ -19,6 +19,7 @@ public class Cli extends UI{
 	private static final String MESSAGE_CLI_CUSTOM = "(Fail-Safe) No Tab-completion";
 	protected static final String MESSAGE_INITIAL_HELP_OFFER = "Type \"help\" for a list of commands.";
 	protected static final String MESSAGE_NEXT_COMMAND = "Command: ";
+	private static final String MESSAGE_NO_SUCH_COMMAND_AVAILABLE = "This command \"%1$s\" is not supported by DoIT.";
 
 	protected static final String COMMAND_HELP = "help";
 	protected static final String COMMAND_EXIT = "exit";
@@ -229,7 +230,11 @@ public class Cli extends UI{
 		} else {
 			text = getNoHTMLHelp(command[1]);
 		}
-		return text;
+		if(!text.isEmpty()){
+			return text;
+		}
+
+		return String.format(MESSAGE_NO_SUCH_COMMAND_AVAILABLE, command[1]);
 	}
 
 }

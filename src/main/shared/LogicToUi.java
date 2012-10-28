@@ -10,20 +10,32 @@ import java.util.ArrayList;
 
 public class LogicToUi {
 
-
+	public static final int INVALID_SERIAL = Integer.MIN_VALUE; 
 	
 	public static enum SortStatus {TYPE, DONE, START, END, NAME };
-	boolean sortReverse = false;
+	private boolean sortReverse = false;
 	
-	String output = null;
-	ArrayList<Task> display = null;
-	SearchTerms filters = null;
+	private String output = null;
+	private ArrayList<Task> display = null;
+	private SearchTerms filters = null;
 	
-	SortStatus currentSorting = null;
+	//TODO : Change 1 to INVALID_SERIAL once fully implemented by logic. For GUI testing purposes.
+	private int lastChangedSerial = 1;  
+	
+	
+	private SortStatus currentSorting = null;
+
+	
 	
 	public LogicToUi(String output)	{
 		assert(output != null);
 		this.output = output;
+	}
+	
+	public LogicToUi(String output, int lastChangedSerial){
+		assert(output != null);
+		this.output = output;
+		this.lastChangedSerial = lastChangedSerial;
 	}
 	
 	public LogicToUi(ArrayList<Task> display, String output) {
@@ -121,5 +133,17 @@ public class LogicToUi {
 	
 	public ArrayList<Task> getList() {
 		return display;
+	}
+	
+	public boolean containsLastChangedSerial(){
+		if(lastChangedSerial == INVALID_SERIAL){
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public int getLastChangedSerial(){
+		return lastChangedSerial;
 	}
 }

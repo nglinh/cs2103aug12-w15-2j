@@ -1,5 +1,12 @@
 package main.ui;
-
+/**  
+ * Hint.java 
+ * To provide the help/hint function
+ * 
+ * Data read from help.xml resource.
+ * HTML and nonHTML output for GUI and CLI respectively.
+ * @author  Yeo Kheng Meng
+ */ 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,12 +75,12 @@ public class Hint {
 
 			CmdHint helpPack = new CmdHint(name, summary);
 
-			for(int j = 0; j < eachCommand.getElementsByTagName(TAG_USAGE).getLength(); j++){
+			for(int j = 0; j < numberOfDuplicateTags(eachCommand, TAG_USAGE); j++){
 				String usage = getNodeValue(eachCommand, TAG_USAGE, j);
 				helpPack.addUsage(usage);
 			}
 
-			for(int j = 0; j < eachCommand.getElementsByTagName(TAG_EXTRA).getLength(); j++){
+			for(int j = 0; j < numberOfDuplicateTags(eachCommand, TAG_EXTRA); j++){
 				String extra = getNodeValue(eachCommand, TAG_EXTRA, j);
 				helpPack.addExtra(extra);
 			}
@@ -88,7 +95,10 @@ public class Hint {
 
 
 	}
-
+	
+	private int numberOfDuplicateTags(Element eachCommand, String tag){
+		return eachCommand.getElementsByTagName(tag).getLength();
+	}
 
 	private String getNodeValue(Element eachCommand, String tag, int position){
 		return eachCommand.getElementsByTagName(tag).item(position).getChildNodes().item(0).getNodeValue();
@@ -99,7 +109,7 @@ public class Hint {
 		CmdHint hintPack = helpStore.get(needHelp);
 
 		if(hintPack == null){
-			return null;
+			return "";
 		} else {
 			return hintPack.getHTMLHelp();
 		}
@@ -110,7 +120,7 @@ public class Hint {
 		CmdHint hintPack = helpStore.get(needHelp);
 
 		if(hintPack == null){
-			return null;
+			return "";
 		} else {
 			return hintPack.getNoHTMLHelp();
 		}
@@ -123,22 +133,15 @@ public class Hint {
 }
 
 
-
-
-
 class CmdHint {
-
-	private String name;
-	private String summary;
-	private LinkedList<String> usage = new LinkedList<String>();
-	private LinkedList<String> extra = new LinkedList<String>();
 
 	private String nameHTML;
 	private String summaryHTML;
 	private LinkedList<String> usageHTML = new LinkedList<String>();
 	private LinkedList<String> extraHTML =  new LinkedList<String>();
 
-	private static String END_OF_LINE = System.getProperty("line.separator");
+	private static final String END_OF_LINE = System.getProperty("line.separator");
+	private static final String END_OF_LINE_HTML = "<br>";
 	private static final String EXAMPLE_HTML_HEADING = "<h2>Usage/Examples :</h2> ";
 	private static final String EXAMPLE_NO_HTML_HEADING = stripHTML(EXAMPLE_HTML_HEADING);
 
@@ -149,19 +152,14 @@ class CmdHint {
 	public CmdHint(String name, String summary){
 		this.nameHTML = name;
 		this.summaryHTML = summary;
-
-		this.name = stripHTML(name);
-		this.summary = stripHTML(summary);
 	}
 
 	public void addUsage(String usageHTML){
 		this.usageHTML.add(usageHTML);
-		this.usage.add(stripHTML(usageHTML));
 	}
 
 	public void addExtra(String extraHTML){
-		this.extraHTML.addLast(extraHTML);
-		this.extra.add(stripHTML(extraHTML));
+		this.extraHTML.add(extraHTML);
 	}
 
 
@@ -173,18 +171,18 @@ class CmdHint {
 
 		if(returnNoHTML == null)
 		{
-			String output = name + END_OF_LINE;
-			output += summary + END_OF_LINE + END_OF_LINE;
+			String output = stripHTML(nameHTML) + END_OF_LINE;
+			output += stripHTML(summaryHTML) + END_OF_LINE + END_OF_LINE;
 
 			output += EXAMPLE_NO_HTML_HEADING + END_OF_LINE;
-			for(String use : usage){
-				output += use + END_OF_LINE;
+			for(String use : usageHTML){
+				output += stripHTML(use) + END_OF_LINE;
 			}
 
 			output += END_OF_LINE;
 			
-			for(String ext : extra){
-				output += ext + END_OF_LINE;
+			for(String ext : extraHTML){
+				output += stripHTML(ext) + END_OF_LINE;
 			}
 			returnNoHTML = output;
 		}
@@ -195,7 +193,6 @@ class CmdHint {
 
 		if(returnHTML == null)
 		{
-			END_OF_LINE = "<br>";
 			
 			String output = nameHTML;
 			output += "<p>" + summaryHTML + "</p>";
@@ -203,13 +200,13 @@ class CmdHint {
 
 			output += "<p>";
 			for(String use : usageHTML){
-				output += use + END_OF_LINE;
+				output += use + END_OF_LINE_HTML;
 			}
 			output += "</p>";
 
 			output += "<p>";
 			for(String ext : extraHTML){
-				output += ext + END_OF_LINE;
+				output += ext + END_OF_LINE_HTML;
 			}
 			output += "</p>";
 
