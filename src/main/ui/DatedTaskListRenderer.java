@@ -89,7 +89,14 @@ public class DatedTaskListRenderer{
 		
 		sb.append("<table cellpadding=0 cellspacing=0 class=\"taskbox\" width=100%>");
 		sb.append("<tr><td>"+renderTaskDate(t, currentDay)+"</td><td width=1 align=center>" + taskIndex + "</td></tr>");
-		sb.append("<tr><td><font size=5>"+HTMLEncoder.encode(taskName)+"</font></td><td valign=middle align=center><input type=checkbox></td></tr>");
+		sb.append("<tr>");
+		sb.append("<td><font size=5>"+HTMLEncoder.encode(taskName)+"</font></td>");
+		if(t.isDone()){
+			sb.append("<td valign=middle align=center><input type=checkbox checked></td>");
+		}else{
+			sb.append("<td valign=middle align=center><input type=checkbox></td>");
+		}
+		sb.append("</tr>");
 		sb.append("</table>");
 		
 		indexList.add(taskIndex);

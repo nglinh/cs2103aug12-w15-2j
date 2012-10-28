@@ -31,7 +31,10 @@ import main.shared.Task;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.JPanel;
 import javax.swing.event.HyperlinkListener;
@@ -55,7 +58,7 @@ public class GuiMain2 extends GuiCommandBox{
 	protected JPopupMenu popupCmdHint;
 	protected JEditorPane txtCmdHint;
 	
-	private static GuiMain2 theOne = null;
+	
 	private JPanel panelCmd;
 	private JScrollPane scrollPane;
 	private JScrollPane scrollPane_1;
@@ -64,12 +67,18 @@ public class GuiMain2 extends GuiCommandBox{
 	private JMenuItem mntmGetHtmlOf;
 	//private JEditorPane txtStatus;
 	//private JTextField txtCmd;
+	
+	private static GuiMain2 theOne = null;
 	public static GuiMain2 getInstance(){
 		if (theOne == null){
 			theOne = new GuiMain2();
 		}
 		return theOne;
 	}
+	
+	Map<ToggleButtonModel, Integer> checkboxToIndexMap;
+	Map<ToggleButtonModel, Integer> checkboxToIndexMap2;
+	private JMenuItem mntmRefresh;
 
 	/**
 	 * Launch the application.
@@ -99,6 +108,7 @@ public class GuiMain2 extends GuiCommandBox{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		initialize();
 	}
 
@@ -106,8 +116,7 @@ public class GuiMain2 extends GuiCommandBox{
 	 * Initialize the contents of the frame.
 	 */
 	protected void initialize() {
-		super.initialize();
-		
+				
 		frame = new JFrame();
 		frame.setBounds(100, 100, 600, 620);
 		
@@ -253,11 +262,18 @@ public class GuiMain2 extends GuiCommandBox{
         	}
         });
         mnDebug.add(mntmGetHtmlOf);
+        
+        mntmRefresh = new JMenuItem("Refresh");
+        mntmRefresh.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		update(null);
+        	}
+        });
+        mnDebug.add(mntmRefresh);
 		
 		String fileStatus = checkFilePermissions();		
 		executeCommand("list");
 		showStatus(fileStatus);
-		
 	}
 	
 	public void update(LogicToUi returnValue){
@@ -270,24 +286,58 @@ public class GuiMain2 extends GuiCommandBox{
 		}
 		
 		showStatus(returnValue.getString());
+		
+		// Update other windows
+		//GuiMain.getInstance().updateWindow(this);
+		//GuiQuickAdd.getInstance().updateWindow(this);
+	}
+	
+	public void updateWindow(Object source) {
+		
+		if(this.frame.isVisible() && source != this){
+			showTasksList(sendCommandToLogic("refresh").getList());
+		}
+		//executeCommand("refresh");
+		
 	}
 	
 	public void showTasksList(List<Task> taskList){
 		
-		
-	
-		int scrollBarPos = ((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
-		int scrollPaneMiddle = ((JScrollPane) txtDatedTasks.getParent().getParent()).getHeight() /2 ;
-		if (scrollBarPos >= 1){
-			txtDatedTasks.setCaretPosition(txtDatedTasks.viewToModel(new Point(0,scrollBarPos + scrollPaneMiddle)));
+		int txtDatedTasksCaretPos = 0, txtUndatedTasksCaretPos = 0;
+		try{
+			int txtDatedTasksScrollBarPos = ((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
+			int txtDatedTasksScrollPaneMiddle = ((JScrollPane) txtDatedTasks.getParent().getParent()).getHeight() /2 ;
+			if (txtDatedTasksScrollBarPos >= 1){
+				txtDatedTasks.setCaretPosition(txtDatedTasks.viewToModel(new Point(0,txtDatedTasksScrollBarPos + txtDatedTasksScrollPaneMiddle)));
+			}
+			txtDatedTasksCaretPos = txtDatedTasks.getCaretPosition();
+			
+			int txtUndatedTasksScrollBarPos = ((JScrollPane) txtUndatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
+			int txtUndatedTasksScrollPaneMiddle = ((JScrollPane) txtUndatedTasks.getParent().getParent()).getHeight() /2 ;
+			if (txtUndatedTasksScrollBarPos >= 1){
+				txtUndatedTasks.setCaretPosition(txtUndatedTasks.viewToModel(new Point(0,txtUndatedTasksScrollBarPos + txtUndatedTasksScrollPaneMiddle)));
+			}
+			txtUndatedTasksCaretPos = txtUndatedTasks.getCaretPosition();
+		}catch(IllegalArgumentException e){
+			e.printStackTrace();
 		}
-		int pos = txtDatedTasks.getCaretPosition();
+				
 		DatedTaskListRenderer dtr = new DatedTaskListRenderer(taskList);
 		txtDatedTasks.setText(dtr.render());
-		txtDatedTasks.setCaretPosition(pos);		
-		
+				
 		UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(taskList);
 		txtUndatedTasks.setText(udtr.render());
+		
+		// We need to enclose the following in a try-catch block as an exception is thrown
+		// if the caret position requested is beyond the length of the contents
+		// This can happen if the new list is shorter than the current list.
+		try {
+			txtDatedTasks.setCaretPosition(txtDatedTasksCaretPos);
+			txtUndatedTasks.setCaretPosition(txtUndatedTasksCaretPos);
+		} catch (IllegalArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		CalendarRenderer calr = new CalendarRenderer(new DateTime(), taskList);
 		txtCalendar.setText(calr.render());
@@ -302,6 +352,96 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		System.out.println(dtr.getIndexList());
 		System.out.println(udtr.getIndexList());
+		
+		// Checkbox handler
+		
+		// Note that we use HashMap here instead of other Map such as TreeMap
+		// because ToggleButtonModel is not comparable
+		checkboxToIndexMap = new HashMap<ToggleButtonModel, Integer>();
+		checkboxToIndexMap2 = new HashMap<ToggleButtonModel, Integer>();
+		
+		// Checkbox handler for dated tasks column
+		int i = 0;
+			
+		HTMLDocument doc = (HTMLDocument)txtDatedTasks.getDocument();
+		ElementIterator it = new ElementIterator(doc);
+        Element element;
+		
+		while ( (element = it.next()) != null )
+        {
+            System.out.println();
+
+            AttributeSet as = element.getAttributes();
+            Enumeration enumm = as.getAttributeNames();
+
+            while( enumm.hasMoreElements() )
+            {
+                Object name = enumm.nextElement();
+                Object value = as.getAttribute( name );
+                System.out.println( "\t" + name + " : " + value );
+
+                if (value instanceof ToggleButtonModel)
+                {
+                	ToggleButtonModel model = (ToggleButtonModel)value;
+                	checkboxToIndexMap.put(model, dtr.getIndexList().get(i++));
+                	model.addActionListener(new ActionListener(){
+                		public void actionPerformed(ActionEvent e){
+                			System.out.println(checkboxToIndexMap.get(e.getSource()));
+                			System.out.println(((ToggleButtonModel)e.getSource()).isSelected());
+                			boolean isDone = ((ToggleButtonModel)e.getSource()).isSelected();
+                			int index = checkboxToIndexMap.get(e.getSource());
+                			if(isDone){
+                				executeCommand("done " + index);
+                			}else{
+                				executeCommand("undone " + index);
+                			}
+                		}
+                	});
+                    System.out.println(model.isSelected());
+                }
+            }
+		}
+		
+		// Checkbox handler for undated tasks column
+		i = 0;
+			
+		HTMLDocument doc2 = (HTMLDocument)txtUndatedTasks.getDocument();
+		it = new ElementIterator(doc2);
+		
+		while ( (element = it.next()) != null )
+        {
+            System.out.println();
+
+            AttributeSet as = element.getAttributes();
+            Enumeration enumm = as.getAttributeNames();
+
+            while( enumm.hasMoreElements() )
+            {
+                Object name = enumm.nextElement();
+                Object value = as.getAttribute( name );
+                System.out.println( "\t" + name + " : " + value );
+
+                if (value instanceof ToggleButtonModel)
+                {
+                	ToggleButtonModel model = (ToggleButtonModel)value;
+                	checkboxToIndexMap2.put(model, udtr.getIndexList().get(i++));
+                	model.addActionListener(new ActionListener(){
+                		public void actionPerformed(ActionEvent e){
+                			System.out.println(checkboxToIndexMap2.get(e.getSource()));
+                			System.out.println(((ToggleButtonModel)e.getSource()).isSelected());
+                			boolean isDone = ((ToggleButtonModel)e.getSource()).isSelected();
+                			int index = checkboxToIndexMap2.get(e.getSource());
+                			if(isDone){
+                				executeCommand("done " + index);
+                			}else{
+                				executeCommand("undone " + index);
+                			}
+                		}
+                	});
+                    System.out.println(model.isSelected());
+                }
+            }
+		}
 	}
 
 	@Override
@@ -309,7 +449,8 @@ public class GuiMain2 extends GuiCommandBox{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GuiMain2 window = new GuiMain2();
+					//GuiMain2 window = new GuiMain2();
+					GuiMain2 window = GuiMain2.getInstance();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
