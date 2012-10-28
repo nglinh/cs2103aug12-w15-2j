@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<hint>
+	<command>
+		<name><![CDATA[<h1>Help</h1>]]></name>
+		<summary>Type "help [command]" for detailed usage for "command"</summary>		
+		<usage>help</usage>
+		<usage>add</usage>
+		<usage>list</usage>
+		<usage>edit</usage>
+		<usage>delete</usage>
+		<usage>done</usage>
+		<usage>undone</usage>
+		<usage>undo</usage>
+		<usage>refresh</usage>
+		<usage>sort</usage>
+		<usage>postpone</usage>
+		<usage>search</usage>
+		<usage>exit</usage>
+		<extra>Terminology:</extra>
+		<extra>Floating tasks: Tasks which have no time component.</extra>
+		<extra>Deadline tasks: Tasks which have one time as deadline.</extra>
+		<extra>Timed tasks: Tasks which have a start and end time.</extra>
+		<extra>For command-line users, you are advised to call a list/refresh operation after every change to the database.</extra>
+	</command>
+	<command>
+		<name><![CDATA[<h1>Add</h1>]]></name>
+		<summary>Adds a task to database</summary>
+		<usage><![CDATA[<b>add</b> read a book]]></usage>
+		<usage><![CDATA[<b>add</b> school camp <b>from</b> 3pm today <b>to</b> 5pm tomorrow]]></usage>
+		<usage><![CDATA[<b>a</b> hand in homework <b>by</b> Monday 6pm (<b>a</b> is a shortcut for add)]]></usage>
+		<extra><![CDATA[If DoIt misinterprets the task name as the time, put inverted commas around <b>"task name"</b>:]]></extra>
+		<extra><![CDATA[add <b>"</b>read book from page 1000 to 1100<b>"</b> by Friday.]]></extra>	
+	</command>
+	<command>
+		<name><![CDATA[<h1>List</h1>]]></name>
+		<summary>Shows the list of tasks in your schedule</summary>
+		<usage><![CDATA[<b>list</b> [parameter(s)] ]]></usage>
+		<usage><![CDATA[<b>list</b> today (Tasks that happen today)]]></usage>
+		<usage><![CDATA[<b>ls</b> undone floating (Floating tasks that are incomplete)]]></usage>
+		<usage><![CDATA[<b>l</b> overdue (Tasks that have passed the current moment and are incomplete)]]></usage>
+		<extra><![CDATA[Possible parameters: "done", "undone", "timed", "deadline", "floating", "today", "tomorrow", "overdue"]]></extra>
+	</command>
+	<command>
+		<name><![CDATA[<h1>Edit</h1>]]></name>
+		<summary>Edits the selected task</summary>
+		<usage><![CDATA[<b>edit</b> [index] [parameter] [new value] ...]]></usage>
+		<usage><![CDATA[<b>edit</b> 1 -name go home (Change name of task at index 1 to "go home")]]></usage>
+		<usage><![CDATA[<b>edit</b> 10 -deadline today 6pm (Change deadline of task 10 to 6pm today. Will convert to deadline task if not previously.)]]></usage>
+		<usage><![CDATA[<b>edit</b> 2 -start 3pm 5 sept -end 4pm 6 sept (Change start and end times of timed tasks)]]></usage>
+		<extra><![CDATA[To maximise DoIT's chances in correctly updating your task, try to change one parameter at a time.]]></extra>
+	</command>
+		<command>
+		<name><![CDATA[<h1>Delete</h1>]]></name>
+		<summary>Deletes task(s) from your schedule</summary>
+		<usage><![CDATA[<b>delete</b> [index] (Deletes the task at index) ]]></usage>
+		<usage><![CDATA[<b>delete done</b> (Delete all completed tasks) ]]></usage>
+		<usage><![CDATA[<b>del</b> over (Delete all tasks before this moment) ]]></usage>
+		<usage><![CDATA[<b>d</b> all (Deletes <b>EACH AND EVERY</b> task in your schedule) ]]></usage>
+	</command>		
+	<command>
+		<name><![CDATA[<h1>Done</h1>]]></name>
+		<summary>Marks the task specified by index as done.</summary>
+		<usage><![CDATA[<b>done</b> [index] ]]></usage>
+		<extra>Obtain the "index" number from the list. "index" will be based on last shown list.</extra>
+	</command>
+	<command>
+		<name><![CDATA[<h1>Undone</h1>]]></name>
+		<summary>Marks the task specified by index as undone.</summary>
+		<usage><![CDATA[<b>undone</b> [index] ]]></usage>
+		<extra>Obtain the "index" number from the list. "index" will be based on last shown list.</extra>
+	</command>
+	<command>
+		<name><![CDATA[<h1>Undo</h1>]]></name>
+		<summary>Undos the last change you made to the database.</summary>
+		<usage><![CDATA[<b>undo</b>]]></usage>
+		<extra>DoIT supports up to 1000 undo steps</extra>
+	</command>
+		<command>
+		<name><![CDATA[<h1>Refresh</h1>]]></name>
+		<summary>Refreshes your list base on latest, list, sort and search parameters.</summary>
+		<usage><![CDATA[<b>undo</b>]]></usage>
+		<extra>This command has no effect in the graphical interface.</extra>
+	</command>
+	<command>
+		<name><![CDATA[<h1>Sort</h1>]]></name>
+		<summary>Sorts the current list of tasks</summary>
+		<usage><![CDATA[<b>sort</b> [parameter] "reverse"]]></usage>
+		<usage><![CDATA[<b>sort</b> type (Order of deadline, timed, floating)]]></usage>
+		<usage><![CDATA[<b>sort</b> done (Undone tasks come first)]]></usage>
+		<usage><![CDATA[<b>sort</b> start (By start time/deadline)]]></usage>
+		<usage><![CDATA[<b>sort</b> end (By end time/deadline)]]></usage>
+		<usage><![CDATA[<b>sort</b> name (Alphabetical order)]]></usage>
+		<extra><![CDATA[Add "reverse" parameter to sort by descending order instead.]]></extra>
+		<extra><![CDATA[Only up to 1 parameter except "reverse" is allowed. Default is sort by start/deadline.]]></extra>
+		<extra><![CDATA[Does not work for calendar mode in graphical interface.]]></extra>	
+	</command>
+		<command>
+		<name><![CDATA[<h1>Postpone</h1>]]></name>
+		<summary>Postpones a task</summary>
+		<usage><![CDATA[<b>postpone</b> [index] [time parameter] ]]></usage>
+		<usage><![CDATA[<b>postpone</b> 1 3 hours (postpones task at index 1 by 3 hours) ]]></usage>
+		<extra>This command has no effect on floating tasks. Start and End times for timed tasks will shift together.</extra>
+	</command>
+		<command>
+		<name><![CDATA[<h1>Search</h1>]]></name>
+		<summary>Search for task(s) based on keywords</summary>
+		<usage><![CDATA[<b>search</b> "keyword1" "keyword2" ... ]]></usage>
+		<usage><![CDATA[<b>search</b> birthday (search for tasks with birthday in description)]]></usage>
+		<usage><![CDATA[<b>search</b> birthday family (search for tasks with "birthday" and "family" in description)]]></usage>
+		<extra>The keyword search is case-insensitive. Time range search is not supported yet.</extra>
+	</command>
+		<command>
+		<name><![CDATA[<h1>Exit</h1>]]></name>
+		<summary>Exits DoIT</summary>
+		<usage><![CDATA[<b>exit</b>]]></usage>
+		<usage><![CDATA[<b>quit</b>]]></usage>
+		<extra>All undo steps will be lost when DoIT quits.</extra>
+	</command>
+
+
+</hint>
