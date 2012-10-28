@@ -81,9 +81,15 @@ public class TaskTest {
 	}
 
 
-	@Test(expected = IllegalArgumentException.class)
+
 	public void testTaskString() {
-		new Task("");
+		try{
+			new Task("");
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
+		
+		new Task("1");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -345,19 +351,7 @@ public class TaskTest {
 
 	@Test
 	public void testChangetoFloating() {
-		try{
-			name.changetoFloating();
-			fail();
-		} catch (IllegalArgumentException e) {
-		}
-		
-		try{
-			nameTrue.changetoFloating();
-			fail();
-		} catch (IllegalArgumentException e) {
-		}
 
-		
 		nameDeadline.changeName(NAME_ONLY);
 		nameDeadline.changetoFloating();
 		
@@ -421,11 +415,14 @@ public class TaskTest {
 	}
 	@Test
 	public void testchangetoDeadline() {
-		try{
-			nameDeadline.changetoDeadline(DEADLINE);
-			fail();
-		} catch (IllegalArgumentException e) {
-		}	
+		nameDeadline.changetoDeadline(DEADLINE_TRUE);
+		assertEquals(nameDeadline.getDeadline(), DEADLINE_TRUE);
+		
+		nameTrue.changetoDeadline(DEADLINE_TRUE);
+		assertEquals(nameTrue.getDeadline(), DEADLINE_TRUE);
+		
+		nameTimed.changetoDeadline(DEADLINE_TRUE);
+		assertEquals(nameTimed.getDeadline(), DEADLINE_TRUE);
 	}
 	
 	@Test
