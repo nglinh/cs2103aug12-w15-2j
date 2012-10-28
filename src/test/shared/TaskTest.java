@@ -582,17 +582,74 @@ public class TaskTest {
 	
 	@Test
 	public void testClashesWithRange(){
-		//Use Task name
-		//Use Task nameDeadline + 1month
-		//Use Task nameTimed minus 1day to plus 1 day
+
+		try{
+			nameDeadlineTrue.clashesWithRange(null, TIMED_DONE_FALSE_END);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
 		
-		DateTime start = new DateTime().minusMonths(1);
-		DateTime end = new DateTime().minusMonths(1).plusMinutes(1);
+		try{
+			nameDeadlineTrue.clashesWithRange(TIMED_DONE_FALSE_END, null);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
 		
-		assertFalse(name.clashesWithRange(start, end));
-		assertTrue(name.clashesWithRange(start, end));
+		try{
+			nameDeadlineTrue.clashesWithRange(Task.INVALID_DATE_FIELD, TIMED_DONE_FALSE_END);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}
 		
-		//TODO:
+		try{
+			nameDeadlineTrue.clashesWithRange(TIMED_DONE_FALSE_END, Task.INVALID_DATE_FIELD);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}	
+		
+		try{
+			nameDeadlineTrue.clashesWithRange(TIMED_DONE_FALSE_END, TIMED_DONE_FALSE_START);
+			fail();
+		} catch (IllegalArgumentException e) {
+		}	
+		
+		
+		DateTime deadlineLow = DEADLINE.minus(1);
+		DateTime deadline = DEADLINE;
+		DateTime deadlineHigh = DEADLINE.plus(1);
+	
+		//Floating task will never clash
+		assertFalse(name.clashesWithRange(deadlineLow, deadlineHigh));
+		
+		//Test Deadline Task
+		assertTrue(nameDeadline.clashesWithRange(deadlineLow, deadlineHigh));
+		assertTrue(nameDeadline.clashesWithRange(deadlineLow, deadline));
+		assertTrue(nameDeadline.clashesWithRange(deadline, deadlineHigh));
+		
+		assertFalse(nameDeadline.clashesWithRange(deadlineHigh, deadlineHigh.plus(1)));
+		assertFalse(nameDeadline.clashesWithRange(deadlineLow.minus(1), deadlineLow));
+		
+		//Test Timed Task
+		DateTime timedStartLow = TIMED_START.minus(1);
+		DateTime timedStart = TIMED_START;
+		DateTime timedStartHigh = TIMED_START.plus(1);
+		
+		DateTime timedEndLow = TIMED_END.minus(1);
+		DateTime timedEnd = TIMED_END;
+		DateTime timedEndHigh = TIMED_END.plus(1);
+		
+		
+		//Test equality
+		assertTrue(nameTimed.clashesWithRange(timedStart, timedEndHigh));
+		assertTrue(nameTimed.clashesWithRange(timedStartLow, timedEnd));
+		assertTrue(nameTimed.clashesWithRange(timedEnd, timedEndHigh));
+		assertTrue(nameTimed.clashesWithRange(timedStartLow, timedStart));
+		
+		assertTrue(nameTimed.clashesWithRange(timedStartHigh, timedEndLow));
+		assertFalse(nameTimed.clashesWithRange(timedStartLow.minus(1), timedStartLow));
+		assertFalse(nameTimed.clashesWithRange(timedEndHigh, timedEndHigh.plus(1)));
+	
+		assertTrue(nameTimed.clashesWithRange(timedStartLow, timedEndHigh));
 		
 		
 	}
