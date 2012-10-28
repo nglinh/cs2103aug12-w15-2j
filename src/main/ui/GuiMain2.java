@@ -274,20 +274,41 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	public void showTasksList(List<Task> taskList){
 		
-		
-	
-		int scrollBarPos = ((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
-		int scrollPaneMiddle = ((JScrollPane) txtDatedTasks.getParent().getParent()).getHeight() /2 ;
-		if (scrollBarPos >= 1){
-			txtDatedTasks.setCaretPosition(txtDatedTasks.viewToModel(new Point(0,scrollBarPos + scrollPaneMiddle)));
+		int txtDatedTasksCaretPos = 0, txtUndatedTasksCaretPos = 0;
+		try{
+			int txtDatedTasksScrollBarPos = ((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
+			int txtDatedTasksScrollPaneMiddle = ((JScrollPane) txtDatedTasks.getParent().getParent()).getHeight() /2 ;
+			if (txtDatedTasksScrollBarPos >= 1){
+				txtDatedTasks.setCaretPosition(txtDatedTasks.viewToModel(new Point(0,txtDatedTasksScrollBarPos + txtDatedTasksScrollPaneMiddle)));
+			}
+			txtDatedTasksCaretPos = txtDatedTasks.getCaretPosition();
+			
+			int txtUndatedTasksScrollBarPos = ((JScrollPane) txtUndatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
+			int txtUndatedTasksScrollPaneMiddle = ((JScrollPane) txtUndatedTasks.getParent().getParent()).getHeight() /2 ;
+			if (txtUndatedTasksScrollBarPos >= 1){
+				txtUndatedTasks.setCaretPosition(txtUndatedTasks.viewToModel(new Point(0,txtUndatedTasksScrollBarPos + txtUndatedTasksScrollPaneMiddle)));
+			}
+			txtUndatedTasksCaretPos = txtUndatedTasks.getCaretPosition();
+		}catch(IllegalArgumentException e){
+			e.printStackTrace();
 		}
-		int pos = txtDatedTasks.getCaretPosition();
+				
 		DatedTaskListRenderer dtr = new DatedTaskListRenderer(taskList);
 		txtDatedTasks.setText(dtr.render());
-		txtDatedTasks.setCaretPosition(pos);		
-		
+				
 		UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(taskList);
 		txtUndatedTasks.setText(udtr.render());
+		
+		// We need to enclose the following in a try-catch block as an exception is thrown
+		// if the caret position requested is beyond the length of the contents
+		// This can happen if the new list is shorter than the current list.
+		try {
+			txtDatedTasks.setCaretPosition(txtDatedTasksCaretPos);
+			txtUndatedTasks.setCaretPosition(txtUndatedTasksCaretPos);
+		} catch (IllegalArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		CalendarRenderer calr = new CalendarRenderer(new DateTime(), taskList);
 		txtCalendar.setText(calr.render());
