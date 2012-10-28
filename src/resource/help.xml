@@ -2,7 +2,7 @@
 <hint>
 	<command>
 		<name><![CDATA[<h1>Help</h1>]]></name>
-		<summary>Type "help [command]" for detailed usage for "command"</summary>		
+		<summary><![CDATA[For graphical interface users, just type the command to see the drop down help.<br>For command-line users, type "help [command]" for detailed usage for "command"]]></summary>		
 		<usage>help</usage>
 		<usage>add</usage>
 		<usage>list</usage>
@@ -37,7 +37,7 @@
 		<usage><![CDATA[<b>list</b> [parameter(s)] ]]></usage>
 		<usage><![CDATA[<b>list</b> today (Tasks that happen today)]]></usage>
 		<usage><![CDATA[<b>ls</b> undone floating (Floating tasks that are incomplete)]]></usage>
-		<usage><![CDATA[<b>l</b> overdue (Tasks that have passed the current moment and are incomplete)]]></usage>
+		<usage><![CDATA[<b>l</b> overdue (Tasks that are before the current moment and are incomplete)]]></usage>
 		<extra><![CDATA[Possible parameters: "done", "undone", "timed", "deadline", "floating", "today", "tomorrow", "overdue"]]></extra>
 	</command>
 	<command>
@@ -105,7 +105,7 @@
 		<name><![CDATA[<h1>Search</h1>]]></name>
 		<summary>Search for task(s) based on keywords</summary>
 		<usage><![CDATA[<b>search</b> "keyword1" "keyword2" ... ]]></usage>
-		<usage><![CDATA[<b>search</b> birthday (search for tasks with birthday in description)]]></usage>
+		<usage><![CDATA[<b>search</b> birthday (search for tasks with "birthday" in description)]]></usage>
 		<usage><![CDATA[<b>search</b> birthday family (search for tasks with "birthday" and "family" in description)]]></usage>
 		<extra>The keyword search is case-insensitive. Time range search is not supported yet.</extra>
 	</command>
