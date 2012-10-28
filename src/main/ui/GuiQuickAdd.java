@@ -133,8 +133,9 @@ public class GuiQuickAdd extends UI{
 		textStatus.setText(returnValue.getString());
 		
 		// Update other windows
-		GuiMain.getInstance().updateWindow(this);
-		GuiMain2.getInstance().updateWindow(this);
+		//GuiMain.getInstance().updateWindow(this);
+		//GuiMain2.getInstance().updateWindow(this);
+		GuiUpdate.update(this);
 	}
 
 	public void updateWindow(Object source) {

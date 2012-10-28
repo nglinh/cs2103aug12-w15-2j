@@ -165,7 +165,10 @@ public class GuiMain extends GuiCommandBox{
 		scrollPane.setViewportView(table);
 		
 		String fileStatus = checkFilePermissions();		
-		executeCommand("list");
+		//executeCommand("list");
+		// Note we do not use executeCommand here, as doing so will cause a further update
+		// request to be propagated to all windows.
+		showTasksList(sendCommandToLogic("refresh").getList());
 		showStatus(fileStatus);
 	}
 
@@ -473,11 +476,14 @@ public class GuiMain extends GuiCommandBox{
 		// Update other windows
 		//GuiMain2.getInstance().updateWindow(this);
 		//GuiQuickAdd.getInstance().updateWindow(this);
+		GuiUpdate.update(this);
 	}
 
 	public void updateWindow(Object source) {
 		if(source != this){
-			showTasksList(sendCommandToLogic("refresh").getList());
+			LogicToUi result = sendCommandToLogic("refresh");
+			showTasksList(result.getList());
+			showStatus(result.getString());
 		}
 		//executeCommand("refresh");
 		

@@ -35,7 +35,7 @@ public class DatedTaskListRenderer{
 			DateTime currentDay = entry.getKey();
 			List<Task> tasksOnCurrentDay = entry.getValue();
 			
-			sb.append("<a name=\"date-"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\"></a>");
+			sb.append("<font size=1><a name=\"date-"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\"></a></font>");
 			sb.append("<table width=100% \">");
 			sb.append("<tr>");
 			
