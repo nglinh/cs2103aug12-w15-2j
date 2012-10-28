@@ -169,7 +169,7 @@ public class GuiCommandBox extends UI{
 						}else{ // undefined
 							popupCmdHint.show(txtCmd, 5, txtCmd.getHeight());
 							hintPos = HintPosEnum.BELOW;
-							if(popupCmdHint.getLocationOnScreen().getY() < txtCmd.getLocationOnScreen().getY()){
+							if(popupCmdHint.getLocationOnScreen().getY() < txtCmd.getLocationOnScreen().getY() + txtCmd.getSize().getHeight()){
 								popupCmdHint.setVisible(false);
 								popupCmdHint.show(txtCmd, 5, -1 * popupCmdHint.getHeight());
 								hintPos = HintPosEnum.ABOVE;
