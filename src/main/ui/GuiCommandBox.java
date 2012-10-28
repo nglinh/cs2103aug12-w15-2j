@@ -189,13 +189,13 @@ public class GuiCommandBox extends UI{
 		HTMLEditorKit kit = new HTMLEditorKit();
 		txtCmdHint.setEditorKit(kit);
 
-		StyleSheet styleSheet = kit.getStyleSheet();
-		styleSheet.addRule("body, p {font-family:Segoe UI;}");
-		styleSheet
+		StyleSheet hintStyleSheet = kit.getStyleSheet();
+		hintStyleSheet.addRule("body, p {font-family:Segoe UI;}");
+		hintStyleSheet
 				.addRule("h1 {font-family:Segoe UI; margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-		styleSheet
+		hintStyleSheet
 				.addRule("h2 {font-family:Segoe UI; margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-		styleSheet.addRule("p {margin-top:5px;}");
+		hintStyleSheet.addRule("p {margin-top:5px;}");
 
 		Document doc = kit.createDefaultDocument();
 		txtCmdHint.setDocument(doc);
