@@ -2,16 +2,9 @@ package main.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Date;
-import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -39,29 +32,27 @@ import javax.swing.text.html.StyleSheet;
 import org.joda.time.DateTime;
 
 import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.ParseLocation;
 import com.joestelmach.natty.Parser;
 
 import main.shared.LogicToUi;
 import main.shared.Task;
 import main.shared.Task.TaskType;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-public class GuiMain extends UI{
+public class GuiMain extends GuiCommandBox{
 
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
 	private JFrame frmDoit;
-	private JTextField textCmd;
+	private JTextField txtCmd;
 	private JScrollPane scrollPane;
 	private JTable table;
 	private JPopupMenu popupCmdHint;
-	private JPopupMenu popupStatus;
 	private JMenu mnSomeMenu;
 	private JEditorPane txtCmdHint;
 	private JEditorPane txtStatus;
 	private JPanel panel;
 	
-	private List<String> commandHistory;
-	private ListIterator<String> commandHistoryIterator;
 	
 	private static GuiMain theOne = null;
 
@@ -97,7 +88,8 @@ public class GuiMain extends UI{
 	 * Initialize the contents of the frame.
 	 */
 	@SuppressWarnings("serial")
-	private void initialize() {
+	protected void initialize() {
+		
 		frmDoit = new JFrame();
 		frmDoit.setTitle("DoIt!");
 		frmDoit.setBounds(100, 100, 700, 400);
@@ -111,107 +103,41 @@ public class GuiMain extends UI{
 		
 		panel = new JPanel();
 		frmDoit.getContentPane().add(panel, BorderLayout.SOUTH);
-				panel.setLayout(new BorderLayout(0, 0));
-		
-		
-		
-				textCmd = new JTextField();
-				panel.add(textCmd);
-				
-				commandHistory = new LinkedList<String>();
-				commandHistoryIterator = commandHistory.listIterator();
-				
-				textCmd.addKeyListener(new KeyAdapter() {
-					@Override
-					public void keyReleased(KeyEvent arg0) {
-						if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-							commandHistory.add(textCmd.getText());
-							commandHistoryIterator = commandHistory.listIterator(commandHistory.size());
-							
-							executeCommand(textCmd.getText());
-							popupCmdHint.setVisible(false);
-						} else if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_UP) {
-							if (commandHistoryIterator.hasPrevious()) {
-								textCmd.setText(commandHistoryIterator.previous());
-								showHint();
-							}
-						} else if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_DOWN) {
-							if (commandHistoryIterator.hasNext()) {
-								textCmd.setText(commandHistoryIterator.next());
-								showHint();
-							}
-						} else {
-							showHint();
-						}
-					}
+		panel.setLayout(new BorderLayout(0, 0));
 
-					private void showHint() {
-						List<String> commands = Hint.getInstance().getCommands();
-						boolean isCommand = false;
-						for (String command : commands){
-							if (textCmd.getText().startsWith(command)) {
-								System.out.println(Hint.getInstance().helpForThisCommandHTML(command));
-								txtCmdHint.setText("<html>"+Hint.getInstance().helpForThisCommandHTML(command)+"</html>");
-								//popupCmdHint.setPopupSize(500, 300);
-								popupCmdHint.setPopupSize(500, (int) txtCmdHint.getPreferredSize().getHeight() + 20);
-								popupCmdHint.show(textCmd, 5, textCmd.getHeight());
-								if(popupCmdHint.getLocationOnScreen().getY() < textCmd.getLocationOnScreen().getY()){
-									popupCmdHint.show(textCmd, 5, -1 * popupCmdHint.getHeight());
-								}
-								textCmd.requestFocus();
-								isCommand = true;
-							} 
-						}
-						if(isCommand == false){
-							popupCmdHint.setVisible(false);
-						}
-					}
-				});
-		textCmd.setColumns(10);
-
+		txtCmd = new JTextField();
+		panel.add(txtCmd);
+		
 		popupCmdHint = new JPopupMenu();
-		addPopup(textCmd, popupCmdHint);
+		addPopup(txtCmd, popupCmdHint);
 
 		txtCmdHint = new JEditorPane();
-		txtCmdHint.setEditable(false);
-		txtCmdHint.setContentType("text/html");
-		txtCmdHint.setBackground(new Color(0, 0, 0, 0));
-		txtCmdHint.setOpaque(false);
-		
-		HTMLEditorKit kit = new HTMLEditorKit();
-		txtCmdHint.setEditorKit(kit);
-
-        StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body, p {font-family:Segoe UI;}");
-        styleSheet.addRule("h1 {font-family:Segoe UI; margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-        styleSheet.addRule("h2 {font-family:Segoe UI; margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-        styleSheet.addRule("p {margin-top:5px;}");
-        
-        Document doc = kit.createDefaultDocument();
-        txtCmdHint.setDocument(doc);
-		
 		popupCmdHint.add(txtCmdHint);
 
 		txtStatus = new JEditorPane();
-		txtStatus.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent event) {
-				if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					if (event.getURL().toString().endsWith("/undo")) {
-						executeCommand("undo");
-					}
-				}
-			}
-		});
-		txtStatus.setBackground(new Color(0, 0, 0, 0));
-		txtStatus.setOpaque(false);
 		panel.add(txtStatus, BorderLayout.SOUTH);
-		txtStatus.setEditable(false);
-		txtStatus.setContentType("text/html");
+		
+		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
 
 		scrollPane = new JScrollPane();
 		frmDoit.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
+		table.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode() == java.awt.event.KeyEvent.VK_DELETE){
+					// Note: With every deletion, the index number changes!
+					// Therefore we must delete from the largest number backwards.
+					int[] rowsToDelete = table.getSelectedRows();
+					Arrays.sort(rowsToDelete);
+					System.out.println(Arrays.toString(rowsToDelete));
+					for(int i = (rowsToDelete.length-1); i>=0; i--){
+						executeCommand("delete " + (rowsToDelete[i] + 1));
+					}
+				}
+			}
+		});
 		// Dummy table for WindowBuilder, the table will be filled up by code below
 		table.setModel(new DefaultTableModel(
 				new Object[][] {
@@ -236,31 +162,11 @@ public class GuiMain extends UI{
 		table.getColumnModel().getColumn(3).setPreferredWidth(110);
 		table.getColumnModel().getColumn(4).setPreferredWidth(160);
 
-		popupStatus = new JPopupMenu();
-		addPopup(scrollPane, popupStatus);
 		scrollPane.setViewportView(table);
 		
 		String fileStatus = checkFilePermissions();		
 		executeCommand("list");
 		showStatus(fileStatus);
-	}
-
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
 	}
 
 	@Override
@@ -554,42 +460,15 @@ public class GuiMain extends UI{
 		});
 	}
 
-	public void executeCommand(String text) {
-		
-		System.out.println(text);
-
-		// Call command parser
-		LogicToUi returnValue = sendCommandToLogic(text);
-
-		// Set command text box to empty
-		textCmd.setText("");
-
-
-
-		//int popupWidth = 300;
-		//int popupHeight = 60;
-
-		showStatus(returnValue.getString());
-
-		//popupStatus.setPopupSize(popupWidth, popupHeight);
-		//popupStatus.show(frmDoit, (frmDoit.getWidth() - popupWidth) / 2,
-		//		frmDoit.getHeight() - popupHeight + 5);
-
+	public void update(LogicToUi returnValue){
 		// Call command to refresh the table
-			showTasksList(sendCommandToLogic("refresh").getList());
-
+		showTasksList(sendCommandToLogic("refresh").getList());
 
 		if (returnValue.containsList()) {
 			showTasksList(returnValue.getList());
 		}
-
-	}
-
-	private void showStatus(String status) {
-		txtStatus
-				.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\"><font size=\"4\">"
-						+ status
-						+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a></font></td></tr></table></html>");
+		
+		showStatus(returnValue.getString());
 	}
 
 	public void update() {
