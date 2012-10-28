@@ -1,5 +1,6 @@
 package main.ui;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,16 @@ public class DatedTaskListRenderer{
 	
 	private List<Task> taskList;
 	Map<DateTime, List<Task>> datesWithTasks;
+
+	private List<Integer> indexList;
 	
 	public DatedTaskListRenderer(){
 	}
 	
 	public DatedTaskListRenderer(List<Task> taskList){
 		this.taskList = taskList;
+		
+		indexList = new ArrayList<Integer>();
 	}
 	
 	public String render(){
@@ -47,7 +52,7 @@ public class DatedTaskListRenderer{
 			sb.append("</table>");
 		}
 		
-		System.out.println(sb.toString());
+		//System.out.println(sb.toString());
 		
 		return sb.toString();
 	}
@@ -79,10 +84,15 @@ public class DatedTaskListRenderer{
 	public String renderTask(Task t, DateTime currentDay){
 		StringBuffer sb = new StringBuffer();
 		
+		int taskIndex = taskList.indexOf(t)+1;
+		String taskName = t.getTaskName();
+		
 		sb.append("<table cellpadding=0 cellspacing=0 class=\"taskbox\" width=100%>");
-		sb.append("<tr><td>"+renderTaskDate(t, currentDay)+"</td><td width=1 align=center>" + (taskList.indexOf(t)+1) + "</td></tr>");
-		sb.append("<tr><td><font size=5>"+HTMLEncoder.encode(t.getTaskName())+"</font></td><td valign=middle align=center><input type=checkbox></td></tr>");
+		sb.append("<tr><td>"+renderTaskDate(t, currentDay)+"</td><td width=1 align=center>" + taskIndex + "</td></tr>");
+		sb.append("<tr><td><font size=5>"+HTMLEncoder.encode(taskName)+"</font></td><td valign=middle align=center><input type=checkbox></td></tr>");
 		sb.append("</table>");
+		
+		indexList.add(taskIndex);
 		
 		return sb.toString();
 	}
@@ -185,13 +195,13 @@ public class DatedTaskListRenderer{
 			}
 		}
 		
-		for(Map.Entry<DateTime, List<Task>> entry : datesWithTasks.entrySet()){
+		/*for(Map.Entry<DateTime, List<Task>> entry : datesWithTasks.entrySet()){
 			System.out.println(entry.getKey());
 			for (Task t : entry.getValue()){
 				System.out.println(t.getTaskName());
 			}
 			System.out.println("");
-		}
+		}*/
 	}
 	
 	public void addTaskToMap(DateTime dateTime, Task task){
@@ -201,6 +211,10 @@ public class DatedTaskListRenderer{
 			datesWithTasks.put(dateTime, new LinkedList<Task>());
 			datesWithTasks.get(dateTime).add(task);
 		}
+	}
+	
+	public List<Integer> getIndexList(){
+		return indexList;
 	}
 	
 }

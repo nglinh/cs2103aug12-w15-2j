@@ -1,5 +1,6 @@
 package main.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 import main.shared.Task;
 
@@ -7,8 +8,12 @@ public class UndatedTaskListRenderer {
 	
 	private List<Task> taskList;
 	
+	private List<Integer> indexList;
+	
 	public UndatedTaskListRenderer(List<Task> taskList){
 		this.taskList = taskList;
+		
+		indexList = new ArrayList<Integer>();
 	}
 	
 	public String render(){
@@ -34,7 +39,13 @@ public class UndatedTaskListRenderer {
 		sb.append("<tr><td valign=top align=center><input type=checkbox></td></tr>");
 		sb.append("</table>");
 		
+		indexList.add(taskIndex);
+		
 		return sb.toString();
+	}
+	
+	public List<Integer> getIndexList(){
+		return indexList;
 	}
 
 }

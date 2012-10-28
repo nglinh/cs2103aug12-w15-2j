@@ -300,7 +300,8 @@ public class GuiMain2 extends GuiCommandBox{
 			e.printStackTrace();
 		}
 		
-		
+		System.out.println(dtr.getIndexList());
+		System.out.println(udtr.getIndexList());
 	}
 
 	@Override

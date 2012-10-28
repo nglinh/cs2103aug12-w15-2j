@@ -2,9 +2,11 @@ package main.ui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Rectangle;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -37,6 +39,10 @@ public class GuiCommandBox extends UI{
 	
 	protected List<String> commandHistory;
 	protected ListIterator<String> commandHistoryIterator;
+	
+	private enum HintPosEnum {ABOVE, BELOW, UNDEFINED};
+	private HintPosEnum hintPos = HintPosEnum.UNDEFINED;
+	private Rectangle previousWindowRect;
 
 	/**
 	 * Launch the application.
@@ -140,20 +146,34 @@ public class GuiCommandBox extends UI{
 			}
 
 			private void showHint() {
+				JFrame frame = (JFrame) SwingUtilities.getRoot(txtCmd);
+				Rectangle currentWindowRect = new Rectangle(frame.getLocationOnScreen(), frame.getSize());
+				if(!currentWindowRect.equals(previousWindowRect)){
+					hintPos = HintPosEnum.UNDEFINED;
+					previousWindowRect = currentWindowRect;
+				}
+				
 				List<String> commands = Hint.getInstance().getCommands();
 				boolean isCommand = false;
 				for (String command : commands){
 					if (txtCmd.getText().startsWith(command)) {
 						System.out.println(Hint.getInstance().helpForThisCommandHTML(command));
 						txtCmdHint.setText("<html>"+Hint.getInstance().helpForThisCommandHTML(command)+"</html>");
-						//popupCmdHint.setPopupSize(500, 300);
+						System.out.println(popupCmdHint.getSize());
+						
 						popupCmdHint.setPopupSize(500, (int) txtCmdHint.getPreferredSize().getHeight() + 20);
-						popupCmdHint.show(txtCmd, 5, txtCmd.getHeight());
-						txtCmd.requestFocus();
-						// TODO: Fix stutter for hint box
-						if(popupCmdHint.getLocationOnScreen().getY() < txtCmd.getLocationOnScreen().getY()){
-							popupCmdHint.setVisible(false);
+						if(hintPos == HintPosEnum.BELOW){							
+							popupCmdHint.show(txtCmd, 5, txtCmd.getHeight());
+						}else if(hintPos == HintPosEnum.ABOVE){
 							popupCmdHint.show(txtCmd, 5, -1 * popupCmdHint.getHeight());
+						}else{ // undefined
+							popupCmdHint.show(txtCmd, 5, txtCmd.getHeight());
+							hintPos = HintPosEnum.BELOW;
+							if(popupCmdHint.getLocationOnScreen().getY() < txtCmd.getLocationOnScreen().getY()){
+								popupCmdHint.setVisible(false);
+								popupCmdHint.show(txtCmd, 5, -1 * popupCmdHint.getHeight());
+								hintPos = HintPosEnum.ABOVE;
+							}
 						}
 						txtCmd.requestFocus();
 						isCommand = true;
