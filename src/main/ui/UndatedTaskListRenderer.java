@@ -26,8 +26,11 @@ public class UndatedTaskListRenderer {
 	public String renderTask(Task t){
 		StringBuffer sb = new StringBuffer();
 		
+		int taskIndex = taskList.indexOf(t)+1;
+		String taskName = t.getTaskName();
+		
 		sb.append("<table cellpadding=0 cellspacing=0 class=\"taskbox\" width=100%>");
-		sb.append("<tr><td rowspan=2><font size=5>"+t.getTaskName()+"</font></td><td width=1 align=center>" + (taskList.indexOf(t)+1) + "</td></tr>");
+		sb.append("<tr><td rowspan=2><font size=5>"+HTMLEncoder.encode(taskName)+"</font></td><td width=1 align=center>" + taskIndex + "</td></tr>");
 		sb.append("<tr><td valign=top align=center><input type=checkbox></td></tr>");
 		sb.append("</table>");
 		

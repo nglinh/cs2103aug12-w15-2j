@@ -1,37 +1,69 @@
 package main.ui;
 
 import java.awt.EventQueue;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
+
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton.ToggleButtonModel;
+import javax.swing.JViewport;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.ElementIterator;
+import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
+import main.shared.LogicToUi;
 import main.shared.Task;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
 import javax.swing.JPanel;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
 
 import org.joda.time.DateTime;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class GuiMain2 extends UI{
+public class GuiMain2 extends GuiCommandBox{
 
 	private JFrame frame;
-	private JTextField textField;
-	JEditorPane txtDatedTasks;
-	JEditorPane txtUndatedTasks;
-	JEditorPane txtCalendar;
+	protected JEditorPane txtDatedTasks;
+	protected JEditorPane txtUndatedTasks;
+	protected JEditorPane txtCalendar;
+	protected JTextField txtCmd;
+	protected JEditorPane txtStatus;
+	protected JPopupMenu popupCmdHint;
+	protected JEditorPane txtCmdHint;
 	
 	private static GuiMain2 theOne = null;
+	private JPanel panelCmd;
+	private JScrollPane scrollPane;
+	private JScrollPane scrollPane_1;
+	private JMenuBar menuBar;
+	private JMenu mnDebug;
+	private JMenuItem mntmGetHtmlOf;
+	//private JEditorPane txtStatus;
+	//private JTextField txtCmd;
 	public static GuiMain2 getInstance(){
 		if (theOne == null){
 			theOne = new GuiMain2();
@@ -73,7 +105,9 @@ public class GuiMain2 extends UI{
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	protected void initialize() {
+		super.initialize();
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 600, 620);
 		
@@ -81,7 +115,7 @@ public class GuiMain2 extends UI{
 		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 		splitPane.setDividerLocation(350);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		splitPane.setLeftComponent(scrollPane);
 		
 		txtDatedTasks = new JEditorPane();
@@ -94,8 +128,24 @@ public class GuiMain2 extends UI{
 		txtDatedTasks.setEditable(false);
 		scrollPane.setViewportView(txtDatedTasks);
 		
-		textField = new JTextField();
-		frame.getContentPane().add(textField, BorderLayout.SOUTH);
+		panelCmd = new JPanel();
+		frame.getContentPane().add(panelCmd, BorderLayout.SOUTH);
+		panelCmd.setLayout(new BorderLayout(0, 0));
+		
+		txtCmd = new JTextField();
+		panelCmd.add(txtCmd, BorderLayout.NORTH);
+		
+		txtStatus = new JEditorPane();
+		txtStatus.setText("Status goes here");
+		panelCmd.add(txtStatus);
+		
+		popupCmdHint = new JPopupMenu();
+		addPopup(txtCmd, popupCmdHint);
+		
+		txtCmdHint = new JEditorPane();
+		popupCmdHint.add(txtCmdHint);
+		
+		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
 		
 		// Dated tasks pane
 		HTMLEditorKit kit = new HTMLEditorKit();
@@ -110,9 +160,6 @@ public class GuiMain2 extends UI{
         
         Document doc = kit.createDefaultDocument();
         txtDatedTasks.setDocument(doc);
-        
-        DatedTaskListRenderer dtr = new DatedTaskListRenderer(sendCommandToLogic("list").getList());
-		txtDatedTasks.setText(dtr.render());
 		
 		// Panel for right side
 		JPanel panel = new JPanel();
@@ -120,7 +167,7 @@ public class GuiMain2 extends UI{
 		panel.setLayout(new BorderLayout(0, 0));
 		
 		// Undated tasks pane
-		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1 = new JScrollPane();
 		panel.add(scrollPane_1);		
 		
 		txtUndatedTasks = new JEditorPane();
@@ -129,10 +176,7 @@ public class GuiMain2 extends UI{
 		scrollPane_1.setViewportView(txtUndatedTasks);
 		
 		Document doc2 = kit.createDefaultDocument();		
-		UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(sendCommandToLogic("list").getList());
-		
 		txtUndatedTasks.setDocument(doc2);
-		txtUndatedTasks.setText(udtr.render());
 		
 		// Calendar
 		txtCalendar = new JEditorPane();
@@ -167,16 +211,110 @@ public class GuiMain2 extends UI{
         
         Document doc3 = kit.createDefaultDocument();
         txtCalendar.setDocument(doc3);
+        
+        menuBar = new JMenuBar();
+        frame.setJMenuBar(menuBar);
+        
+        mnDebug = new JMenu("Debug");
+        menuBar.add(mnDebug);
+        
+        mntmGetHtmlOf = new JMenuItem("Get HTML of right pane");
+        mntmGetHtmlOf.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		HTMLDocument doc = (HTMLDocument)txtUndatedTasks.getDocument();
+        		ElementIterator it = new ElementIterator(doc);
+                Element element;
+        		
+        		while ( (element = it.next()) != null )
+                {
+                    System.out.println();
+
+                    AttributeSet as = element.getAttributes();
+                    Enumeration enumm = as.getAttributeNames();
+
+                    while( enumm.hasMoreElements() )
+                    {
+                        Object name = enumm.nextElement();
+                        Object value = as.getAttribute( name );
+                        System.out.println( "\t" + name + " : " + value );
+
+                        if (value instanceof ToggleButtonModel)
+                        {
+                        	ToggleButtonModel model = (ToggleButtonModel)value;
+                        	model.addActionListener(new ActionListener(){
+                        		public void actionPerformed(ActionEvent e){
+                        			System.out.println(((ToggleButtonModel)e.getSource()).isSelected());
+                        		}
+                        	});
+                            System.out.println(model.isSelected());
+                        }
+                    }
+                }
+        	}
+        });
+        mnDebug.add(mntmGetHtmlOf);
 		
-		CalendarRenderer calr = new CalendarRenderer(new DateTime(), sendCommandToLogic("list").getList());
+		String fileStatus = checkFilePermissions();		
+		executeCommand("list");
+		showStatus(fileStatus);
+		
+	}
+	
+	public void update(LogicToUi returnValue){
+		
+		// Call command to refresh the table
+		showTasksList(sendCommandToLogic("refresh").getList());
+	
+		if (returnValue.containsList()) {
+			showTasksList(returnValue.getList());
+		}
+		
+		showStatus(returnValue.getString());
+	}
+	
+	public void showTasksList(List<Task> taskList){
+		
+		
+	
+		int scrollBarPos = ((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
+		int scrollPaneMiddle = ((JScrollPane) txtDatedTasks.getParent().getParent()).getHeight() /2 ;
+		if (scrollBarPos >= 1){
+			txtDatedTasks.setCaretPosition(txtDatedTasks.viewToModel(new Point(0,scrollBarPos + scrollPaneMiddle)));
+		}
+		int pos = txtDatedTasks.getCaretPosition();
+		DatedTaskListRenderer dtr = new DatedTaskListRenderer(taskList);
+		txtDatedTasks.setText(dtr.render());
+		txtDatedTasks.setCaretPosition(pos);		
+		
+		UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(taskList);
+		txtUndatedTasks.setText(udtr.render());
+		
+		CalendarRenderer calr = new CalendarRenderer(new DateTime(), taskList);
 		txtCalendar.setText(calr.render());
+		
+		try {
+			System.out.println(txtDatedTasks.modelToView(txtDatedTasks.getCaretPosition()));
+			System.out.println((((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue()));
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 
 	@Override
 	public void runUI() {
-		// TODO Auto-generated method stub
-		frame.setVisible(true);
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					GuiMain2 window = new GuiMain2();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		
 	}
 

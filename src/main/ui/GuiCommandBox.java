@@ -29,14 +29,14 @@ import java.util.ListIterator;
 
 public class GuiCommandBox extends UI{
 
-	private JFrame frame;
-	private JTextField txtCmd;
-	private JEditorPane txtStatus;
-	private JPopupMenu popupCmdHint;
-	private JEditorPane txtCmdHint;
+	private JFrame dummyFrame;
+	protected JTextField txtCmd;
+	protected JEditorPane txtStatus;
+	protected JPopupMenu popupCmdHint;
+	protected JEditorPane txtCmdHint;
 	
-	private List<String> commandHistory;
-	private ListIterator<String> commandHistoryIterator;
+	protected List<String> commandHistory;
+	protected ListIterator<String> commandHistoryIterator;
 
 	/**
 	 * Launch the application.
@@ -46,7 +46,8 @@ public class GuiCommandBox extends UI{
 			public void run() {
 				try {
 					GuiCommandBox window = new GuiCommandBox();
-					window.frame.setVisible(true);
+					window.initialize();
+					window.dummyFrame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -65,23 +66,51 @@ public class GuiCommandBox extends UI{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		initialize();
+		//initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	protected void initialize() {
 		
 		// Window
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		dummyFrame = new JFrame();
+		dummyFrame.setBounds(100, 100, 450, 300);
+		dummyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		// Text box for commands
 		txtCmd = new JTextField();
-		frame.getContentPane().add(txtCmd, BorderLayout.NORTH);
+		dummyFrame.getContentPane().add(txtCmd, BorderLayout.NORTH);
+				
+		// Popup for hints
+		popupCmdHint = new JPopupMenu();
+		addPopup(txtCmd, popupCmdHint);
+		
+		// Text box in popup for hints
+		txtCmdHint = new JEditorPane();
+		popupCmdHint.add(txtCmdHint);
+		
+        // Text box for status
+		txtStatus = new JEditorPane();
+				
+		dummyFrame.getContentPane().add(txtStatus, BorderLayout.CENTER);
+		
+		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
+	}
+	
+	protected void configureWidgets(final JTextField txtCmd, JEditorPane txtStatus, final JEditorPane txtCmdHint, final JPopupMenu popupCmdHint){
+		this.txtCmd = txtCmd;
+		this.txtStatus = txtStatus;
+		this.txtCmdHint = txtCmdHint;
+		this.popupCmdHint = popupCmdHint;
+		
 		txtCmd.setColumns(10);
+		
+		txtCmdHint.setEditable(false);
+		txtCmdHint.setContentType("text/html");
+		txtCmdHint.setBackground(new Color(0, 0, 0, 0));
+		txtCmdHint.setOpaque(false);		
 		
 		// Handler for key presses in command box
 		commandHistory = new LinkedList<String>();
@@ -120,7 +149,10 @@ public class GuiCommandBox extends UI{
 						//popupCmdHint.setPopupSize(500, 300);
 						popupCmdHint.setPopupSize(500, (int) txtCmdHint.getPreferredSize().getHeight() + 20);
 						popupCmdHint.show(txtCmd, 5, txtCmd.getHeight());
+						txtCmd.requestFocus();
+						// TODO: Fix stutter for hint box
 						if(popupCmdHint.getLocationOnScreen().getY() < txtCmd.getLocationOnScreen().getY()){
+							popupCmdHint.setVisible(false);
 							popupCmdHint.show(txtCmd, 5, -1 * popupCmdHint.getHeight());
 						}
 						txtCmd.requestFocus();
@@ -133,33 +165,21 @@ public class GuiCommandBox extends UI{
 			}
 		});
 		
-		// Popup for hints
-		popupCmdHint = new JPopupMenu();
-		addPopup(txtCmd, popupCmdHint);
-		
-		// Text box in popup for hints
-		txtCmdHint = new JEditorPane();
-		txtCmdHint.setEditable(false);
-		txtCmdHint.setContentType("text/html");
-		txtCmdHint.setBackground(new Color(0, 0, 0, 0));
-		txtCmdHint.setOpaque(false);
-		popupCmdHint.add(txtCmdHint);
-		
 		// Use HTMLEditorKit to style the HTML
 		HTMLEditorKit kit = new HTMLEditorKit();
 		txtCmdHint.setEditorKit(kit);
 
-        StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body, p {font-family:Segoe UI;}");
-        styleSheet.addRule("h1 {font-family:Segoe UI; margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-        styleSheet.addRule("h2 {font-family:Segoe UI; margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-        styleSheet.addRule("p {margin-top:5px;}");
-        
-        Document doc = kit.createDefaultDocument();
-        txtCmdHint.setDocument(doc);
+		StyleSheet styleSheet = kit.getStyleSheet();
+		styleSheet.addRule("body, p {font-family:Segoe UI;}");
+		styleSheet
+				.addRule("h1 {font-family:Segoe UI; margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
+		styleSheet
+				.addRule("h2 {font-family:Segoe UI; margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
+		styleSheet.addRule("p {margin-top:5px;}");
+
+		Document doc = kit.createDefaultDocument();
+		txtCmdHint.setDocument(doc);
 		
-        // Text box for status
-		txtStatus = new JEditorPane();
 		txtStatus.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent event) {
 				if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -173,8 +193,6 @@ public class GuiCommandBox extends UI{
 		txtStatus.setOpaque(false);
 		txtStatus.setEditable(false);
 		txtStatus.setContentType("text/html");
-		
-		frame.getContentPane().add(txtStatus, BorderLayout.CENTER);
 	}
 	
 	public void executeCommand(String text) {
@@ -188,10 +206,10 @@ public class GuiCommandBox extends UI{
 		update(returnValue);
 	}
 
-	private void showStatus(String status) {
+	protected void showStatus(String status) {
 		txtStatus
 				.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\"><font size=\"4\">"
-						+ status
+						+ HTMLEncoder.encode(status)
 						+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a></font></td></tr></table></html>");
 	}
 	
@@ -204,7 +222,7 @@ public class GuiCommandBox extends UI{
 		initialize();		
 	}
 
-	private static void addPopup(Component component, final JPopupMenu popup) {
+	protected static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
