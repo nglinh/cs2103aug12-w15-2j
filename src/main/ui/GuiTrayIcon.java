@@ -86,9 +86,9 @@ public class GuiTrayIcon extends UI {
 		    };
 		            
 		    PopupMenu popup = new PopupMenu();
-		    MenuItem mainWindowItem = new MenuItem("Main Window");
+		    MenuItem mainWindowItem = new MenuItem("List View");
 		    mainWindowItem.addActionListener(mainWindowListener);
-		    MenuItem mainWindow2Item = new MenuItem("Main Window ver 2");
+		    MenuItem mainWindow2Item = new MenuItem("Agenda View");
 		    mainWindow2Item.addActionListener(mainWindow2Listener);
 		    MenuItem quickAddWindowItem = new MenuItem("Quick Add");
 		    quickAddWindowItem.addActionListener(quickAddWindowListener);

@@ -36,7 +36,12 @@ public class UndatedTaskListRenderer {
 		
 		sb.append("<table cellpadding=0 cellspacing=0 class=\"taskbox\" width=100%>");
 		sb.append("<tr><td rowspan=2><font size=5>"+HTMLEncoder.encode(taskName)+"</font></td><td width=1 align=center>" + taskIndex + "</td></tr>");
-		sb.append("<tr><td valign=top align=center><input type=checkbox></td></tr>");
+		//sb.append("<tr><td valign=top align=center><input type=checkbox></td></tr>");
+		if(t.isDone()){
+			sb.append("<tr><td valign=top align=center><input type=checkbox checked></td></tr>");
+		}else{
+			sb.append("<tr><td valign=top align=center><input type=checkbox></td></tr>");
+		}
 		sb.append("</table>");
 		
 		indexList.add(taskIndex);
