@@ -153,9 +153,9 @@ public class GuiCommandBox extends UI{
 					previousWindowRect = currentWindowRect;
 				}
 				
-				List<String> commands = Hint.getInstance().getCommands();
+
 				boolean isCommand = false;
-				for (String command : commands){
+				for (String command : commandList){
 					if (txtCmd.getText().startsWith(command)) {
 						System.out.println(Hint.getInstance().helpForThisCommandHTML(command));
 						txtCmdHint.setText("<html>"+Hint.getInstance().helpForThisCommandHTML(command)+"</html>");

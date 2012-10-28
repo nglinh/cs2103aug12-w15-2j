@@ -7,6 +7,8 @@ package main.ui;
  */ 
 
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -21,11 +23,13 @@ public abstract class UI {
 	private final DateTimeFormatter LINE_DATE_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_FORMAT);
 	private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 	
-	protected static final String COMMAND_CHECK_FILE_PERMISSIONS = "fileStatus";
+	protected final String COMMAND_CHECK_FILE_PERMISSIONS = "fileStatus";
 
+
+	private static Logic logic = Logic.getInstance();
+	private static Hint hint = Hint.getInstance();
 	
-	private Logic logic = Logic.getInstance();
-	private Hint hint = Hint.getInstance();
+	protected static List<String> commandList = hint.getCommands();
 	
 	//This is the first method that will run the UI after it is constructed. DoITstart will run this.
 	public abstract void runUI();
