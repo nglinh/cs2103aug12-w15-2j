@@ -150,31 +150,10 @@ public class Database {
 		}
 
 		private boolean dateMatching(Task currentEntry, SearchTerms terms) {
-			if(currentEntry.isFloatingTask()) {
-				return false;
-			}
-
-			DateTime timeToCompare;
-
-			if(currentEntry.isDeadlineTask()) {
-				timeToCompare = currentEntry.getDeadline();
-			} else {
-				timeToCompare = currentEntry.getStartDate();
-			}
-
-			if(terms.getStartDate().isEqual(timeToCompare) || 
-					terms.getEndDate().isEqual(timeToCompare)) {
-				return true;
-			}
-
-			if(terms.getStartDate().isBefore(timeToCompare) && 
-					timeToCompare.isBefore(terms.getEndDate())) {
-				return true;
-			}
-
-
-
-			return false;
+			DateTime startRange = terms.getStartDate();
+			DateTime endRange = terms.getEndDate();
+			
+			return currentEntry.clashesWithRange(startRange, endRange);
 
 		}
 
