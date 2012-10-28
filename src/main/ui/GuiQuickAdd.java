@@ -132,7 +132,13 @@ public class GuiQuickAdd extends UI{
 
 		textStatus.setText(returnValue.getString());
 		
-		GuiMain.getInstance().update();
+		// Update other windows
+		GuiMain.getInstance().updateWindow(this);
+		GuiMain2.getInstance().updateWindow(this);
+	}
+
+	public void updateWindow(Object source) {
+		// TODO Auto-generated method stub
 		
 	}
 

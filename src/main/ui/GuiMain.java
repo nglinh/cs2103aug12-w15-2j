@@ -469,10 +469,17 @@ public class GuiMain extends GuiCommandBox{
 		}
 		
 		showStatus(returnValue.getString());
+		
+		// Update other windows
+		//GuiMain2.getInstance().updateWindow(this);
+		//GuiQuickAdd.getInstance().updateWindow(this);
 	}
 
-	public void update() {
-		executeCommand("refresh");
+	public void updateWindow(Object source) {
+		if(source != this){
+			showTasksList(sendCommandToLogic("refresh").getList());
+		}
+		//executeCommand("refresh");
 		
 	}
 
