@@ -1,5 +1,12 @@
 package main.ui;
-
+/**  
+ * Hint.java 
+ * To provide the help/hint function
+ * 
+ * Data read from help.xml resource.
+ * HTML and nonHTML output for GUI and CLI respectively.
+ * @author  Yeo Kheng Meng
+ */ 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,9 +131,6 @@ public class Hint {
 	}
 
 }
-
-
-
 
 
 class CmdHint {
