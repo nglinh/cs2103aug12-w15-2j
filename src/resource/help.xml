@@ -4,17 +4,11 @@
 		<name><![CDATA[<h1>Help</h1>]]></name>
 		<summary><![CDATA[For graphical interface users, just type the command to see the drop down help.<br>For command-line users, type "help [command]" for detailed usage for "command"]]></summary>		
 		<usage>help</usage>
-		<usage>add</usage>
-		<usage>list</usage>
-		<usage>edit</usage>
+		<usage>add, edit, postpone</usage>
+		<usage>list, sort, search, refresh</usage>
+		<usage>done, undone</usage>
 		<usage>delete</usage>
-		<usage>done</usage>
-		<usage>undone</usage>
 		<usage>undo</usage>
-		<usage>refresh</usage>
-		<usage>sort</usage>
-		<usage>postpone</usage>
-		<usage>search</usage>
 		<usage>exit</usage>
 		<extra>Terminology:</extra>
 		<extra>Floating tasks: Tasks which have no time component.</extra>
