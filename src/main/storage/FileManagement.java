@@ -46,7 +46,7 @@ public class FileManagement {
 
 		private static final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
 
-		//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
+//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
 		private static final int LINE_POSITION_TASKTYPE = 1;
 		private static final int LINE_POSITION_DONE = 2;
 		private static final int LINE_POSITION_DEADLINE_DATE = 3;
@@ -109,7 +109,7 @@ public class FileManagement {
 
 		public void readFileAndDetectCorruption(ArrayList<Task> storeInHere) {
 			if(storeInHere == null) {
-				throw new IllegalArgumentException("null input");
+				throw new IllegalArgumentException();
 			}
 
 			if((fileAttributes.equals(FileStatus.FILE_ALL_OK)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
@@ -181,7 +181,14 @@ public class FileManagement {
 
 
 		private void readFiletoDataBase(ArrayList<Task> storeInHere) throws IOException, DataFormatException {
-
+			assert(storeInHere != null);
+			
+			if(randDatabaseAccess == null) {
+				throw new IOException();
+			}
+			
+			
+			
 			int fileSize = (int) databaseFile.length();
 			byte[] fileByteContents = new byte[fileSize];
 
@@ -208,6 +215,8 @@ public class FileManagement {
 		}
 
 		private Task TaskParser(String[] parsed) throws DataFormatException {
+			assert(parsed != null);
+			
 			Task parsedTask;
 
 			switch(parsed[LINE_POSITION_TASKTYPE])	{
@@ -226,7 +235,8 @@ public class FileManagement {
 		}
 
 		private Task parseInTimedTask(String[] parsed) throws DataFormatException {
-
+			assert(parsed != null);
+			
 			String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);
 			boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
 			DateTime startDate = parseDate(parsed[LINE_POSITION_START_DATE]); 
@@ -242,7 +252,8 @@ public class FileManagement {
 
 		private String parseTaskName(String taskName)
 				throws DataFormatException {
-
+			assert(taskName != null);
+			
 			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
 				throw new DataFormatException();
 			}
@@ -251,7 +262,8 @@ public class FileManagement {
 
 
 		private Task parseInDeadlineTask(String[] parsed) throws DataFormatException {
-
+			assert(parsed != null);
+			
 			String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);		
 			boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
 			DateTime deadline = parseDate(parsed[LINE_POSITION_DEADLINE_DATE]);
@@ -260,15 +272,17 @@ public class FileManagement {
 		}
 
 		private Task parseInFloatingTask(String[] parsed) throws DataFormatException {
-
+			assert(parsed != null);
+			
 			String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);
 			boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
 
 			return new Task(taskName, done);
 		}
 
-		private boolean retrieveTaskDoneStatus(String parsed)
-				throws DataFormatException {
+		private boolean retrieveTaskDoneStatus(String parsed) throws DataFormatException {
+			assert(parsed != null);
+			
 			boolean done;
 
 			if(parsed.equals(LINE_DONE)) {
@@ -283,6 +297,7 @@ public class FileManagement {
 
 
 		private DateTime parseDate(String date) throws DataFormatException {
+			
 			DateTime parsedDate = null;
 
 			try {
@@ -296,7 +311,8 @@ public class FileManagement {
 
 
 		private String taskToDatabaseString(Task toBeConverted, int index) {	
-
+			assert(toBeConverted != null);
+			
 			String typeString;
 
 			TaskType typeOfIncomingTask = toBeConverted.getType();
@@ -341,7 +357,7 @@ public class FileManagement {
 
 		public void writeDataBaseToFile(ArrayList<Task> toBeWritten) throws IOException, WillNotWriteToCorruptFileException	{
 			if(toBeWritten == null) {
-				throw new IllegalArgumentException("null input");
+				throw new IllegalArgumentException();
 			}
 
 			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
