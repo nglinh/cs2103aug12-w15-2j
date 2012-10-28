@@ -43,6 +43,7 @@ public class GuiCommandBox extends UI{
 	private enum HintPosEnum {ABOVE, BELOW, UNDEFINED};
 	private HintPosEnum hintPos = HintPosEnum.UNDEFINED;
 	private Rectangle previousWindowRect;
+	private String hintPreviousCommand = "";
 
 	/**
 	 * Launch the application.
@@ -157,6 +158,11 @@ public class GuiCommandBox extends UI{
 				boolean isCommand = false;
 				for (String command : commandList){
 					if (txtCmd.getText().startsWith(command)) {
+						if(!hintPreviousCommand.equals(command)){
+							hintPos = HintPosEnum.UNDEFINED;
+							hintPreviousCommand = command;
+						}						
+						
 						System.out.println(Hint.getInstance().helpForThisCommandHTML(command));
 						txtCmdHint.setText("<html>"+Hint.getInstance().helpForThisCommandHTML(command)+"</html>");
 						System.out.println(popupCmdHint.getSize());
