@@ -217,6 +217,7 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		StyleSheet styleSheet2 = kit.getStyleSheet();
         styleSheet2.addRule(".calendar td{text-align:right;}");
+        styleSheet2.addRule("a {color:#2A5696;text-decoration:none;}");
         
         Document doc3 = kit.createDefaultDocument();
         txtCalendar.setDocument(doc3);
@@ -272,7 +273,10 @@ public class GuiMain2 extends GuiCommandBox{
         mnDebug.add(mntmRefresh);
 		
 		String fileStatus = checkFilePermissions();		
-		executeCommand("list");
+		// executeCommand("list");
+		// Note we do not use executeCommand here, as doing so will cause a further update
+		// request to be propagated to all windows.
+		showTasksList(sendCommandToLogic("refresh").getList());
 		showStatus(fileStatus);
 	}
 	
@@ -290,12 +294,14 @@ public class GuiMain2 extends GuiCommandBox{
 		// Update other windows
 		//GuiMain.getInstance().updateWindow(this);
 		//GuiQuickAdd.getInstance().updateWindow(this);
+		GuiUpdate.update(this);
 	}
 	
 	public void updateWindow(Object source) {
-		
-		if(this.frame.isVisible() && source != this){
-			showTasksList(sendCommandToLogic("refresh").getList());
+		if(source != this){
+			LogicToUi result = sendCommandToLogic("refresh");
+			showTasksList(result.getList());
+			showStatus(result.getString());
 		}
 		//executeCommand("refresh");
 		
@@ -303,6 +309,9 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	public void showTasksList(List<Task> taskList){
 		
+		// This code moves the current caret position to the middle of the current
+		// view, and stores it. After updating, we move the caret back to the same position
+		// to keep the same view in place.
 		int txtDatedTasksCaretPos = 0, txtUndatedTasksCaretPos = 0;
 		try{
 			int txtDatedTasksScrollBarPos = ((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
@@ -342,6 +351,7 @@ public class GuiMain2 extends GuiCommandBox{
 		CalendarRenderer calr = new CalendarRenderer(new DateTime(), taskList);
 		txtCalendar.setText(calr.render());
 		
+		/*
 		try {
 			System.out.println(txtDatedTasks.modelToView(txtDatedTasks.getCaretPosition()));
 			System.out.println((((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue()));
@@ -349,6 +359,7 @@ public class GuiMain2 extends GuiCommandBox{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		System.out.println(dtr.getIndexList());
 		System.out.println(udtr.getIndexList());
