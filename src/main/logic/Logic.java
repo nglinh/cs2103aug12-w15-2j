@@ -22,7 +22,6 @@ import main.shared.LogicToUi.SortStatus;
 import main.shared.SearchTerms;
 import main.shared.Task.SortByEndDate;
 import main.shared.Task.SortByStartDate;
-import main.shared.Task.TaskType;
 import main.storage.Database;
 import main.storage.NoMoreUndoStepsException;
 import main.storage.WillNotWriteToCorruptFileException;
@@ -31,9 +30,6 @@ import main.shared.Task;
 import main.storage.Database.DB_File_Status;
 
 public class Logic {
-	private static final String ERROR_CANNOT_PARSE_DATE = "One or more field(s) expects time component. However," +
-			"either time component is missing, or DoIt! could not parse it :(." +
-			"Please check your input";
 	private final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check your file permissions.";
 	private final String ERROR_FILE_CORRUPTED = "File is corrupted. Please rectify the problem or delete the database file and restart DoIT. :(";
 
@@ -41,11 +37,12 @@ public class Logic {
 		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE, EXIT
 	};
 
-
+	private CommandParser parser;
+	private CommandExecutor executor;
 	public Database dataBase = null;
-	private ArrayList<Task> lastShownToUI = new ArrayList<Task>();
+	public static ArrayList<Task> lastShownToUI = new ArrayList<Task>();
 	private String latestRefreshCommandForUI = "list";
-
+	
 	private String latestCommandFromUI = null;
 	private Stack<String> undoHistory = new Stack<String>();
 
@@ -294,77 +291,11 @@ public class Logic {
 	}
 
 
-	private LogicToUi editTask(String arguments) {
-		try{
-			int index;
-			index = Integer.parseInt(arguments.split(" ")[0]);
-			arguments = arguments.replaceFirst(arguments.trim().split(" ")[0], "").trim();
-			index--; //Since arraylist index starts from 0
-
-			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {
-				throw new NoSuchElementException();
-			}
-
-			int serial = lastShownToUI.get(index).getSerial();
-
-			Task toBeEdited = dataBase.locateATask(serial);
-			EditParser editParser = new EditParser(arguments);
-			if(editParser.willChangeDeadline){
-				if(toBeEdited.getType()!= TaskType.DEADLINE){
-					toBeEdited.changetoDeadline(editParser.getNewDeadline());
-				}
-				else{
-					toBeEdited.changeDeadline(editParser.getNewDeadline());
-				}
-			}
-			if(editParser.willChangeName){
-				toBeEdited.changeName(editParser.getNewName());
-			}
-			if(editParser.willChangeStartTime){
-				if(toBeEdited.getType()!=TaskType.TIMED){
-					if(!editParser.willChangeEndTime){
-						return new LogicToUi("In order to change to timed task, you need to specify" +
-								"both start time and end time.");
-					}
-					else{
-						toBeEdited.changetoTimed(editParser.getNewStartTime(), editParser.getNewEndTime());
-					}
-				}
-				else{
-					toBeEdited.changeStartAndEndDate(editParser.getNewStartTime(), toBeEdited.getEndDate());
-				}
-			}
-			if(editParser.willChangeEndTime){
-				if(toBeEdited.getType()!=TaskType.TIMED){
-					if(!editParser.willChangeStartTime){
-						return new LogicToUi("In order to change to timed task, you need to specify" +
-								"both start time and end time.");
-					}
-					else{
-						toBeEdited.changetoTimed(editParser.getNewStartTime(), editParser.getNewEndTime());
-					}
-				}
-				else{
-					toBeEdited.changeStartAndEndDate(toBeEdited.getStartDate(), editParser.getNewEndTime());
-				}
-			}
-			if(editParser.willChangeType){
-				toBeEdited.changetoFloating();
-			}
-			dataBase.update(serial, toBeEdited);
-			pushCommandToUndoHistoryStack();
-			return new LogicToUi(taskToString(toBeEdited) + " updated.",toBeEdited.getSerial());
-		}catch (NoSuchElementException | NumberFormatException e) {
-			return new LogicToUi(
-					"Sorry this index number or parameter you provided is not valid. " +
-					"Please try again with a correct number or refresh the list.");
-		} catch (IOException e) {
-			return new LogicToUi(ERROR_IO);
-		} catch (WillNotWriteToCorruptFileException e) {
-			return new LogicToUi(ERROR_FILE_CORRUPTED);
-		} catch (CannotParseDateException e) {
-			return new LogicToUi(ERROR_CANNOT_PARSE_DATE);
-		}
+	private LogicToUi editTask(String argument) {
+			parser = new EditParser(argument);
+			parser.parse();
+			executor = new EditExecutor((EditParser) parser);
+			return executor.execute();
 	}
 
 	private LogicToUi sort(String arguments) {
@@ -756,51 +687,10 @@ public class Logic {
 
 
 	private LogicToUi addTask(String arguments) {
-		if(arguments.length()==0)
-			return new LogicToUi("Cannot add a task with empty description.");
-		try {
-			Task newTask;
-			AddParser argParser = new AddParser(arguments);
-			argParser.parse();
-			TaskType taskType = argParser.getTaskType();
-			switch (taskType){
-			case FLOATING:
-				newTask = new Task(argParser.getTaskDescription());
-				dataBase.add(newTask);
-				pushCommandToUndoHistoryStack();
-				break;
-			case DEADLINE:
-				DateTime dt = argParser.getBeginTime();
-				String taskName = argParser.getTaskDescription();
-				newTask = new Task(taskName,dt);
-				dataBase.add(newTask);
-				pushCommandToUndoHistoryStack();
-				break;
-
-			case TIMED:
-				DateTime st = argParser.getBeginTime();
-				DateTime et = argParser.getEndTime();
-				String newTaskName = argParser.getTaskDescription();
-				newTask = new Task(newTaskName, st, et);
-				dataBase.add(newTask);
-				pushCommandToUndoHistoryStack();
-				break;
-			default:
-				return new LogicToUi(
-						"I could not determine the type of your event. Can you be more specific?");
-			}
-			return new LogicToUi(  taskToString(newTask)+ " added",newTask.getSerial());
-		} 
-		catch (WillNotWriteToCorruptFileException e){
-			return null;
-		}
-		catch( EmptyDescriptionException e) {
-			return new LogicToUi("Task description cannot be empty");
-		}
-		catch (IOException e) {
-			return new LogicToUi(ERROR_IO);
-		}
-
+		parser = new AddParser(arguments);
+		parser.parse();
+		executor = new AddExecutor((AddParser) parser);
+		return executor.execute();
 	}
 
 	private Logic(){
