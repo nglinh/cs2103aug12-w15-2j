@@ -60,7 +60,7 @@ public class FileManagement {
 		private static final String[] filehelp = {
 			"################################################################################################################################################################" ,
 			"# Ref| Type | Done |        Deadline        |          Start         |          End           |                                  Task                          #" ,
-			"#  1 |  D   |   *  | 01-Jan-2012 0600 +0800 | ---------------------- | ---------------------- | An undone deadline task by 0600 1st Jan 2012                   #" ,
+			"#  1 |  D   |   *  | 01-Jan-2012 0600 +0800 | ---------------------- | ---------------------- | A done deadline task by 0600 1st Jan 2012                      #" ,
 			"#  2 |  T   |   -  | ---------------------- | 31-Dec-2012 2359 +0800 | 28-Feb-2013 2248 +0800 | An undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #" , 
 			"#  3 |  F   |   *  | ---------------------- | ---------------------- | ---------------------- | A done floating task                                           #" ,
 			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                                         #" ,

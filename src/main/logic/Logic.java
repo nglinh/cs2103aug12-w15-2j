@@ -31,14 +31,14 @@ import main.shared.Task;
 import main.storage.Database.DB_File_Status;
 
 public class Logic {
-	private final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check the permission"
-			+ "for the file";
-	private final String ERROR_FILE_CORRUPTED = "File is corrupted. Please check :(.";
-
-
+	private static final String ERROR_CANNOT_PARSE_DATE = "One or more field(s) expects time component. However," +
+			"either time component is missing, or DoIt! could not parse it :(." +
+			"Please check your input";
+	private final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check your file permissions.";
+	private final String ERROR_FILE_CORRUPTED = "File is corrupted. Please rectify the problem or delete the database file and restart DoIT. :(";
 
 	public enum CommandType {
-		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE
+		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE, EXIT
 	};
 
 
@@ -121,10 +121,8 @@ public class Logic {
 			//Fallthrough
 		case "u" :
 			return CommandType.UNDO;
-
 		case "sort":
 			return CommandType.SORT;
-
 		case "filestatus":
 			return CommandType.FILE_STATUS;
 		case "refresh":
@@ -134,11 +132,19 @@ public class Logic {
 		case "undone" :
 			return CommandType.UNDONE;
 		case "edit":
-
+		//fall through	
+		case "edi":
+		//fall through
+		case "upd":
+		//fall through	
 		case "update":
 			return CommandType.EDIT;
 		case "postpone":
 			return CommandType.POSTPONE;
+		case "exit":
+			//Fallthrough
+		case "quit":
+			return CommandType.EXIT;
 		default:
 			throw new NoSuchCommandException();
 		}
@@ -172,13 +178,21 @@ public class Logic {
 		case SORT:
 			return sort(arguments);
 		case EDIT:
-			return edit(arguments);
+			return editTask(arguments);
 		case POSTPONE:
 			return postpone(arguments);
+		case EXIT:
+			return exit();
 		default:
 			return null;
 		}
 	}
+
+	private LogicToUi exit() {
+		dataBase.unlockFileToExit();
+		return new LogicToUi("Exiting DoIt");
+	}
+
 
 	private LogicToUi postpone(String arguments) {
 
@@ -280,7 +294,7 @@ public class Logic {
 	}
 
 
-	private LogicToUi edit(String arguments) {
+	private LogicToUi editTask(String arguments) {
 		try{
 			int index;
 			index = Integer.parseInt(arguments.split(" ")[0]);
@@ -339,7 +353,7 @@ public class Logic {
 			}
 			dataBase.update(serial, toBeEdited);
 			pushCommandToUndoHistoryStack();
-			return new LogicToUi(taskToString(toBeEdited) + " updated.");
+			return new LogicToUi(taskToString(toBeEdited) + " updated.",toBeEdited.getSerial());
 		}catch (NoSuchElementException | NumberFormatException e) {
 			return new LogicToUi(
 					"Sorry this index number or parameter you provided is not valid. " +
@@ -348,6 +362,8 @@ public class Logic {
 			return new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
 			return new LogicToUi(ERROR_FILE_CORRUPTED);
+		} catch (CannotParseDateException e) {
+			return new LogicToUi(ERROR_CANNOT_PARSE_DATE);
 		}
 	}
 
@@ -666,63 +682,6 @@ public class Logic {
 		return new LogicToUi(results, statusMsg, filter);
 	}
 
-	private LogicToUi deleteTask(String arguments){
-		if(arguments.length() == 0) {
-			return new LogicToUi(
-					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
-		}
-
-
-		int index;
-
-		try {
-			if(arguments.equals("over")){
-				dataBase.deleteOver();
-				pushCommandToUndoHistoryStack();
-				return new LogicToUi("All tasks that has ended before this moment have been deleted");
-			}
-
-			if(arguments.equals("done")){
-				dataBase.deleteDone();
-				pushCommandToUndoHistoryStack();
-				return new LogicToUi("All completed tasks have been deleted");
-			}
-
-			if(arguments.equals("all")){
-				dataBase.deleteAll();
-				pushCommandToUndoHistoryStack();
-				return new LogicToUi("All tasks have been deleted");
-			}
-
-
-			index = Integer.parseInt(arguments);
-			index--; //Since arraylist index starts from 0
-
-			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {
-				throw new NoSuchElementException();
-			}
-
-			int serial = lastShownToUI.get(index).getSerial();
-
-			Task toBeDeleted = dataBase.locateATask(serial);
-			dataBase.delete(serial);
-			pushCommandToUndoHistoryStack();
-
-			String taskDetails = taskToString(toBeDeleted);
-			return new LogicToUi(taskDetails + " has been deleted.");
-		} catch (NoSuchElementException | NumberFormatException e) {
-			return new LogicToUi(
-					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
-		} catch (IOException e) {
-			return new LogicToUi(
-					ERROR_IO);
-		} catch (WillNotWriteToCorruptFileException e) {
-			return new LogicToUi(ERROR_FILE_CORRUPTED);
-		}
-
-
-	}
-
 	private String taskToString(Task toBeConverted) {
 
 		if(toBeConverted.isTimedTask()) {
@@ -740,26 +699,83 @@ public class Logic {
 		return LINE_DATE_FORMATTER.print(inputDate);
 	}
 
+	private LogicToUi deleteTask(String arguments){
+		if(arguments.length() == 0) {
+			return new LogicToUi(
+					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
+		}
+		int index;
+	
+		try {
+			if(arguments.equals("over")){
+				dataBase.deleteOver();
+				pushCommandToUndoHistoryStack();
+				return new LogicToUi("All tasks that has ended before this moment have been deleted");
+			}
+	
+			if(arguments.equals("done")){
+				dataBase.deleteDone();
+				pushCommandToUndoHistoryStack();
+				return new LogicToUi("All completed tasks have been deleted");
+			}
+	
+			if(arguments.equals("all")){
+				dataBase.deleteAll();
+				pushCommandToUndoHistoryStack();
+				return new LogicToUi("All tasks have been deleted");
+			}
+	
+	
+			index = Integer.parseInt(arguments);
+			index--; //Since arraylist index starts from 0
+	
+			if((index < 0) || ((index  +  1) > lastShownToUI.size()) ) {
+				throw new NoSuchElementException();
+			}
+	
+			int serial = lastShownToUI.get(index).getSerial();
+	
+			Task toBeDeleted = dataBase.locateATask(serial);
+			dataBase.delete(serial);
+			pushCommandToUndoHistoryStack();
+	
+			String taskDetails = taskToString(toBeDeleted);
+			return new LogicToUi(taskDetails + " has been deleted.");
+		} catch (NoSuchElementException | NumberFormatException e) {
+			return new LogicToUi(
+					"Sorry this index number or parameter you provided is not valid. Please try again with a correct number or refresh the list.");
+		} catch (IOException e) {
+			return new LogicToUi(
+					ERROR_IO);
+		} catch (WillNotWriteToCorruptFileException e) {
+			return new LogicToUi(ERROR_FILE_CORRUPTED);
+		}
+	
+	
+	}
+
+
 	private LogicToUi addTask(String arguments) {
 		if(arguments.length()==0)
 			return new LogicToUi("Cannot add a task with empty description.");
 		try {
 			Task newTask;
 			AddParser argParser = new AddParser(arguments);
+			argParser.parse();
 			TaskType taskType = argParser.getTaskType();
 			switch (taskType){
 			case FLOATING:
 				newTask = new Task(argParser.getTaskDescription());
 				dataBase.add(newTask);
 				pushCommandToUndoHistoryStack();
-				return new LogicToUi(  taskToString(newTask)+ " added");
+				break;
 			case DEADLINE:
 				DateTime dt = argParser.getBeginTime();
 				String taskName = argParser.getTaskDescription();
 				newTask = new Task(taskName,dt);
 				dataBase.add(newTask);
 				pushCommandToUndoHistoryStack();
-				return new LogicToUi(taskToString(newTask) + " added");
+				break;
 
 			case TIMED:
 				DateTime st = argParser.getBeginTime();
@@ -768,12 +784,12 @@ public class Logic {
 				newTask = new Task(newTaskName, st, et);
 				dataBase.add(newTask);
 				pushCommandToUndoHistoryStack();
-				return new LogicToUi(taskToString(newTask) +" added");
+				break;
 			default:
 				return new LogicToUi(
 						"I could not determine the type of your event. Can you be more specific?");
-
-			} 
+			}
+			return new LogicToUi(  taskToString(newTask)+ " added",newTask.getSerial());
 		} 
 		catch (WillNotWriteToCorruptFileException e){
 			return null;
@@ -782,17 +798,13 @@ public class Logic {
 			return new LogicToUi("Task description cannot be empty");
 		}
 		catch (IOException e) {
-			return new LogicToUi(
-					ERROR_IO);
+			return new LogicToUi(ERROR_IO);
 		}
 
 	}
 
-
-
 	private Logic(){
 		dataBase = Database.getInstance();
-
 	}
 
 }

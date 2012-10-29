@@ -529,7 +529,10 @@ public class Database {
 		public int getUndoStepsLeft() {
 			return undoOperations.size();
 		}
-
+		
+		public void unlockFileToExit(){
+				diskFile.closeFile();
+		}
 
 		private DB_File_Status parseFileAttributes(FileManagement diskFile) {
 
