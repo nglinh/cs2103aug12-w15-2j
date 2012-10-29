@@ -15,6 +15,7 @@ import main.shared.LogicToUi;
 
 public class Cli extends UI{
 
+
 	protected static final String MESSAGE_WELCOME_TO_DO_IT = "Welcome to DoIT!";
 	private static final String MESSAGE_CLI_CUSTOM = "(Fail-Safe) No Tab-completion";
 	protected static final String MESSAGE_INITIAL_HELP_OFFER = "Type \"help\" for a list of commands.";
@@ -28,15 +29,17 @@ public class Cli extends UI{
 
 	protected static final String TABLE_LINE_PARAM_DELIMITER = "|";
 
-	protected static final String TABLE_TOP_AND_BOTTOM           = "+-----------------------------------------------------------------------------+";
-	protected static final String TABLE_HEADER                   = "|Idx| |  Start/Deadline   |        End        |           What to Do?         |";
-	protected static final String TABLE_ROW_DEMARCATION          = "+---+-+-------------------+-------------------+-------------------------------+";
+	protected static	   String TABLE_TOP_AND_BOTTOM           = "+-----------------------------------------------------------------------------+";
+	protected static 	   String TABLE_HEADER                   = "|Idx| |  Start/Deadline   |        End        |      What to Do?              |";
+	protected static 	   String TABLE_ROW_DEMARCATION          = "+---+-+-------------------+-------------------+-------------------------------+";
 	protected static final String TABLE_ENTRY_FORMAT = TABLE_LINE_PARAM_DELIMITER + "%1$3d" + TABLE_LINE_PARAM_DELIMITER + "%2$s" + TABLE_LINE_PARAM_DELIMITER +  " %3$s " + TABLE_LINE_PARAM_DELIMITER +  " %4$s " + TABLE_LINE_PARAM_DELIMITER +  " %5$s " + TABLE_LINE_PARAM_DELIMITER;
 
 	protected static final String TABLE_ENTRY_OVERFLOW_FORMAT = TABLE_LINE_PARAM_DELIMITER + "   " + TABLE_LINE_PARAM_DELIMITER + " "  + TABLE_LINE_PARAM_DELIMITER + "                   "  +   TABLE_LINE_PARAM_DELIMITER + "                   " +  TABLE_LINE_PARAM_DELIMITER + " %1$s " + TABLE_LINE_PARAM_DELIMITER;
 
-	protected static final int    TABLE_DESCRIPTION_ALLOWANCE = 29;
-	protected static final String TABLE_DESCRIPTION_PAD = "%-" + TABLE_DESCRIPTION_ALLOWANCE + "s";
+	protected static int consoleWidth = 80;
+	protected static final int TABLE_SIZE_OF_PRE_TASK_DESCRIPTION = 51;
+	protected static int    TABLE_DESCRIPTION_ALLOWANCE = consoleWidth - TABLE_SIZE_OF_PRE_TASK_DESCRIPTION;
+	protected static String TABLE_DESCRIPTION_PAD = "%-" + TABLE_DESCRIPTION_ALLOWANCE + "s";
 
 	protected static final String TABLE_ENTRY_UNDONE = "-";
 	protected static final String TABLE_ENTRY_DONE = "*";
