@@ -326,8 +326,8 @@ public class AddParser {
 	}
 	private String getStringInsideApostrophe() {
 		String result = "";
-		int firstApostrophePos = argument.indexOf('*');
-		int lastApostrophePos = argument.lastIndexOf('*');
+		int firstApostrophePos = argument.indexOf('\"');
+		int lastApostrophePos = argument.lastIndexOf('\"');
 		for(int i =firstApostrophePos+1;i<=lastApostrophePos-1;++i){
 			result+= argument.toCharArray()[i];
 		}
