@@ -43,6 +43,7 @@ public class GuiCommandBox extends UI{
 	private enum HintPosEnum {ABOVE, BELOW, UNDEFINED};
 	private HintPosEnum hintPos = HintPosEnum.UNDEFINED;
 	private Rectangle previousWindowRect;
+	private String hintPreviousCommand = "";
 
 	/**
 	 * Launch the application.
@@ -157,6 +158,11 @@ public class GuiCommandBox extends UI{
 				boolean isCommand = false;
 				for (String command : commandList){
 					if (txtCmd.getText().startsWith(command)) {
+						if(!hintPreviousCommand.equals(command)){
+							hintPos = HintPosEnum.UNDEFINED;
+							hintPreviousCommand = command;
+						}						
+						
 						System.out.println(Hint.getInstance().helpForThisCommandHTML(command));
 						txtCmdHint.setText("<html>"+Hint.getInstance().helpForThisCommandHTML(command)+"</html>");
 						System.out.println(popupCmdHint.getSize());
@@ -169,7 +175,7 @@ public class GuiCommandBox extends UI{
 						}else{ // undefined
 							popupCmdHint.show(txtCmd, 5, txtCmd.getHeight());
 							hintPos = HintPosEnum.BELOW;
-							if(popupCmdHint.getLocationOnScreen().getY() < txtCmd.getLocationOnScreen().getY()){
+							if(popupCmdHint.getLocationOnScreen().getY() < txtCmd.getLocationOnScreen().getY() + txtCmd.getSize().getHeight()){
 								popupCmdHint.setVisible(false);
 								popupCmdHint.show(txtCmd, 5, -1 * popupCmdHint.getHeight());
 								hintPos = HintPosEnum.ABOVE;
@@ -189,13 +195,13 @@ public class GuiCommandBox extends UI{
 		HTMLEditorKit kit = new HTMLEditorKit();
 		txtCmdHint.setEditorKit(kit);
 
-		StyleSheet styleSheet = kit.getStyleSheet();
-		styleSheet.addRule("body, p {font-family:Segoe UI;}");
-		styleSheet
+		StyleSheet hintStyleSheet = kit.getStyleSheet();
+		hintStyleSheet.addRule("body, p {font-family:Segoe UI;}");
+		hintStyleSheet
 				.addRule("h1 {font-family:Segoe UI; margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-		styleSheet
+		hintStyleSheet
 				.addRule("h2 {font-family:Segoe UI; margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-		styleSheet.addRule("p {margin-top:5px;}");
+		hintStyleSheet.addRule("p {margin-top:5px;}");
 
 		Document doc = kit.createDefaultDocument();
 		txtCmdHint.setDocument(doc);

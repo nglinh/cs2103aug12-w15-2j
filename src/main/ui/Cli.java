@@ -49,7 +49,7 @@ public class Cli extends UI{
 
 		System.out.println(MESSAGE_WELCOME_TO_DO_IT);
 		System.out.println(MESSAGE_CLI_CUSTOM);
-		System.out.println(checkFilePermissions() + "\n");
+		System.out.println(super.checkFilePermissions() + "\n");
 		System.out.println(MESSAGE_INITIAL_HELP_OFFER);
 		System.out.print(MESSAGE_NEXT_COMMAND);
 
@@ -88,7 +88,7 @@ public class Cli extends UI{
 		case COMMAND_QUIT :
 		{
 			scan.close();
-			exit();
+			super.exit();
 		}
 		break;
 		case COMMAND_HELP :
@@ -105,7 +105,7 @@ public class Cli extends UI{
 
 	protected String passMessageToLogic(String lineFromInput) {
 		assert(lineFromInput != null);
-		LogicToUi logicReturn = sendCommandToLogic(lineFromInput);
+		LogicToUi logicReturn = super.sendCommandToLogic(lineFromInput);
 
 		String result;
 		if(logicReturn.containsList()) {
@@ -127,7 +127,7 @@ public class Cli extends UI{
 
 		StringBuffer screenTable = new StringBuffer();
 
-		screenTable.append("Current Date/Time is: "+ currentTimeInLongerForm() + "\n");
+		screenTable.append("Current Date/Time is: "+ super.currentTimeInLongerForm() + "\n");
 
 		screenTable.append(TABLE_TOP_AND_BOTTOM + "\n");
 		screenTable.append(TABLE_HEADER + "\n");
@@ -172,15 +172,15 @@ public class Cli extends UI{
 
 
 		if(entry.getType().equals(TaskType.TIMED)) {
-			start = dateTimeToString(entry.getStartDate());
+			start = super.dateTimeToString(entry.getStartDate());
 		} else if(entry.getType().equals(TaskType.DEADLINE)) {
-			start = dateTimeToString(entry.getDeadline());
+			start = super.dateTimeToString(entry.getDeadline());
 		} else {
 			start = TABLE_EMPTY_DATE_FIELD;
 		}
 
 		if(entry.getType().equals(TaskType.TIMED)) {
-			end = dateTimeToString(entry.getEndDate());
+			end = super.dateTimeToString(entry.getEndDate());
 		} else {
 			end = TABLE_EMPTY_DATE_FIELD;
 		}
@@ -226,9 +226,9 @@ public class Cli extends UI{
 		String text;
 		
 		if(command.length == 1){
-			 text = getNoHTMLHelp("help");
+			 text = super.getNoHTMLHelp("help");
 		} else {
-			text = getNoHTMLHelp(command[1]);
+			text = super.getNoHTMLHelp(command[1]);
 		}
 		if(!text.isEmpty()){
 			return text;
