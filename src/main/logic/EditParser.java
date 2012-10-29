@@ -32,12 +32,11 @@ public class EditParser implements CommandParser{
 	private String argument;
 	public EditParser(String arg) {
 		argument = arg;
-		parse();
 	}
 	@Override
 	public void parse(){
 		int index;
-		index = Integer.parseInt(argument.split(" ")[0]);
+		index = Integer.parseInt(getFirstWord(argument));
 		argument = removeFirstWord(argument);
 		index--; //Since arraylist index starts from 0
 	
