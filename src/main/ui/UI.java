@@ -17,13 +17,15 @@ import main.shared.LogicToUi;
 import main.logic.Logic;
 
 public abstract class UI {
-	private final String LINE_DATE_FORMAT = "dd-MMM-yy hh:mma";
-	private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
 	
-	private final DateTimeFormatter LINE_DATE_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_FORMAT);
-	private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
+	private static final String LINE_DATE_FORMAT = "dd-MMM-yy hh:mma";
+	private static final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma";
 	
-	protected final String COMMAND_CHECK_FILE_PERMISSIONS = "fileStatus";
+	private static final DateTimeFormatter LINE_DATE_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_FORMAT);
+	private static final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
+	
+	private static final String COMMAND_CHECK_FILE_PERMISSIONS = "fileStatus";
+	private static final String COMMAND_EXIT = "exit";
 
 
 	private static Logic logic = Logic.getInstance();
@@ -66,6 +68,7 @@ public abstract class UI {
 	}
 	
 	protected void exit(){
+		sendCommandToLogic(COMMAND_EXIT);
 		System.exit(0);
 	}
 

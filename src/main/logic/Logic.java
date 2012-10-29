@@ -31,17 +31,14 @@ import main.shared.Task;
 import main.storage.Database.DB_File_Status;
 
 public class Logic {
+	private final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check your file permissions.";
+	private final String ERROR_FILE_CORRUPTED = "File is corrupted. Please rectify the problem or delete the database file and restart DoIT. :(";
 	private static final String ERROR_CANNOT_PARSE_DATE = "One or more field(s) expects time component. However," +
 			"either time component is missing, or DoIt! could not parse it :(." +
 			"Please check your input";
-	private final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check the permission"
-			+ "for the file";
-	private final String ERROR_FILE_CORRUPTED = "File is corrupted. Please check :(.";
-
-
 
 	public enum CommandType {
-		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE
+		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE, EXIT
 	};
 
 
@@ -144,6 +141,10 @@ public class Logic {
 			return CommandType.EDIT;
 		case "postpone":
 			return CommandType.POSTPONE;
+		case "exit":
+			//Fallthrough
+		case "quit":
+			return CommandType.EXIT;
 		default:
 			throw new NoSuchCommandException();
 		}
@@ -180,10 +181,18 @@ public class Logic {
 			return editTask(arguments);
 		case POSTPONE:
 			return postpone(arguments);
+		case EXIT:
+			return exit();
 		default:
 			return null;
 		}
 	}
+
+	private LogicToUi exit() {
+		dataBase.unlockFileToExit();
+		return new LogicToUi("Exiting DoIt");
+	}
+
 
 	private LogicToUi postpone(String arguments) {
 
