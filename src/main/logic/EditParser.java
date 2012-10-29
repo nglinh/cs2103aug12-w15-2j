@@ -7,32 +7,56 @@ import org.joda.time.DateTime;
 import com.joestelmach.natty.Parser;
 import com.joestelmach.natty.DateGroup;
 
+import main.shared.Task;
 import main.shared.Task.TaskType;
 
-public class EditParser {
+public class EditParser implements CommandParser{
 	public boolean willChangeType= false;
 	public boolean willChangeStartTime = false;
 	public boolean willChangeDeadline = false;
 	public boolean willChangeEndTime = false;
 	public boolean willChangeName = false;
+	public boolean canParseStartTime = true;
+	public boolean canParseEndTime = true;
+	public boolean canParseDeadline = true;
+	public boolean canParseName = true;
+	public boolean isIndexValid = true;
+	
 	private String newName;
 	private DateTime newStartTime;
 	private DateTime newEndTime;
 	private DateTime newDeadline;
 	private TaskType newType;
 	private Parser parser;
-	public EditParser(String arguments) throws CannotParseDateException {
-		String[] tempStringArray = arguments.split("-");
+	private Task toBeEdited;
+	private String argument;
+	public EditParser(String arg) {
+		argument = arg;
+		parse();
+	}
+	@Override
+	public void parse(){
+		int index;
+		index = Integer.parseInt(argument.split(" ")[0]);
+		argument = removeFirstWord(argument);
+		index--; //Since arraylist index starts from 0
+	
+		if((index < 0) || ((index  +  1) > Logic.lastShownToUI.size()) ) {
+			isIndexValid = false;
+			return;
+		}
+		toBeEdited = Logic.lastShownToUI.get(index);
+		String[] tempStringArray = argument.split("-");
 		for(int i =0;i<tempStringArray.length;++i){
 			if(tempStringArray[i]!=null&&
 					tempStringArray[i].length()!=0){
 				String commandArgument = getFirstWord(tempStringArray[i]);
-				String updatedField = removeFisrtWord(tempStringArray[i]);
+				String updatedField = removeFirstWord(tempStringArray[i]);
 				updateField(commandArgument,updatedField);
 			}
 		}
 	}
-	private void updateField(String commandArgument, String newField) throws CannotParseDateException {
+	private void updateField(String commandArgument, String newField){
 		parser = new Parser();
 		List<DateGroup> groupsOfDates;
 		groupsOfDates = parser.parse(newField);
@@ -42,6 +66,10 @@ public class EditParser {
 		case "n":
 			willChangeName = true;
 			newName = newField;
+			if(newName.length()==0){
+				canParseName = false;
+				break;
+			}
 			break;
 		case "begintime":
 			//fall through
@@ -55,7 +83,8 @@ public class EditParser {
 				newStartTime =  new DateTime(groupsOfDates.get(0).getDates().get(0));
 			}
 			else{
-				throw new CannotParseDateException();
+				canParseStartTime = false;
+				return;
 			}
 			break;
 		case "endtime":
@@ -70,7 +99,8 @@ public class EditParser {
 				newEndTime =  new DateTime(groupsOfDates.get(0).getDates().get(0));
 			}
 			else{
-				throw new CannotParseDateException();
+				canParseEndTime = false;
+				return;
 			}
 			break;
 		case "deadline":
@@ -81,7 +111,8 @@ public class EditParser {
 				newDeadline =  new DateTime(groupsOfDates.get(0).getDates().get(0));
 			}
 			else{
-				throw new CannotParseDateException();
+				canParseDeadline = false;
+				return;
 			}
 			break;
 		case "tofloating":
@@ -92,11 +123,14 @@ public class EditParser {
 			break;
 		}
 	}
-	private String removeFisrtWord(String string){
+	private String removeFirstWord(String string){
 		return string.replaceFirst(getFirstWord(string), "").trim();
 	}
 	private String getFirstWord(String string) {
 		return string.split(" ")[0];
+	}
+	public Task getToBeEdited(){
+		return toBeEdited;
 	}
 	public String getNewName(){
 		return newName;
