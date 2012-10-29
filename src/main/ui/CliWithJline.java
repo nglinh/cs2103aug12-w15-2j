@@ -92,9 +92,11 @@ public class CliWithJline extends Cli{
 	}
 
 	private void getConsoleSizeAndAdjustOutput(){
-		//DoIT is only guaranteed to display properly for the minimim description width, below that, the 
-		//header for the description will be too small.
-		if(consoleWidth != console.getTerminal().getWidth()){
+		//DoIT is only guaranteed to display properly for the minimum description width, 
+		//below that, the header for the description will be too small.
+		if(consoleWidth == console.getTerminal().getWidth()){
+			return;
+		} else {
 			consoleWidth = console.getTerminal().getWidth();
 		}
 
