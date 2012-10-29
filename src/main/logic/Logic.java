@@ -31,14 +31,11 @@ import main.shared.Task;
 import main.storage.Database.DB_File_Status;
 
 public class Logic {
-	private final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check the permission"
-			+ "for the file";
-	private final String ERROR_FILE_CORRUPTED = "File is corrupted. Please check :(.";
-
-
+	private final String ERROR_IO = "Something is wrong with the file. I cannot write to it. Please check your file permissions.";
+	private final String ERROR_FILE_CORRUPTED = "File is corrupted. Please rectify the problem or delete the database file and restart DoIT. :(";
 
 	public enum CommandType {
-		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE
+		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE, EXIT
 	};
 
 
@@ -139,6 +136,10 @@ public class Logic {
 			return CommandType.EDIT;
 		case "postpone":
 			return CommandType.POSTPONE;
+		case "exit":
+			//Fallthrough
+		case "quit":
+			return CommandType.EXIT;
 		default:
 			throw new NoSuchCommandException();
 		}
@@ -175,10 +176,18 @@ public class Logic {
 			return edit(arguments);
 		case POSTPONE:
 			return postpone(arguments);
+		case EXIT:
+			return exit();
 		default:
 			return null;
 		}
 	}
+
+	private LogicToUi exit() {
+		dataBase.unlockFileToExit();
+		return new LogicToUi("Exiting DoIt");
+	}
+
 
 	private LogicToUi postpone(String arguments) {
 
