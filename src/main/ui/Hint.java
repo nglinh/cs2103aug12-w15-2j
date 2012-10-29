@@ -61,6 +61,8 @@ public class Hint {
 			hintReady = false;
 			e.printStackTrace();
 		}
+		
+		assert(hintReady);
 	}
 
 
@@ -135,10 +137,13 @@ public class Hint {
 
 class CmdHint {
 
+
 	private String nameHTML;
 	private String summaryHTML;
 	private LinkedList<String> usageHTML = new LinkedList<String>();
 	private LinkedList<String> extraHTML =  new LinkedList<String>();
+	
+	private static final String STRIP_HTML_REGEX = "\\<.*?>";
 
 	private static final String END_OF_LINE = System.getProperty("line.separator");
 	private static final String END_OF_LINE_HTML = "<br>";
@@ -164,7 +169,7 @@ class CmdHint {
 
 
 	public static String stripHTML(String input){
-		return input.replaceAll("\\<.*?>","");
+		return input.replaceAll(STRIP_HTML_REGEX,"");
 	}
 
 	public String getNoHTMLHelp(){
