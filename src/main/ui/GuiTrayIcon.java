@@ -63,7 +63,7 @@ public class GuiTrayIcon extends UI {
 		        public void actionPerformed(ActionEvent e) {
 		        	System.out.println(e.getActionCommand());
 		            System.out.println("Exiting...");
-		            System.exit(0);
+		            exit();
 		        }
 		    };
 		    
