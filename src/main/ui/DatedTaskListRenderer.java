@@ -30,12 +30,19 @@ public class DatedTaskListRenderer{
 	public String render(){
 		generateDatesWithTasks();
 		
+		boolean firstEntry = true;
 		StringBuffer sb = new StringBuffer();
 		for(Map.Entry<DateTime, List<Task>> entry : datesWithTasks.entrySet()){
 			DateTime currentDay = entry.getKey();
 			List<Task> tasksOnCurrentDay = entry.getValue();
 			
-			sb.append("<font size=1><a name=\"date-"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\"></a></font>");
+			if(firstEntry){
+				sb.append("<div class=separatorfirst>");
+				firstEntry = false;
+			}else{
+				sb.append("<div class=separator>");
+			}
+			sb.append("<a name=\"date-"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\"></a></div>");
 			sb.append("<table width=100% \">");
 			sb.append("<tr>");
 			
@@ -111,7 +118,7 @@ public class DatedTaskListRenderer{
 		if (t.getType() == TaskType.DEADLINE) {
 			
 			if (t.getDeadline().isAfter(nearEndOfCurrentDay)){
-				return "By today";
+				return "By this day";
 			}else{
 				return "By "
 						+ DateTimeFormat.forPattern("h:mma").print(t.getDeadline())

@@ -1,6 +1,6 @@
 package main.logic;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -11,81 +11,98 @@ import main.shared.Task.TaskType;
 import com.joestelmach.natty.CalendarSource;
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
-
+/**This class defines the parser for add command. Each AddParser object associates
+ * with 1 command only. The information extracted from the argument is private
+ * and to be extracted using designed API (get methods).
+ * 
+ * @author mrlinh
+ *
+ */
 public class AddParser {
+	
+	private static final int SECOND_ENTRY = 1;
+	private static final int FIRST_ENTRY = 0;
+	private static final int START_INDEX = 0;
+	
 	private List<DateGroup> groups;
-	private Parser parser;
-	private String argument;
+	private Parser parser;						//natty parser to be used internally.
+	private String argument;					//passed in by logic.
 	private TaskType taskType;
-	private int matchingPosition1;
-	private int endDateStringPosition;
-	public AddParser(String str){
-		argument = str;
+	private int dateStringStartPosition;
+	private int dateStringEndPosition;
+	private DateTime startDate;
+	private DateTime endDate;
+	private DateTime deadline;
+	
+	/**
+	 * Constructor for AddParser
+	 * @param arg: the string argument of add command.
+	 */
+	public AddParser(String arg){
+		argument = arg;
+		parser = new Parser(TimeZone.getDefault());
+		groups = new ArrayList<DateGroup>();
+		taskType = null;
+		dateStringStartPosition = 0;
+		dateStringEndPosition = 0;
+		startDate = null;
+		endDate = null;
+		deadline = null;
+	}
+	
+	/**
+	 * Parse the argument. Extracted results are memorized in private
+	 * variables associate with this AddParser object.
+	 */
+	public void parse(){
 		String dateString;
-		if(hasApostrophePair()){
-			dateString = removeDescription(argument);
+		if(hasAposPair()){
+			dateString = removeTextInsideApostrophe();
 		}
 		else{
-			dateString = removeTriggerWord(argument);
+			dateString = removeTriggerWord();
 		}
-		matchingPosition1 = 0;
-		endDateStringPosition = 0;
-		parser = new Parser(TimeZone.getDefault());
+
 		CalendarSource.setBaseDate(new DateTime().withTime(23,59,00,00).toDate());
 		groups = parser.parse(dateString);
-		if(this.getTaskType()!= TaskType.FLOATING){
-			int location = groups.get(0).getPosition();
-			matchingPosition1 = location;
-			while(!checkFullWord(dateString,location)){
+		if(groups.size()!=0){
+			dateStringStartPosition = groups.get(0).getPosition();
+			while(!checkSeparatedBySpace()){
 				char[] tempCharArray = dateString.toCharArray();
 				String tempString = "";
-				int i = location;
+				int i = dateStringStartPosition;
 				while(i<tempCharArray.length && tempCharArray[i]!=' '){
 					i++;
 				}
+				while(i<tempCharArray.length && tempCharArray[i]==' '){
+					i++;
+				}
 				if(i == tempCharArray.length){
-					dateString = argument.trim();
-					location = argument.length();
-					matchingPosition1 = location;
+					dateStringStartPosition = argument.length();
 					groups = parser.parse("");
 					break;
 				}
-				matchingPosition1 += i-location+1;
+				dateStringStartPosition = i;
 				for(int k = i;k<dateString.length();k++){
 					tempString = tempString + tempCharArray[k];
 				}
-				dateString = tempString.trim();
+				dateString = tempString;
 				groups = parser.parse(dateString);
-				location = groups.get(0).getPosition();
-				matchingPosition1 += location;
+				if(groups.size()==0){
+					break;
+				}
+				dateStringStartPosition += groups.get(0).getPosition();
 			}
-			determineEndOfDateString();
-
 			//adjustTimeBasedOnTriggerWords();
 		}
-	}
-	private String removeDescription(String argument2) {
-		String result = "";
-		for(int i =argument2.indexOf("\"");i<=argument2.lastIndexOf("\"");++i)
-			result+= " ";
-		if(argument2.lastIndexOf("\"")<argument2.length()-1){
-			for(int i = argument2.lastIndexOf("\"")+1;i<argument2.length();++i)
-				result+= argument2.toCharArray()[i];
+		determineEndOfDateString();
+		determineTaskType();
+		if(taskType==TaskType.DEADLINE){
+			determineDeadline();
 		}
-		return result;
-	}
-	private boolean hasApostrophePair() {
-		if(argument.indexOf("\"")==argument.lastIndexOf("\""))
-			return false;
-		return true;
-	}
-	private void determineEndOfDateString() {
-		if(this.getTaskType()!=TaskType.FLOATING){
-			String tempString = groups.get(0).getText();
-			endDateStringPosition = matchingPosition1+tempString.length()+1;
-
+		if(taskType==TaskType.TIMED){
+			determineStartAndEnd();
 		}
-
 	}
 	/*private void adjustTimeBasedOnTriggerWords() {
 		char[] tempCharArray = argument.toCharArray();
@@ -100,93 +117,176 @@ public class AddParser {
 	    }
 
 	}*/
-	private String removeTriggerWord(String argument2) {
+	
+	/**
+	 * 
+	 * Remove trigger words from original text to ensure correctness
+	 * of parsing. This is due to natty's issue with parsing text containing
+	 * trigger words.
+	 * Trigger words are: from, this, by, to, on, at...
+	 * 
+	 * @return the string with trigger words replaced by space.
+	 *
+	 */
+	
+	private String removeTriggerWord() {
 		String result = "";
-		String[] tempStringArray = argument2.split(" ");
+		String[] tempStringArray = argument.split(" ");
 		for (int i =0;i<tempStringArray.length;++i){
-			if(tempStringArray[i].compareTo("from")==0 || 
-					tempStringArray[i].compareTo("this")==0)
-				result = result + "    ";
-			else if(tempStringArray[i].compareTo("by")==0)
-				result = result + "   ";
-			else if(tempStringArray[i].compareTo("before")==0)
-				result = result + "       ";
-			else if(tempStringArray[i].compareTo("on")==0||
-					tempStringArray[i].compareTo("at")==0)
-				result = result +"   ";
-			else
-				result = result+ tempStringArray[i]+" ";
+			switch(tempStringArray[i].toLowerCase()){
+			case "from":
+			case "this":
+				result+="     ";
+				break;
+			case "by":
+			case "on":
+			case "at":
+				result+="   ";
+				break;
+			default:
+				result += tempStringArray[i]+" ";
+			}
 		}
 		return result.trim();
 	}
-	private boolean checkFullWord(String dateString, int location) {
-		char[] tempCharArray = dateString.toCharArray();
-		String matchingValue = groups.get(0).getText();
-		char[] matchingArray = matchingValue.toCharArray();
-		if((location+matchingArray.length < tempCharArray.length &&
-				tempCharArray[location+matchingArray.length] != ' ')||
-				location!=0 && tempCharArray[location-1]!=' ')
+	
+	/**
+	 * Determine whether the argument has a pair of apostrophe. 
+	 * As long as the text has 2 apostrophe then it will return true.
+	 * i.e, will return true even if the text has an odd number of
+	 * apostrophes.
+	 * 
+	 * @return true if it has a pair of apostrophe, else returns false.
+	 */
+	private boolean hasAposPair() {
+		if(argument.indexOf("\"")==argument.lastIndexOf("\""))
 			return false;
 		return true;
 	}
-	public TaskType getTaskType(){
-		if(groups.size()==0)
-			taskType = TaskType.FLOATING;
-		else if(groups.get(0).getDates().size()==1){
-			taskType =  TaskType.DEADLINE;
-		}
-		else 
-			taskType = TaskType.TIMED;
-		return taskType;
+	
+	/**
+	 * Check if the matching text returned by natty is
+	 * separated from the next word by a space.
+	 * Example: Natty may interpret "go to market" as mar in March.
+	 * This method is to make sure natty only parse mar if it is
+	 * in a string like "do something in mar at somewhere".
+	 * 
+	 * @return true if the parsed text is separated
+	 * by space, else return false.
+	 */
+	
+	private boolean checkSeparatedBySpace() {
+		char[] tempCharArray = argument.toCharArray();
+		String matchingValue = groups.get(START_INDEX).getText();
+		char[] matchingArray = matchingValue.toCharArray();
+		if((dateStringStartPosition+matchingArray.length < tempCharArray.length &&
+				tempCharArray[dateStringStartPosition+matchingArray.length] != ' ')||
+				(dateStringStartPosition!=0 && tempCharArray[dateStringStartPosition-1]!=' '))
+			return false;
+		return true;
 	}
-	public String getTaskDescription() throws EmptyDescriptionException{
-		if(!hasApostrophePair()){
-			if(taskType == TaskType.FLOATING)
-				return argument;
-			else{
-				return buildString(argument,this.matchingPosition1);
-			}
-		}
-		else{
-			int temp1 = argument.indexOf("\"");
-			int temp2 = argument.lastIndexOf("\"");
-			if(temp1 == temp2){
-				if(taskType == TaskType.FLOATING)
-					return argument;
-				else{
-					return buildString(argument,this.matchingPosition1);
-				}
-			}
-			else{
-				return getTaskDescriptionInsideApostrophe(temp1, temp2);
-			}
-
-		}
-	}
-	private String getTaskDescriptionInsideApostrophe(int temp1, int temp2) {
+	/**
+	 * This method remove the text inside the outermost pair of
+	 * apostrophe to get a date string contains only text that is
+	 * outside the pair of apostrophe.
+	 * 
+	 * @return the text outside apostrophe.
+	 */
+	private String removeTextInsideApostrophe() {
 		String result = "";
-		for(int i =temp1+1;i<=temp2-1;++i){
-			result+= argument.toCharArray()[i];
+		for(int i =argument.indexOf("\"");i<=argument.lastIndexOf("\"");++i)
+			result+= " ";
+		if(argument.lastIndexOf("\"")<argument.length()-1){
+			for(int i = argument.lastIndexOf("\"")+1;i<argument.length();++i)
+				result+= argument.toCharArray()[i];
 		}
-		result.trim();
 		return result;
 	}
-	private String buildString(String argument, int matchingPosition) throws EmptyDescriptionException {
+	
+	/**
+	 * This method determines the deadline of the new task. 
+	 * Pre-condition: the new task is a deadline task, i.e has only 1 date.
+	 */
+	
+	private void determineDeadline() {
+		deadline = new DateTime(groups.get(FIRST_ENTRY).getDates().get(FIRST_ENTRY));
+	}
+	
+	/**
+	 * This method determines start time and end time of the new task.
+	 * Pre-condition: the new task is a timed task, i.e has 2 date.
+	 */
+	
+	private void determineStartAndEnd(){
+		DateTime time1 = new DateTime(groups.get(FIRST_ENTRY).getDates().get(FIRST_ENTRY));
+		DateTime time2 = new DateTime(groups.get(FIRST_ENTRY).getDates().get(SECOND_ENTRY));
+		if(time2.isBefore(time1)){
+			startDate = time2;
+			endDate = time1;
+		}
+		else{
+			startDate = time1;
+			endDate = time2;
+		}
+	}
+	/**
+	 * Determines task type of the new task base on
+	 * the number of successfully interpreted dates.
+	 */
+	
+	private void determineTaskType() {
+		if(groups.size()==0){
+			taskType = TaskType.FLOATING;
+		}
+		else if(groups.get(FIRST_ENTRY).getDates().size()==1){
+			taskType = TaskType.DEADLINE;
+		}
+		else if(groups.get(FIRST_ENTRY).getDates().size()==2){
+			taskType = TaskType.TIMED;
+		}
+	}
+	
+	/**
+	 * Determine the end of the date string. This comes in handy
+	 * when there is text AFTER the date string that needs to be
+	 * added to the task description.
+	 */
+	
+	private void determineEndOfDateString() {
+		if(this.getTaskType()!=TaskType.FLOATING){
+			String tempString = groups.get(groups.size()-1).getText();
+			dateStringEndPosition = dateStringStartPosition+tempString.length()+1;
+
+		}
+
+	}
+	
+	/**
+	 * This method builds the task description after removing trigger words
+	 * 
+	 * @return string of task description including text both before and
+	 * 			after the time component.
+	 * 
+	 * @throws EmptyDescriptionException
+	 */
+	
+	private String buildTaskNameString() throws EmptyDescriptionException {
 		String result = "";
 		char[] tempCharArray = argument.toCharArray();
-		for(int i =0;i<matchingPosition;++i)
+		for(int i =0;i<dateStringStartPosition;++i)
 			result = result+tempCharArray[i];
 		String[] tempStringArray = result.split(" ");
 		if(tempStringArray[tempStringArray.length-1].compareTo("from")==0||
 				tempStringArray[tempStringArray.length-1].compareTo("by")==0||
 				tempStringArray[tempStringArray.length-1].compareTo("before")==0||
 				tempStringArray[tempStringArray.length-1].compareTo("on")==0||
-				tempStringArray[tempStringArray.length-1].compareTo("at")==0){
+				tempStringArray[tempStringArray.length-1].compareTo("at")==0||
+				tempStringArray[tempStringArray.length-1].compareTo("this")==0){
 			result = "";
 			for(int i=0;i<tempStringArray.length-1;++i)
 				result = result + tempStringArray[i]+" ";
 		}
-		for(int i = endDateStringPosition;i<argument.length();i++){
+		for(int i = dateStringEndPosition;i<argument.length();i++){
 			result+= tempCharArray[i];
 		}
 		result = result.trim();
@@ -195,33 +295,59 @@ public class AddParser {
 		else
 			return result;
 	}
-	public DateTime getBeginTime(){
-		Date st = this.getGroups().get(0).getDates().get(0);
-		DateTime time1 = new DateTime(st);
-		if(groups.get(0).getDates().size()==2){
-			Date et = groups.get(0).getDates().get(1);
-			DateTime time2 = new DateTime(et);
-			if(time2.isBefore(time1)){
-				return time2;
-			}
-			else
-				return time1;
+
+	/*
+	 * ===================================================================================
+	 * ====== Below are API to extract the interpreted information out of the parser======
+	 * ===================================================================================
+	 * */
+	
+	public TaskType getTaskType(){
+		if(groups.size()==0)
+			taskType = TaskType.FLOATING;
+		else if(groups.get(START_INDEX).getDates().size()==1){
+			taskType =  TaskType.DEADLINE;
 		}
-		return time1;
+		else 
+			taskType = TaskType.TIMED;
+		return taskType;
+	}
+	public String getTaskDescription() throws EmptyDescriptionException{
+		if(!hasAposPair()){
+			if(taskType == TaskType.FLOATING)
+				return argument;
+			else{
+				return buildTaskNameString();
+			}
+		}
+		else{
+			return getStringInsideApostrophe();
+		}
+	}
+	private String getStringInsideApostrophe() {
+		String result = "";
+		int firstApostrophePos = argument.indexOf('*');
+		int lastApostrophePos = argument.lastIndexOf('*');
+		for(int i =firstApostrophePos+1;i<=lastApostrophePos-1;++i){
+			result+= argument.toCharArray()[i];
+		}
+		result.trim();
+		return result;
+	}
+	public DateTime getBeginTime(){
+		if(groups.get(0).getDates().size()==2){
+			return startDate;
+		}
+		return new DateTime(groups.get(FIRST_ENTRY).getDates().get(FIRST_ENTRY));
 	}
 	public DateTime getEndTime(){
-		Date et = this.getGroups().get(0).getDates().get(1);
-		DateTime time2 = new DateTime(et);
-		if(groups.get(0).getDates().size()==2){
-			Date st = this.getGroups().get(0).getDates().get(0);
-			DateTime time1 = new DateTime(st);
-			if(time2.isBefore(time1)){
-				return time1;
-			}
-			else
-				return time2;
+		if(groups.get(FIRST_ENTRY).getDates().size()==2){
+			return endDate;
 		}
-		return time2;
+		return new DateTime(groups.get(FIRST_ENTRY).getDates().get(FIRST_ENTRY));
+	}
+	public DateTime getDeadline(){
+		return this.deadline;
 	}
 	public List<DateGroup> getGroups(){
 		return this.groups;
