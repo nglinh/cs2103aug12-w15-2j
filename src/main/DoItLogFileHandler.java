@@ -6,13 +6,17 @@ import java.util.logging.FileHandler;
 public class DoItLogFileHandler {
 
 
-	private static final String LOG_FILE_NAME = "DoItLog.txt";
+	private final String LOG_FILE_NAME = "DoItLog.txt";
 
-	private static FileHandler fh;
+	private FileHandler fh;
 
-	DoItLogFileHandler theOne = null;
+	private static DoItLogFileHandler theOne = null;
+	
+	private DoItLogFileHandler(){
+		
+	}
 
-	public DoItLogFileHandler getInstance(){
+	public static DoItLogFileHandler getInstance(){
 		if(theOne == null){
 			theOne = new DoItLogFileHandler();
 		}
