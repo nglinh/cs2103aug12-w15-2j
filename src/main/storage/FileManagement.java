@@ -127,6 +127,8 @@ public class FileManagement {
 		}
 		public void prepareDatabaseFile() {
 
+			assert(databaseFile != null);
+			
 			boolean isRWLockSucessful = true;
 			//Open file as read and write
 			try {
@@ -187,6 +189,8 @@ public class FileManagement {
 
 		private void readFiletoDataBase(ArrayList<Task> storeInHere) throws IOException, DataFormatException {
 			assert(storeInHere != null);
+			assert(databaseFile != null);
+			
 			
 			if(randDatabaseAccess == null) {
 				throw new IOException();
@@ -197,6 +201,9 @@ public class FileManagement {
 			int fileSize = (int) databaseFile.length();
 			byte[] fileByteContents = new byte[fileSize];
 
+			
+			assert(START_OF_FILE >= 0);
+			
 			randDatabaseAccess.seek(START_OF_FILE);
 			randDatabaseAccess.read(fileByteContents);
 
@@ -302,6 +309,8 @@ public class FileManagement {
 
 
 		private DateTime parseDate(String date) throws DataFormatException {
+			
+			assert(date != null);
 			
 			DateTime parsedDate = null;
 
