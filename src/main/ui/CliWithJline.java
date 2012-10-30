@@ -63,10 +63,14 @@ public class CliWithJline extends Cli{
 		System.out.println(MESSAGE_WELCOME_TO_DO_IT);
 		System.out.println(MESSAGE_CLI_CUSTOM);
 		System.out.println();
+		
+		
 
 		try {
+			log.info("Before instantiate console reader");
 			console = new ConsoleReader();
-
+			log.info("After instantiate console reader");
+			
 			configureArguments();
 
 			console.println(checkFilePermissions() + "\n");
@@ -77,9 +81,12 @@ public class CliWithJline extends Cli{
 			String lineFromInput;
 			while(true)	{
 				lineFromInput = console.readLine();
+				log.info("Received this command \"" + lineFromInput + "\"");
+				
 				getConsoleSizeAndAdjustOutput();
 				String consoleOut = processInput(lineFromInput);
-
+				log.info("Output this string \"" + consoleOut + "\"");
+				
 				console.println();
 				console.println(consoleOut);
 
@@ -87,6 +94,7 @@ public class CliWithJline extends Cli{
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			log.warning("Probably issue with Jline " + e);
 		}
 
 	}
@@ -98,12 +106,17 @@ public class CliWithJline extends Cli{
 			return;
 		} else {
 			consoleWidth = console.getTerminal().getWidth();
+			log.info("New console Width detected to be " + consoleWidth);
 		}
 
 		TABLE_DESCRIPTION_ALLOWANCE = consoleWidth - TABLE_SIZE_OF_PRE_TASK_DESCRIPTION;
+		
+		log.info("Table Description Allowance detected to be " + TABLE_DESCRIPTION_ALLOWANCE);
 		if(TABLE_DESCRIPTION_ALLOWANCE < TABLE_MINIMUM_DESCRIPTION_SIZE) {
 			TABLE_DESCRIPTION_ALLOWANCE = TABLE_MINIMUM_DESCRIPTION_SIZE;
 		}
+		
+		log.info("Table Description Allowance set to be " + TABLE_DESCRIPTION_ALLOWANCE);
 
 		TABLE_TOP_AND_BOTTOM = TABLE_TOP_AND_BOTTOM_BEGIN;
 		TABLE_ROW_DEMARCATION = TABLE_ROW_DEMARCATION_BEGIN;

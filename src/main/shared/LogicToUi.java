@@ -5,7 +5,7 @@ package main.shared;
  * @author  Yeo Kheng Meng
  */ 
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class LogicToUi {
@@ -16,7 +16,7 @@ public class LogicToUi {
 	private boolean sortReverse = false;
 	
 	private String output = null;
-	private ArrayList<Task> display = null;
+	private List<Task> display = null;
 	private SearchTerms filters = null;
 	
 	//TODO : Change 1 to INVALID_SERIAL once fully implemented by logic. For GUI testing purposes.
@@ -38,7 +38,7 @@ public class LogicToUi {
 		this.lastChangedSerial = lastChangedSerial;
 	}
 	
-	public LogicToUi(ArrayList<Task> display, String output) {
+	public LogicToUi(List<Task> display, String output) {
 		assert(display != null);
 		assert(output != null);
 		
@@ -48,7 +48,7 @@ public class LogicToUi {
 		
 	}
 	
-	public LogicToUi(ArrayList<Task> display, String output, SearchTerms filters) {
+	public LogicToUi(List<Task> display, String output, SearchTerms filters) {
 		assert(display != null);
 		assert(output != null);
 		assert(filters != null);
@@ -59,7 +59,7 @@ public class LogicToUi {
 		
 	}
 	
-	public LogicToUi(ArrayList<Task> display, String output, SortStatus sorting, boolean reverse) {
+	public LogicToUi(List<Task> display, String output, SortStatus sorting, boolean reverse) {
 		assert(display != null);
 		assert(output != null);
 
@@ -71,7 +71,7 @@ public class LogicToUi {
 	}
 	
 	
-	public LogicToUi(ArrayList<Task> display, String output, SearchTerms filters, SortStatus sorting, boolean reverse) {
+	public LogicToUi(List<Task> display, String output, SearchTerms filters, SortStatus sorting, boolean reverse) {
 		assert(display != null);
 		assert(output != null);
 		assert(filters != null);
@@ -131,7 +131,7 @@ public class LogicToUi {
 		return output;
 	}
 	
-	public ArrayList<Task> getList() {
+	public List<Task> getList() {
 		return display;
 	}
 	

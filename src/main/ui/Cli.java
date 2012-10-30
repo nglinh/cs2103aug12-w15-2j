@@ -6,9 +6,11 @@ package main.ui;
  * @author  Yeo Kheng Meng
  */
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
+import main.LogHandler;
 import main.shared.Task;
 import main.shared.Task.TaskType;
 import main.shared.LogicToUi;
@@ -46,6 +48,8 @@ public class Cli extends UI{
 	protected static final String TABLE_EMPTY_DATE_FIELD = "        -        ";
 
 	Scanner scan = new Scanner(System.in);
+	
+	protected Logger log = LogHandler.getLogInstance();
 
 	public void runUI(){
 
@@ -63,7 +67,11 @@ public class Cli extends UI{
 
 		while(true)     {
 			lineFromInput = scan.nextLine();
+			log.info("Received this command \"" + lineFromInput + "\"");
+			
 			String consoleOut = processInput(lineFromInput);
+			
+			log.info("Output this string \"" + consoleOut + "\"");
 
 			System.out.println();
 			System.out.println(consoleOut);
@@ -90,14 +98,17 @@ public class Cli extends UI{
 			//Fallthrough
 		case COMMAND_QUIT :
 		{
+			log.info("Exit command parsed");
 			scan.close();
 			super.exit();
 		}
 		break;
 		case COMMAND_HELP :
+			log.info("Help command parsed");
 			outputLine = parseHelp(command);
 			break;
 		default :
+			log.info("Message goes to logic parsed");
 			outputLine = passMessageToLogic(lineFromInput);
 
 		}
@@ -126,7 +137,7 @@ public class Cli extends UI{
 	protected String formatTaskListToString(LogicToUi logicReturn) {
 		assert(logicReturn != null);
 
-		ArrayList<Task> listResults = logicReturn.getList();
+		List<Task> listResults = logicReturn.getList();
 
 		StringBuffer screenTable = new StringBuffer();
 
