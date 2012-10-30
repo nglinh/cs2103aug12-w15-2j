@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 public class LogHandler {
 
 
-	private static final String LOG_FILE_NAME = "DoItLog.txt";
+	private static final String LOG_FILE_NAME = "DoItLog.log";
 	private static FileHandler fh;
 	private static Logger theOneLogger = null;
 

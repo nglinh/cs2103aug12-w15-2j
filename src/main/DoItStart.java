@@ -22,10 +22,8 @@ import main.ui.UI;
 
 public class DoItStart {
 	
-	private static Logger log;
+	private static Logger log = LogHandler.getLogInstance();
 	public static void main(String[] args){
-		
-		log = LogHandler.getLogInstance();
 		
 		log.info("Program start");
 		

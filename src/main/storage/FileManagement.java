@@ -13,13 +13,15 @@ import java.io.StringReader;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import main.LogHandler;
 import main.shared.Task;
 import main.shared.Task.TaskType;
 
@@ -90,6 +92,8 @@ public class FileManagement {
 		private FileLock databaseFileLock = null;
 		private FileChannel databaseChannel = null;
 		private RandomAccessFile randDatabaseAccess = null;
+		
+		private Logger log = LogHandler.getLogInstance();
 
 		private static FileManagement theOne = null;
 
@@ -102,11 +106,11 @@ public class FileManagement {
 		}
 
 		private FileManagement()	{
-
+			log.info("FileMgmt instance created");
 		}
 
 
-		public void readFileAndDetectCorruption(ArrayList<Task> storeInHere) {
+		public void readFileAndDetectCorruption(List<Task> storeInHere) {
 			if(storeInHere == null) {
 				throw new IllegalArgumentException();
 			}
@@ -121,6 +125,7 @@ public class FileManagement {
 		}
 		public void prepareDatabaseFile() {
 
+			log.info("Prepare database file");
 			assert(databaseFile != null);
 			
 			boolean isRWLockSucessful = true;
@@ -128,6 +133,8 @@ public class FileManagement {
 			try {
 				randDatabaseAccess = new RandomAccessFile(databaseFile, "rws");
 				databaseChannel = randDatabaseAccess.getChannel();
+				
+				log.info("Attempting to get file lock");
 				databaseFileLock = databaseChannel.tryLock();
 
 				if(databaseFileLock == null) {
@@ -138,6 +145,7 @@ public class FileManagement {
 				}
 			} catch (IOException e) {
 				isRWLockSucessful = false;
+				log.warning("Cannot open for writing " + e);
 			}
 
 			//If the above is successful, we end this method
@@ -147,11 +155,13 @@ public class FileManagement {
 
 			//Open File as read only
 			try {
+				log.warning("Attempt to open as read only");
 				randDatabaseAccess = new RandomAccessFile(databaseFile, "r");
 				databaseChannel = randDatabaseAccess.getChannel();
 				fileAttributes = FileStatus.FILE_READ_ONLY;
 			} catch (IOException e) {
 				fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
+				log.severe("Unknown file permissions " + e);
 			}
 
 		}
@@ -161,6 +171,7 @@ public class FileManagement {
 		}
 
 		public void closeFile(){
+			log.info("Closing File");
 			try {
 				if(databaseFileLock != null ){
 					databaseFileLock.release();
@@ -177,16 +188,20 @@ public class FileManagement {
 				randDatabaseAccess = null;
 
 			} catch (IOException e) {
+				log.severe("Cannot close file " + databaseFileLock + " " + databaseChannel + " " + randDatabaseAccess + " " + e );
 			}
 		}
 
 
-		private void readFiletoDataBase(ArrayList<Task> storeInHere) throws IOException, DataFormatException {
+		private void readFiletoDataBase(List<Task> storeInHere) throws IOException, DataFormatException {
+			log.info("Reading file method");
+			
 			assert(storeInHere != null);
 			assert(databaseFile != null);
 			
 			
 			if(randDatabaseAccess == null) {
+				log.warning("randDatabase is null, database file probably not prepared");
 				throw new IOException();
 			}
 			
@@ -198,8 +213,12 @@ public class FileManagement {
 			
 			assert(START_OF_FILE >= 0);
 			
+			log.info("Start reading from disk");
+			
 			randDatabaseAccess.seek(START_OF_FILE);
 			randDatabaseAccess.read(fileByteContents);
+			
+			log.info("Reading to RAM completed");
 
 			String fileInStringFormat = new String(fileByteContents);
 			BufferedReader fileStringReader = new BufferedReader(new StringReader(fileInStringFormat));
@@ -207,8 +226,12 @@ public class FileManagement {
 
 			String lineFromInput;
 			String parsed[] = null;
+			
+			log.info("Parsing contents");
 
 			while((lineFromInput = fileStringReader.readLine()) != null)	{
+				log.info(lineFromInput);
+				
 				if(lineFromInput.startsWith(LINE_IGNORE_CHARACTER)) continue;
 
 				parsed = lineFromInput.split(LINE_PARAM_DELIMITER_READ, LINE_NUM_FIELDS);
@@ -217,6 +240,8 @@ public class FileManagement {
 
 				storeInHere.add(toBeAdded);
 			}
+			
+			log.info("Parsing complete");
 
 		}
 
@@ -232,7 +257,7 @@ public class FileManagement {
 			break;
 			case LINE_TIMED : parsedTask = parseInTimedTask(parsed);
 			break;
-			default: throw new DataFormatException();
+			default: throw new DataFormatException("Unknown task type");
 
 			}
 
@@ -249,7 +274,7 @@ public class FileManagement {
 			DateTime endDate = parseDate(parsed[LINE_POSITION_END_DATE]); 
 
 			if(startDate.isAfter(endDate)) {
-				throw new DataFormatException();
+				throw new DataFormatException("Start date after end date");
 			}
 
 			return new Task(taskName, startDate, endDate, done);
@@ -261,7 +286,7 @@ public class FileManagement {
 			assert(taskName != null);
 			
 			if(taskName.length() == ZERO_LENGTH_TASK_NAME) {
-				throw new DataFormatException();
+				throw new DataFormatException("0 length task name");
 			}
 			return taskName;
 		}
@@ -296,7 +321,7 @@ public class FileManagement {
 			} else if(parsed.equals(LINE_UNDONE)){
 				done = false;
 			} else {
-				throw new DataFormatException();
+				throw new DataFormatException("Unknown Done value");
 			}
 			return done;
 		}
@@ -311,7 +336,7 @@ public class FileManagement {
 			try {
 				parsedDate = new DateTime(FILE_DATE_FORMAT.parseDateTime(date));
 			} catch (IllegalArgumentException e) {
-				throw new DataFormatException();
+				throw new DataFormatException("Date not in correct format");
 			}
 
 			return parsedDate;
@@ -349,8 +374,11 @@ public class FileManagement {
 			String end = getTimeFileFormat(toBeConverted.getEndDate());
 
 			String task = toBeConverted.getTaskName();
+			
+			String taskString = String.format(FILE_LINE_FORMAT, index, typeString, doneString, deadline, start, end, task);
 
-			return String.format(FILE_LINE_FORMAT, index, typeString, doneString, deadline, start, end, task);
+			log.info("Task string generated " + taskString);
+			return taskString;
 		}
 
 
@@ -363,17 +391,22 @@ public class FileManagement {
 		}
 
 
-		public void writeDataBaseToFile(ArrayList<Task> toBeWritten) throws IOException, WillNotWriteToCorruptFileException	{
+		public void writeDataBaseToFile(List<Task> toBeWritten) throws IOException, WillNotWriteToCorruptFileException	{
+			log.info("Attempt to write file");
+			
 			if(toBeWritten == null) {
-				throw new IllegalArgumentException();
+				log.warning("Null arguments");
+				throw new IllegalArgumentException("Null arguments");
 			}
 
 			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
-				throw new WillNotWriteToCorruptFileException();
+				log.warning("Attempting to write to corrupt file");
+				throw new WillNotWriteToCorruptFileException("Corrupt File");
 			}
 
 			if(randDatabaseAccess == null) {
-				throw new IOException();
+				log.warning("randDatabaseAccess is null");
+				throw new IOException("Database file not prepared");
 			}
 
 			StringBuffer dataToBeWritten = new StringBuffer();
@@ -395,11 +428,16 @@ public class FileManagement {
 			dataToBeWritten.append(appendLastModified + LINE_END_OF_LINE);
 
 			String dataStringToBeWritten = dataToBeWritten.toString();
-
+			log.info("Data to be written " + dataStringToBeWritten );
+			
 			//Truncate the file to 0 or INITIAL_FILE_SIZE size to clear the old database file before writing
+			log.info("Attempt to write to disk");
+			
 			randDatabaseAccess.setLength(INITIAL_FILE_SIZE);
 			randDatabaseAccess.seek(START_OF_FILE);
 			randDatabaseAccess.writeBytes(dataStringToBeWritten);
+			
+			log.info("Disk Write complete");
 
 		}
 
