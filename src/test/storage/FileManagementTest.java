@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -78,9 +79,9 @@ public class FileManagementTest {
 
 	Task nameTimed;
 	Task nameTimedFalse;
-	ArrayList<Task> filledListing;
-	ArrayList<Task> shortListing;
-	ArrayList<Task> initialClearListing;
+	List<Task> filledListing;
+	List<Task> shortListing;
+	List<Task> initialClearListing;
 
 	FileManagement fileMgmt = FileManagement.getInstance();
 
@@ -186,7 +187,7 @@ public class FileManagementTest {
 	@Test
 	public void corruptTest() {
 
-		ArrayList<Task> initialClearListing = new ArrayList<Task>();
+		List<Task> initialClearListing = new ArrayList<Task>();
 
 		BufferedWriter writeFile;
 

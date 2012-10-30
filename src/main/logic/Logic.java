@@ -43,7 +43,7 @@ public class Logic {
 
 
 	public Database dataBase = null;
-	private ArrayList<Task> lastShownToUI = new ArrayList<Task>();
+	private List<Task> lastShownToUI = new ArrayList<Task>();
 	private String latestRefreshCommandForUI = "list";
 
 	private String latestCommandFromUI = null;
@@ -519,7 +519,7 @@ public class Logic {
 		String[] keywords = arguments.split(" ");
 
 		SearchTerms terms = new SearchTerms(keywords);
-		ArrayList<Task> results = dataBase.search(terms);
+		List<Task> results = dataBase.search(terms);
 
 		String statusMsg = "You have searched for ";
 
@@ -588,7 +588,7 @@ public class Logic {
 
 			filter = new SearchTerms(false, true, false, false, false, startDate, endDate);
 
-			ArrayList<Task> results = dataBase.search(filter);
+			List<Task> results = dataBase.search(filter);
 
 			lastShownToUI = results;
 			latestRefreshCommandForUI = new String(latestCommandFromUI);
@@ -676,7 +676,7 @@ public class Logic {
 		}
 
 
-		ArrayList<Task> results = dataBase.search(filter);
+		List<Task> results = dataBase.search(filter);
 
 		lastShownToUI = results;
 		latestRefreshCommandForUI = latestCommandFromUI;

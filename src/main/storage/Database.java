@@ -11,10 +11,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 
+import main.LogHandler;
 import main.storage.FileManagement.FileStatus;
 import main.shared.SearchTerms;
 import main.shared.Task;
@@ -29,12 +32,14 @@ public class Database {
 
 		public static final int MAX_UNDO_STEPS = 1000;
 
-		private ArrayList<Task> taskStore = new ArrayList<Task>();
+		private List<Task> taskStore = new ArrayList<Task>();
 
-		private LinkedList<ArrayList<Task>> undoOperations = new LinkedList<ArrayList<Task>>();
+		private LinkedList<List<Task>> undoOperations = new LinkedList<List<Task>>();
 
 		private FileManagement diskFile;
 		private DB_File_Status fileAttributes;
+		
+		private Logger log = LogHandler.getLogInstance();
 
 		
 		private static Database theOne = null;
@@ -54,10 +59,14 @@ public class Database {
 		 */
 
 		private Database() {
+			log.info("Database instance created, now starting FileMgmt");
+			
 			diskFile = FileManagement.getInstance();
 			diskFile.prepareDatabaseFile();
 			diskFile.readFileAndDetectCorruption(taskStore);
 			fileAttributes = parseFileAttributes(diskFile);
+			
+			log.info("FileMgmt started");
 		}
 		
 		
@@ -70,11 +79,11 @@ public class Database {
 		 *  operations done on the result will not affect the database
 		 *
 		 * @param terms Input in the form of a search term class
-		 * @return an ArrayList<Task> containing all the matched tasks    
+		 * @return an List<Task> containing all the matched tasks    
 		 */
 
-		public ArrayList<Task> search(SearchTerms terms) {
-			ArrayList<Task> searchResults = new ArrayList<Task>();
+		public List<Task> search(SearchTerms terms) {
+			List<Task> searchResults = new ArrayList<Task>();
 
 			for(Task currentEntry : taskStore)	{
 				if(taskMeetsSearchTerms(currentEntry, terms)) {
@@ -179,20 +188,24 @@ public class Database {
 		 * Returned result is a clone of the tasks in database,
 		 *  operations done on the result will not affect the database
 		 *  
-		 * @return an ArrayList<Task> containing all the tasks in database   
+		 * @return an List<Task> containing all the tasks in database   
 		 */
 
-		public ArrayList<Task> readAll() {
-			ArrayList<Task> result = new ArrayList<Task>();
+		public List<Task> readAll() {
+			log.info("Retrieving entire database");
+			
+			List<Task> result = new ArrayList<Task>();
 
 			for(Task currentEntry : taskStore)	{
 				result.add(new Task(currentEntry));
 			}
+			
+			log.info("Database of size " + result.size() + " returned");
 
 			return result;
 		}
 		
-		public void writeALL(ArrayList<Task> incoming) throws IOException, WillNotWriteToCorruptFileException {
+		public void writeALL(List<Task> incoming) throws IOException, WillNotWriteToCorruptFileException {
 			if(incoming == null){
 				throw new IllegalArgumentException();
 			}
@@ -382,7 +395,7 @@ public class Database {
 
 			cloneDatabase();
 
-			ArrayList<Task> onlyUndoneTasks = new ArrayList<Task>();
+			List<Task> onlyUndoneTasks = new ArrayList<Task>();
 
 			for(Task currentTask : taskStore) {
 				if(!currentTask.isDone()) {
@@ -411,7 +424,7 @@ public class Database {
 
 			DateTime currentTime = DateTime.now();
 
-			ArrayList<Task> onlyPendingTasks = new ArrayList<Task>();
+			List<Task> onlyPendingTasks = new ArrayList<Task>();
 			for(Task currentTask : taskStore) {
 
 				DateTime timeToCompare;
@@ -439,7 +452,7 @@ public class Database {
 
 
 		private void cloneDatabase() {
-			ArrayList<Task> newCopy = new ArrayList<Task>();
+			List<Task> newCopy = new ArrayList<Task>();
 			for(Task currentTask : taskStore) {
 				newCopy.add(new Task(currentTask));
 			}
