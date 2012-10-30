@@ -3,22 +3,22 @@ package main;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 
-public class DoItLogFileHandler {
+public class LogFileHandler {
 
 
 	private final String LOG_FILE_NAME = "DoItLog.txt";
 
 	private FileHandler fh;
 
-	private static DoItLogFileHandler theOne = null;
+	private static LogFileHandler theOne = null;
 	
-	private DoItLogFileHandler(){
+	private LogFileHandler(){
 		
 	}
 
-	public static DoItLogFileHandler getInstance(){
+	public static LogFileHandler getInstance(){
 		if(theOne == null){
-			theOne = new DoItLogFileHandler();
+			theOne = new LogFileHandler();
 		}
 		return theOne;
 	}
