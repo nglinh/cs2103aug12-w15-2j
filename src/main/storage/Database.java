@@ -191,48 +191,24 @@ public class Database {
 
 			return result;
 		}
-
-		/**
-		 * To return only floating tasks in database
-		 * 
-		 * <p>
-		 * Returned result is a clone of the tasks in database,
-		 *  operations done on the result will not affect the database
-		 *
-		 * @return an ArrayList<Task> containing all the floating tasks in database   
-		 */
-
-		public ArrayList<Task> readFloatingOnly() {
-			ArrayList<Task> floatingOnly = new ArrayList<Task>();
-			for(Task temp : taskStore) {
-				if(temp.isFloatingTask()) {
-					floatingOnly.add(new Task(temp));
-				}
+		
+		public void writeALL(ArrayList<Task> incoming) throws IOException, WillNotWriteToCorruptFileException {
+			if(incoming == null){
+				throw new IllegalArgumentException();
 			}
-
-			return floatingOnly;
+			
+			verifyFileWritingAbility();
+			
+			taskStore.clear();
+			for(Task currentEntry : incoming)	{
+				taskStore.add(new Task(currentEntry));
+			}
+			
+			diskFile.writeDataBaseToFile(taskStore);
+			
 		}
 
-		/**
-		 * To return all tasks except floating database
-		 * 
-		 * <p>
-		 * Returned result is a clone of the tasks in database,
-		 *  operations done on the result will not affect the database
-		 *
-		 * @return an ArrayList<Task> containing all the floating tasks except floating in database   
-		 */
 
-		public ArrayList<Task> readAllExceptFloating() {
-			ArrayList<Task> allExceptFloating = new ArrayList<Task>();
-			for(Task temp : taskStore) {
-				if(!temp.isFloatingTask())	{
-					allExceptFloating.add(new Task(temp));
-				}
-			}
-
-			return allExceptFloating;
-		}
 
 		/**
 		 * To add a new task to database   
