@@ -212,28 +212,28 @@ public class TaskTest {
 		Task toBeTakenOver;
 		
 		toBeTakenOver = new Task(name);
-		assertEquals(toBeTakenOver.showInfo(), name.showInfo());
-		assertEquals(toBeTakenOver.getSerial(), name.getSerial());
+		assertEquals(name.showInfo(), toBeTakenOver.showInfo());
+		assertEquals(name.getSerial(), toBeTakenOver.getSerial());
 		
 		toBeTakenOver = new Task(nameTrue);
-		assertEquals(toBeTakenOver.showInfo(), nameTrue.showInfo());
-		assertEquals(toBeTakenOver.getSerial(), nameTrue.getSerial());
+		assertEquals(nameTrue.showInfo(), toBeTakenOver.showInfo());
+		assertEquals(nameTrue.getSerial(), toBeTakenOver.getSerial());
 		
 		toBeTakenOver = new Task(nameDeadline);
-		assertEquals(toBeTakenOver.showInfo(), nameDeadline.showInfo());
-		assertEquals(toBeTakenOver.getSerial(), nameDeadline.getSerial());
+		assertEquals(nameDeadline.showInfo(), toBeTakenOver.showInfo());
+		assertEquals(nameDeadline.getSerial(), toBeTakenOver.getSerial());
 		
 		toBeTakenOver = new Task(nameDeadlineTrue);
-		assertEquals(toBeTakenOver.showInfo(), nameDeadlineTrue.showInfo());
-		assertEquals(toBeTakenOver.getSerial(), nameDeadlineTrue.getSerial());
+		assertEquals(nameDeadlineTrue.showInfo(), toBeTakenOver.showInfo());
+		assertEquals(nameDeadlineTrue.getSerial(), toBeTakenOver.getSerial());
 		
 		toBeTakenOver = new Task(nameTimed);
-		assertEquals(toBeTakenOver.showInfo(), nameTimed.showInfo());
-		assertEquals(toBeTakenOver.getSerial(), nameTimed.getSerial());
+		assertEquals(nameTimed.showInfo(), toBeTakenOver.showInfo());
+		assertEquals(nameTimed.getSerial(), toBeTakenOver.getSerial());
 		
 		toBeTakenOver = new Task(nameTimedFalse);
-		assertEquals(toBeTakenOver.showInfo(), nameTimedFalse.showInfo());
-		assertEquals(toBeTakenOver.getSerial(), nameTimedFalse.getSerial());
+		assertEquals(nameTimedFalse.showInfo(), toBeTakenOver.showInfo());
+		assertEquals(nameTimedFalse.getSerial(), toBeTakenOver.getSerial());
 		
 
 
@@ -266,65 +266,65 @@ public class TaskTest {
 	public void testGetSerial() {
 		
 		int start = name.getSerial();
-		assertEquals(name.getSerial(), start + 0);
-		assertEquals(nameTrue.getSerial(), start + 1);
+		assertEquals(start + 0, name.getSerial());
+		assertEquals(start + 1, nameTrue.getSerial());
 		
-		assertEquals(nameDeadline.getSerial(), start + 2);
-		assertEquals(nameDeadlineTrue.getSerial(), start + 3);
+		assertEquals(start + 2, nameDeadline.getSerial());
+		assertEquals(start + 3, nameDeadlineTrue.getSerial());
 		
-		assertEquals(nameTimed.getSerial(), start + 4);
-		assertEquals(nameTimedFalse.getSerial(), start + 5);
+		assertEquals(start + 4, nameTimed.getSerial());
+		assertEquals(start + 5, nameTimedFalse.getSerial());
 	}
 
 	@Test
 	public void testGetType() {
 
-		assertEquals(nameTrue.getType(), Task.TaskType.FLOATING);
-		assertEquals(nameDeadlineTrue.getType(), Task.TaskType.DEADLINE);
-		assertEquals(nameTimedFalse.getType(), Task.TaskType.TIMED);
+		assertEquals(Task.TaskType.FLOATING, nameTrue.getType());
+		assertEquals(Task.TaskType.DEADLINE, nameDeadlineTrue.getType());
+		assertEquals(Task.TaskType.TIMED, nameTimedFalse.getType());
 	}
 
 	@Test
 	public void testGetTaskName() {
-		assertEquals(nameTrue.getTaskName(), NAME_TRUE);
-		assertEquals(nameDeadlineTrue.getTaskName(), NAME_1MONTH_TRUE);
-		assertEquals(nameTimedFalse.getTaskName(), NAME_FROM_NOW_TO_TOMORROW_0000_FALSE);
+		assertEquals(NAME_TRUE, nameTrue.getTaskName());
+		assertEquals(NAME_1MONTH_TRUE, nameDeadlineTrue.getTaskName());
+		assertEquals(NAME_FROM_NOW_TO_TOMORROW_0000_FALSE, nameTimedFalse.getTaskName());
 	}
 
 	@Test
 	public void testGetStartDate() {
-		assertEquals(name.getStartDate(), Task.INVALID_DATE_FIELD);
-		assertEquals(nameTrue.getStartDate(), Task.INVALID_DATE_FIELD);
+		assertEquals(Task.INVALID_DATE_FIELD, name.getStartDate());
+		assertEquals(Task.INVALID_DATE_FIELD, nameTrue.getStartDate());
 		
-		assertEquals(nameDeadline.getStartDate(), Task.INVALID_DATE_FIELD);
-		assertEquals(nameDeadlineTrue.getStartDate(), Task.INVALID_DATE_FIELD);
+		assertEquals(Task.INVALID_DATE_FIELD, nameDeadline.getStartDate());
+		assertEquals(Task.INVALID_DATE_FIELD, nameDeadlineTrue.getStartDate());
 		
-		assertEquals(nameTimed.getStartDate(), TIMED_START);
-		assertEquals(nameTimedFalse.getStartDate(), TIMED_DONE_FALSE_START);
+		assertEquals(TIMED_START, nameTimed.getStartDate());
+		assertEquals(TIMED_DONE_FALSE_START, nameTimedFalse.getStartDate());
 	}
 
 	@Test
 	public void testGetEndDate() {
-		assertEquals(name.getEndDate(), Task.INVALID_DATE_FIELD);
-		assertEquals(nameTrue.getEndDate(), Task.INVALID_DATE_FIELD);
+		assertEquals(Task.INVALID_DATE_FIELD, name.getEndDate());
+		assertEquals(Task.INVALID_DATE_FIELD, nameTrue.getEndDate());
 		
-		assertEquals(nameDeadline.getEndDate(), Task.INVALID_DATE_FIELD);
-		assertEquals(nameDeadlineTrue.getEndDate(), Task.INVALID_DATE_FIELD);
+		assertEquals(Task.INVALID_DATE_FIELD, nameDeadline.getEndDate());
+		assertEquals(Task.INVALID_DATE_FIELD, nameDeadlineTrue.getEndDate());
 		
-		assertEquals(nameTimed.getEndDate(), TIMED_END);
-		assertEquals(nameTimedFalse.getEndDate(), TIMED_DONE_FALSE_END);
+		assertEquals(TIMED_END, nameTimed.getEndDate());
+		assertEquals(TIMED_DONE_FALSE_END, nameTimedFalse.getEndDate());
 	}
 
 	@Test
 	public void testGetDeadline() {
-		assertEquals(name.getDeadline(), Task.INVALID_DATE_FIELD);
-		assertEquals(nameTrue.getDeadline(), Task.INVALID_DATE_FIELD);
+		assertEquals(Task.INVALID_DATE_FIELD, name.getDeadline());
+		assertEquals(Task.INVALID_DATE_FIELD, nameTrue.getDeadline());
 		
-		assertEquals(nameDeadline.getDeadline(), DEADLINE);
-		assertEquals(nameDeadlineTrue.getDeadline(), DEADLINE_TRUE);
+		assertEquals(DEADLINE, nameDeadline.getDeadline());
+		assertEquals(DEADLINE_TRUE, nameDeadlineTrue.getDeadline());
 		
-		assertEquals(nameTimed.getDeadline(), Task.INVALID_DATE_FIELD);
-		assertEquals(nameTimedFalse.getDeadline(), Task.INVALID_DATE_FIELD);
+		assertEquals(Task.INVALID_DATE_FIELD, nameTimed.getDeadline());
+		assertEquals(Task.INVALID_DATE_FIELD, nameTimedFalse.getDeadline());
 	}
 	
 	@Test
@@ -344,7 +344,7 @@ public class TaskTest {
 
 		
 		nameTimedFalse.changeName(NAME_ONLY);
-		assertEquals(nameTimedFalse.getTaskName(), NAME_ONLY);
+		assertEquals(NAME_ONLY, nameTimedFalse.getTaskName());
 		
 	}
 
@@ -355,7 +355,7 @@ public class TaskTest {
 		nameDeadline.changeName(NAME_ONLY);
 		nameDeadline.changetoFloating();
 		
-		assertEquals(name.showInfo(), nameDeadline.showInfo());
+		assertEquals(nameDeadline.showInfo(), name.showInfo());
 
 		
 	}
@@ -409,20 +409,20 @@ public class TaskTest {
 		
 		
 		nameTimed.changeStartAndEndDate(TIMED_DONE_FALSE_START, TIMED_DONE_FALSE_END);
-		assertEquals(nameTimed.getStartDate(), TIMED_DONE_FALSE_START);
-		assertEquals(nameTimed.getEndDate(), TIMED_DONE_FALSE_END);
+		assertEquals(TIMED_DONE_FALSE_START, nameTimed.getStartDate());
+		assertEquals(TIMED_DONE_FALSE_END, nameTimed.getEndDate());
 		
 	}
 	@Test
 	public void testchangetoDeadline() {
 		nameDeadline.changetoDeadline(DEADLINE_TRUE);
-		assertEquals(nameDeadline.getDeadline(), DEADLINE_TRUE);
+		assertEquals(DEADLINE_TRUE, nameDeadline.getDeadline());
 		
 		nameTrue.changetoDeadline(DEADLINE_TRUE);
-		assertEquals(nameTrue.getDeadline(), DEADLINE_TRUE);
+		assertEquals(DEADLINE_TRUE, nameTrue.getDeadline());
 		
 		nameTimed.changetoDeadline(DEADLINE_TRUE);
-		assertEquals(nameTimed.getDeadline(), DEADLINE_TRUE);
+		assertEquals(DEADLINE_TRUE, nameTimed.getDeadline());
 	}
 	
 	@Test
@@ -467,7 +467,7 @@ public class TaskTest {
 		}
 		
 		nameDeadline.changeDeadline(DEADLINE_TRUE);
-		assertEquals(nameDeadline.getDeadline(), DEADLINE_TRUE);
+		assertEquals(DEADLINE_TRUE, nameDeadline.getDeadline());
 		
 		
 	}
@@ -482,17 +482,17 @@ public class TaskTest {
 		
 		
 		
-		assertEquals(name.compareTo(nameTrue), COMPARETO_EQUAL);
+		assertEquals(COMPARETO_EQUAL, name.compareTo(nameTrue));
 		
-		assertEquals(nameTrue.compareTo(nameDeadline), COMPARETO_BIGGER);
+		assertEquals(COMPARETO_BIGGER, nameTrue.compareTo(nameDeadline));
 		
-		assertEquals(nameTimedFalse.compareTo(name), COMPARETO_SMALLER);
+		assertEquals(COMPARETO_SMALLER, nameTimedFalse.compareTo(name));
 		
-		assertEquals(nameDeadlineTrue.compareTo(nameDeadline), nameDeadlineTrue.getDeadline().compareTo(nameDeadline.getDeadline()));
+		assertEquals(nameDeadlineTrue.getDeadline().compareTo(nameDeadline.getDeadline()), nameDeadlineTrue.compareTo(nameDeadline));
 		
-		assertEquals(nameTimed.compareTo(nameDeadlineTrue), nameTimed.getStartDate().compareTo(nameDeadlineTrue.getDeadline()));
+		assertEquals(nameTimed.getStartDate().compareTo(nameDeadlineTrue.getDeadline()), nameTimed.compareTo(nameDeadlineTrue));
 		
-		assertEquals(nameDeadlineTrue.compareTo(nameTimed), nameDeadlineTrue.getDeadline().compareTo(nameTimed.getEndDate()));
+		assertEquals(nameDeadlineTrue.getDeadline().compareTo(nameTimed.getEndDate()), nameDeadlineTrue.compareTo(nameTimed));
 		
 	}
 
