@@ -11,22 +11,34 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
+import main.LogHandler;
 
 public class GuiTrayIcon extends UI {
+	
+	Logger log = LogHandler.getLogInstance();
 
 	protected ImageIcon createImageIcon(String path, String description) {
 		java.net.URL imgURL = getClass().getResource(path);
 		if (imgURL != null) {
 			return new ImageIcon(imgURL, description);
 		} else {
-			System.err.println("Couldn't find file: " + path);
+			log.severe("Couldn't find file: " + path);
 			return null;
 		}
 	}
 
 	public void runUI(){
 		final TrayIcon trayIcon;
+		
+		if(checkFilePermissions().contains("lock")){
+			JOptionPane.showMessageDialog(null, "DoIt! is already running! Check your system tray for DoIt's icon.");
+			exit();
+		}
 		
 		if (SystemTray.isSupported()) {
 
@@ -38,31 +50,31 @@ public class GuiTrayIcon extends UI {
 		    MouseListener mouseListener = new MouseListener() {
 		                
 		        public void mouseClicked(MouseEvent e) {
-		            System.out.println("Tray Icon - Mouse clicked!");
+		            log.info("Tray Icon - Mouse clicked!");
 		            //GuiQuickAdd.getInstance().runUI();
 		        }
 
 		        public void mouseEntered(MouseEvent e) {
-		            System.out.println("Tray Icon - Mouse entered!");                 
+		        	log.info("Tray Icon - Mouse entered!");                 
 		        }
 
 		        public void mouseExited(MouseEvent e) {
-		            System.out.println("Tray Icon - Mouse exited!");                 
+		        	log.info("Tray Icon - Mouse exited!");                 
 		        }
 
 		        public void mousePressed(MouseEvent e) {
-		            System.out.println("Tray Icon - Mouse pressed!");                 
+		        	log.info("Tray Icon - Mouse pressed!");                 
 		        }
 
 		        public void mouseReleased(MouseEvent e) {
-		            System.out.println("Tray Icon - Mouse released!");                 
+		        	log.info("Tray Icon - Mouse released!");                 
 		        }
 		    };
 
 		    ActionListener exitListener = new ActionListener() {
 		        public void actionPerformed(ActionEvent e) {
-		        	System.out.println(e.getActionCommand());
-		            System.out.println("Exiting...");
+		        	log.info(e.getActionCommand());
+		        	log.info("Exiting...");
 		            exit();
 		        }
 		    };
@@ -116,7 +128,7 @@ public class GuiTrayIcon extends UI {
 		    try {
 		        tray.add(trayIcon);
 		    } catch (AWTException e) {
-		        System.err.println("TrayIcon could not be added.");
+		    	log.severe("TrayIcon could not be added.");
 		    }
 		    
 		    GuiMain.getInstance().runUI();
