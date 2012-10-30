@@ -29,12 +29,17 @@ public class FileManagement {
 
 
 
+
+
+
 	public static enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, 
 		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT, FILE_IS_LOCKED};
 
 
 
 		public static final String filename = "database.txt";
+		
+		private static final int FILE_INDEX_START = 1;
 
 		private static final String LINE_IGNORE_CHARACTER = "#";
 		private static final String LINE_PARAM_DELIMITER_READ = " \\| ";
@@ -374,7 +379,7 @@ public class FileManagement {
 				dataToBeWritten.append(helpline + LINE_END_OF_LINE);
 			}
 
-			int index = 1; //Start index number from 1
+			int index = FILE_INDEX_START;
 
 			for(Task temp : toBeWritten) {
 				dataToBeWritten.append(taskToDatabaseString(temp, index) + LINE_END_OF_LINE);
