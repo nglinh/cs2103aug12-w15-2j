@@ -190,6 +190,7 @@ public class Logic {
 
 	private LogicToUi exit() {
 		dataBase.unlockFileToExit();
+		System.exit(0);
 		return new LogicToUi("Exiting DoIt");
 	}
 
