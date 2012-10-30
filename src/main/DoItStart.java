@@ -11,6 +11,8 @@ package main;
  * @author  Yeo Kheng Meng
  */ 
 
+import java.util.logging.Logger;
+
 import main.ui.Cli;
 import main.ui.CliWithJline;
 import main.ui.GuiTrayIcon;
@@ -22,21 +24,30 @@ public class DoItStart {
 	
 	public static void main(String[] args){
 		
+		Logger log = LogHandler.getLogInstance();
+		
+		log.info("Program start");
+		
 		UI doITUi;
 		
 		if (args.length == 0) {
+			log.info("Start tray icon");
 			doITUi = new GuiTrayIcon();
 			
 		} else if (args[0].equals("-cli") && isConsoleAttached()) {
+			log.info("Start CliWithJline");
 			doITUi = new CliWithJline();
 		
 		} else if (args[0].equals("-clisafe")) {
+			log.info("Start Cli safe mode");
 			doITUi = new Cli();
 
 		} else {
+			log.info("Start Cli safe mode as unknown arguments");
 			doITUi = new Cli();
 		}
-			
+		
+		log.info("Launch UI");
 		doITUi.runUI();	
 
 	}
