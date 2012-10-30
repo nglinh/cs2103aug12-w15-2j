@@ -140,8 +140,10 @@ public class FileManagement {
 				if(databaseFileLock == null) {
 					fileAttributes = FileStatus.FILE_IS_LOCKED;
 					isRWLockSucessful = false;
+					log.warning("File is locked");
 				} else {
 					fileAttributes = FileStatus.FILE_ALL_OK;
+					log.info("Full permissions obtained for file");
 				}
 			} catch (IOException e) {
 				isRWLockSucessful = false;
@@ -230,13 +232,14 @@ public class FileManagement {
 			log.info("Parsing contents");
 
 			while((lineFromInput = fileStringReader.readLine()) != null)	{
-				log.info(lineFromInput);
+				log.info("Input line " + lineFromInput);
 				
 				if(lineFromInput.startsWith(LINE_IGNORE_CHARACTER)) continue;
 
 				parsed = lineFromInput.split(LINE_PARAM_DELIMITER_READ, LINE_NUM_FIELDS);
 
 				Task toBeAdded = TaskParser(parsed);
+				log.info("Parsed line " + toBeAdded.showInfo());
 
 				storeInHere.add(toBeAdded);
 			}
@@ -418,7 +421,11 @@ public class FileManagement {
 			int index = FILE_INDEX_START;
 
 			for(Task temp : toBeWritten) {
-				dataToBeWritten.append(taskToDatabaseString(temp, index) + LINE_END_OF_LINE);
+				String writeLine = taskToDatabaseString(temp, index) + LINE_END_OF_LINE;
+				
+				log.info("Written line " + writeLine);
+				
+				dataToBeWritten.append(writeLine);
 				index++;
 			}
 
