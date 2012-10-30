@@ -146,8 +146,8 @@ public class FileManagementTest {
 			fileMgmt.writeDataBaseToFile(new ArrayList<Task>());
 			fileMgmt.readFileAndDetectCorruption(initialClearListing);
 
-			assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_ALL_OK);
-			assertEquals(initialClearListing.size(), 0);
+			assertEquals(FileManagement.FileStatus.FILE_ALL_OK, fileMgmt.getFileAttributes());
+			assertEquals(0, initialClearListing.size());
 
 			initialClearListing = new ArrayList<Task>();
 
@@ -159,21 +159,21 @@ public class FileManagementTest {
 				Task fromDisk = initialClearListing.get(i);
 				Task original = filledListing.get(i);
 
-				assertEquals(fromDisk.showInfo(), original.showInfo());
+				assertEquals(original.showInfo(), fromDisk.showInfo());
 			}
 
 			//Write a shortened file, to ensure no remnants of previous database remain on disk
 			initialClearListing = new ArrayList<Task>();
 			fileMgmt.writeDataBaseToFile(shortListing);
 			fileMgmt.readFileAndDetectCorruption(initialClearListing);
-			assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_ALL_OK);
+			assertEquals(FileManagement.FileStatus.FILE_ALL_OK, fileMgmt.getFileAttributes());
 
 			//Check every bit of info written down is read back correctly
 			for(int i = 0; i < shortListing.size(); i++){
 				Task fromDisk = initialClearListing.get(i);
 				Task original = shortListing.get(i);
 
-				assertEquals(fromDisk.showInfo(), original.showInfo());
+				assertEquals(original.showInfo(), fromDisk.showInfo());
 			}
 
 
@@ -210,7 +210,7 @@ public class FileManagementTest {
 				fileMgmt.closeFile();
 
 				System.out.println("Corrupt Strings: " + lastString);
-				assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_IS_CORRUPT);
+				assertEquals(FileManagement.FileStatus.FILE_IS_CORRUPT, fileMgmt.getFileAttributes());
 			}
 		} catch (IOException e) {
 
@@ -251,7 +251,7 @@ public class FileManagementTest {
 			fileMgmt.prepareDatabaseFile();
 
 			//Ensure the file is ok
-			assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_ALL_OK);
+			assertEquals(FileManagement.FileStatus.FILE_ALL_OK, fileMgmt.getFileAttributes());
 
 			//Put a null value in
 			fileMgmt.writeDataBaseToFile(null);
@@ -300,11 +300,11 @@ public class FileManagementTest {
 
 		fileMgmt.prepareDatabaseFile();
 
-		assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_READ_ONLY);
+		assertEquals(FileManagement.FileStatus.FILE_READ_ONLY, fileMgmt.getFileAttributes());
 
 		fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
 		fileMgmt.closeFile();
-		assertEquals(fileMgmt.getFileAttributes(), FileManagement.FileStatus.FILE_READ_ONLY);
+		assertEquals(FileManagement.FileStatus.FILE_READ_ONLY, fileMgmt.getFileAttributes());
 
 		dbFile.setWritable(true);
 
