@@ -4,17 +4,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
+import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 
+import main.LogHandler;
 import main.shared.Task;
 
 public class CalendarRenderer{
+	
+	Logger log = LogHandler.getLogInstance();
 	
 	private List<Task> taskList;
 	private DateTime dt;
@@ -30,15 +31,15 @@ public class CalendarRenderer{
 		
 		generateDatesWithTasks();
 		
-		int month = dt.getMonthOfYear();
-		int year = dt.getYear();
+		//int month = dt.getMonthOfYear();
+		//int year = dt.getYear();
 		
 		// Get the first Sunday before the first of the month as the starting day
 		DateTime startingDay = dt.withDayOfMonth(1).withTimeAtStartOfDay();
 		while(startingDay.getDayOfWeek() != DateTimeConstants.SUNDAY){
 			startingDay = startingDay.minusDays(1);
 		}
-		System.out.println(startingDay);
+		log.info("Starting day: "+startingDay);
 		
 		StringBuffer sb = new StringBuffer();
 		
@@ -56,7 +57,7 @@ public class CalendarRenderer{
 			if(currentDay != startingDay && currentDay.getDayOfWeek() == DateTimeConstants.SUNDAY){
 				sb.append("</tr><tr>");
 			}
-			System.out.println(currentDay + " " + startingDay.plusMonths(1));
+			log.finest(currentDay + " " + startingDay.plusMonths(1));
 			if(datesWithTasks.containsKey(currentDay.withTimeAtStartOfDay())){
 				sb.append("<td align=right><a href=\"http://doit/showTasksForDay/"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\">"+currentDay.getDayOfMonth()+"</a></td>");
 			}else{
@@ -92,11 +93,11 @@ public class CalendarRenderer{
 		}
 		
 		for(Map.Entry<DateTime, List<Task>> entry : datesWithTasks.entrySet()){
-			System.out.println(entry.getKey());
+			log.finest("Date with task: " + entry.getKey());
 			for (Task t : entry.getValue()){
-				System.out.println(t.getTaskName());
+				//System.out.println(t.getTaskName());
+				log.finest(t.getTaskName());
 			}
-			System.out.println("");
 		}
 	}
 	
