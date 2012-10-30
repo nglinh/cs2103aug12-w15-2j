@@ -11,6 +11,7 @@ package main;
  * @author  Yeo Kheng Meng
  */ 
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import main.ui.Cli;
@@ -21,10 +22,10 @@ import main.ui.UI;
 
 public class DoItStart {
 	
-	
+	private static Logger log;
 	public static void main(String[] args){
 		
-		Logger log = LogHandler.getLogInstance();
+		log = LogHandler.getLogInstance();
 		
 		log.info("Program start");
 		
@@ -43,7 +44,7 @@ public class DoItStart {
 			doITUi = new Cli();
 
 		} else {
-			log.info("Start Cli safe mode as unknown arguments");
+			log.log(Level.WARNING, "Unknown arguments, start CLi safe mode");
 			doITUi = new Cli();
 		}
 		
@@ -60,7 +61,14 @@ public class DoItStart {
 	 * @return true if terminal is attached, false if inside Eclipse or in a console-less system
 	 */
 	private static boolean isConsoleAttached() {
-		return System.console() != null;
+		boolean consoleAttached = ( System.console() != null);
+		if(consoleAttached) {
+			log.info("Console attached");
+		} else {
+			log.warning("Console not attached");
+		}
+		
+		return consoleAttached;
 	}
 
 }
