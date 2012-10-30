@@ -26,43 +26,37 @@ import main.shared.Task.TaskType;
 
 public class FileManagement {
 
-
-
-
-
-
-
-	public static enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, 
+	public enum FileStatus {	FILE_ALL_OK, FILE_READ_ONLY, 
 		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT, FILE_IS_LOCKED};
 
 
 
-		public static final String filename = "database.txt";
+		public final String filename = "database.txt";
 		
-		private static final int FILE_INDEX_START = 1;
+		private final int FILE_INDEX_START = 1;
 
-		private static final String LINE_IGNORE_CHARACTER = "#";
-		private static final String LINE_PARAM_DELIMITER_READ = " \\| ";
-		private static final String LINE_PARAM_DELIMITER_WRITE = " | ";
-		private static final String LINE_EMPTY_DATE = "----------------------";
+		private final String LINE_IGNORE_CHARACTER = "#";
+		private final String LINE_PARAM_DELIMITER_READ = " \\| ";
+		private final String LINE_PARAM_DELIMITER_WRITE = " | ";
+		private final String LINE_EMPTY_DATE = "----------------------";
 
-		private static final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm Z";
-		private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern(LINE_DATE_TIME_FORMAT);
+		private final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm Z";
+		private final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern(LINE_DATE_TIME_FORMAT);
 
-		private static final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
+		private final String FILE_LINE_FORMAT = "%1$3d" + LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE + "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s" + LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
 
-//		private static final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
-		private static final int LINE_POSITION_TASKTYPE = 1;
-		private static final int LINE_POSITION_DONE = 2;
-		private static final int LINE_POSITION_DEADLINE_DATE = 3;
-		private static final int LINE_POSITION_START_DATE = 4;
-		private static final int LINE_POSITION_END_DATE = 5;
-		private static final int LINE_POSITION_TASKNAME = 6;
+//		private final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
+		private final int LINE_POSITION_TASKTYPE = 1;
+		private final int LINE_POSITION_DONE = 2;
+		private final int LINE_POSITION_DEADLINE_DATE = 3;
+		private final int LINE_POSITION_START_DATE = 4;
+		private final int LINE_POSITION_END_DATE = 5;
+		private final int LINE_POSITION_TASKNAME = 6;
 
-		private static final int LINE_NUM_FIELDS = 7;
+		private final int LINE_NUM_FIELDS = 7;
 
 
-		private static final String[] filehelp = {
+		private final String[] filehelp = {
 			"################################################################################################################################################################" ,
 			"# Ref| Type | Done |        Deadline        |          Start         |          End           |                                  Task                          #" ,
 			"#  1 |  D   |   *  | 01-Jan-2012 0600 +0800 | ---------------------- | ---------------------- | A done deadline task by 0600 1st Jan 2012                      #" ,
@@ -72,23 +66,23 @@ public class FileManagement {
 			"################################################################################################################################################################"	
 		};
 
-		private static final String LINE_FLOATING = "F";
-		private static final String LINE_DEADLINE = "D";
-		private static final String LINE_TIMED = "T";
+		private final String LINE_FLOATING = "F";
+		private final String LINE_DEADLINE = "D";
+		private final String LINE_TIMED = "T";
 
-		private static final String LINE_DONE = "*";
-		private static final String LINE_UNDONE = "-";
+		private final String LINE_DONE = "*";
+		private final String LINE_UNDONE = "-";
 
-		private static final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma Z";
-		private static final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
+		private final String LINE_DATE_LONGER_FORMAT = "EEE dd-MMM-yyyy hh:mma Z";
+		private final DateTimeFormatter LINE_DATE_LONGER_FORMATTER = DateTimeFormat.forPattern(LINE_DATE_LONGER_FORMAT);
 
-		private static final String LINE_END_OF_LINE = System.getProperty( "line.separator" );
+		private final String LINE_END_OF_LINE = System.getProperty( "line.separator" );
 
-		private static final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
-		private static final int ZERO_LENGTH_TASK_NAME = 0;
+		private final String LINE_LAST_MODIFIED = "#Last Modified: %1$s";
+		private final int ZERO_LENGTH_TASK_NAME = 0;
 
-		private static final long START_OF_FILE = 0;
-		private static final long INITIAL_FILE_SIZE = 0;
+		private final long START_OF_FILE = 0;
+		private final long INITIAL_FILE_SIZE = 0;
 
 		private FileStatus fileAttributes = FileStatus.FILE_PERMISSIONS_UNKNOWN;
 
@@ -356,7 +350,7 @@ public class FileManagement {
 
 			String task = toBeConverted.getTaskName();
 
-			return String.format(FileManagement.FILE_LINE_FORMAT, index, typeString, doneString, deadline, start, end, task);
+			return String.format(FILE_LINE_FORMAT, index, typeString, doneString, deadline, start, end, task);
 		}
 
 

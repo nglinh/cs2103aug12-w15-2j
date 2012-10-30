@@ -119,7 +119,7 @@ public class FileManagementTest {
 
 		//To ensure the database file is blank
 		try {
-			BufferedWriter writeFile = new BufferedWriter(new FileWriter(FileManagement.filename));
+			BufferedWriter writeFile = new BufferedWriter(new FileWriter(fileMgmt.filename));
 			writeFile.close();
 		} catch (IOException e) {
 			fail();
@@ -197,10 +197,10 @@ public class FileManagementTest {
 			for(String spoiltString : corruptStrings)
 			{
 				lastString = spoiltString;
-				writeFile = new BufferedWriter(new FileWriter(FileManagement.filename));
+				writeFile = new BufferedWriter(new FileWriter(fileMgmt.filename));
 				writeFile.close();
 
-				writeFile = new BufferedWriter(new FileWriter(FileManagement.filename));
+				writeFile = new BufferedWriter(new FileWriter(fileMgmt.filename));
 				writeFile.write(spoiltString);
 				writeFile.close();
 
@@ -243,7 +243,7 @@ public class FileManagementTest {
 
 		boolean catchIllegalArgument = false;
 		try {
-			writeFile = new BufferedWriter(new FileWriter(FileManagement.filename));
+			writeFile = new BufferedWriter(new FileWriter(fileMgmt.filename));
 			writeFile.write(FILE_GOOD_STRING);
 			writeFile.close();
 
@@ -290,7 +290,7 @@ public class FileManagementTest {
 	public void readOnlyTest()
 	{
 
-		File dbFile = new File(FileManagement.filename);
+		File dbFile = new File(fileMgmt.filename);
 
 		//Set the file to read only to test
 		if(dbFile.canWrite()){
