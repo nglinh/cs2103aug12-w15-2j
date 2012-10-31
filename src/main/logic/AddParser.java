@@ -108,10 +108,11 @@ public class AddParser {
 	}
 
 	private void adjustStartTimeAndEndTime() {
-		if (taskType != TaskType.FLOATING) {
+		if (taskType == TaskType.TIMED) {
 			String dateString;
 			dateString = groups.get(START_INDEX).getText();
-			if (dateString.contains("to")) {
+			if (dateString.contains("to") && !dateString.matches(".*\\d.*")) //second condition to check if the string contain a number.
+			{
 				String tempStringArray[] = dateString.split("to");
 				if (tempStringArray.length == 2) {
 					CalendarSource.setBaseDate(new DateTime().withTime(00, 00,
