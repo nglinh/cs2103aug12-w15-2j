@@ -17,6 +17,7 @@ public class DatedTaskListRenderer{
 	Map<DateTime, List<Task>> datesWithTasks;
 
 	private List<Integer> indexList;
+	private int highlightSerial = -1;
 	
 	public DatedTaskListRenderer(){
 	}
@@ -25,6 +26,10 @@ public class DatedTaskListRenderer{
 		this.taskList = taskList;
 		
 		indexList = new ArrayList<Integer>();
+	}
+	
+	public void setHighlightSerial(int highlightSerial) {
+		this.highlightSerial = highlightSerial;
 	}
 	
 	public String render(){
@@ -94,7 +99,13 @@ public class DatedTaskListRenderer{
 		int taskIndex = taskList.indexOf(t)+1;
 		String taskName = t.getTaskName();
 		
-		sb.append("<table cellpadding=0 cellspacing=0 class=\"taskbox\" width=100%>");
+		String cssClass = "taskbox";
+		if(highlightSerial == t.getSerial()){
+			cssClass = "taskboxhighlight";
+			sb.append("<div class=separatorfirst><a name=\"highlight\"></a></div>");
+		}
+		
+		sb.append("<table cellpadding=0 cellspacing=0 class=\""+cssClass+"\" width=100%>");
 		sb.append("<tr><td>"+renderTaskDate(t, currentDay)+"</td><td width=1 align=center>" + taskIndex + "</td></tr>");
 		sb.append("<tr>");
 		sb.append("<td><font size=5>"+HTMLEncoder.encode(taskName)+"</font></td>");

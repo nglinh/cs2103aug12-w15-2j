@@ -1,10 +1,10 @@
 package main.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -18,22 +18,17 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.text.Document;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
-
 import org.joda.time.DateTime;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
+import main.LogHandler;
 import main.shared.LogicToUi;
 import main.shared.Task;
 import main.shared.Task.TaskType;
@@ -41,6 +36,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class GuiMain extends GuiCommandBox{
+	
+	private static final int TABLE_COLUMN_WIDTH_CHECKBOX = 20;
+	private static final String TABLE_COLUMN_WIDTH_DATE_MAX_TEXT = "WMW 00 MWM 0000 23:59pm";
+	private static final String TABLE_COLUMN_WIDTH_INDEX_MAX_TEXT = "9999";
+	private static final int TABLE_COLUMN_WIDTH_EXTRA = 10;
+
+	Logger log = LogHandler.getLogInstance();
 
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
 	private JFrame frmDoit;
@@ -64,7 +66,9 @@ public class GuiMain extends GuiCommandBox{
 	}
 	
 	public static GuiMain getInstance() {
+		LogHandler.getLogInstance().info("Getting instance of this class");
 		if (theOne == null) {
+			LogHandler.getLogInstance().info("Previous instance did not exist, instantiating this class");
 			theOne = new GuiMain();
 		}
 		return theOne;
@@ -74,14 +78,18 @@ public class GuiMain extends GuiCommandBox{
 	 * Create the application.
 	 */
 	private GuiMain() {
+		log.entering(this.getClass().getName(), "constructor");
 		try {
+			log.info("Setting look and feel");
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			log.log(Level.WARNING, "Could not set look and feel", e);
 		}
 		initialize();
+		log.exiting(this.getClass().getName(), "constructor");
 	}
 
 	/**
@@ -90,6 +98,9 @@ public class GuiMain extends GuiCommandBox{
 	@SuppressWarnings("serial")
 	protected void initialize() {
 		
+		log.entering(this.getClass().getName(), "initialize");
+		
+		log.info("Setting up stuff in GuiMain");
 		frmDoit = new JFrame();
 		frmDoit.setTitle("DoIt!");
 		frmDoit.setBounds(100, 100, 700, 400);
@@ -117,6 +128,7 @@ public class GuiMain extends GuiCommandBox{
 		txtStatus = new JEditorPane();
 		panel.add(txtStatus, BorderLayout.SOUTH);
 		
+		log.info("Calling GuiCommandBox to configure widgets");
 		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
 
 		scrollPane = new JScrollPane();
@@ -126,12 +138,16 @@ public class GuiMain extends GuiCommandBox{
 		table.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
+				log.finest("Key pressed: " + arg0.getKeyCode());
 				if(arg0.getKeyCode() == java.awt.event.KeyEvent.VK_DELETE){
+					log.finer("Delete key pressed");
 					// Note: With every deletion, the index number changes!
 					// Therefore we must delete from the largest number backwards.
+					log.info("Deleting selected tasks");
 					int[] rowsToDelete = table.getSelectedRows();
 					Arrays.sort(rowsToDelete);
-					System.out.println(Arrays.toString(rowsToDelete));
+					//System.out.println(Arrays.toString(rowsToDelete));
+					log.info("Rows to delete: "+ Arrays.toString(rowsToDelete));
 					for(int i = (rowsToDelete.length-1); i>=0; i--){
 						executeCommand("delete " + (rowsToDelete[i] + 1));
 					}
@@ -164,6 +180,7 @@ public class GuiMain extends GuiCommandBox{
 
 		scrollPane.setViewportView(table);
 		
+		log.info("Checking file status");
 		String fileStatus = checkFilePermissions();		
 		//executeCommand("list");
 		// Note we do not use executeCommand here, as doing so will cause a further update
@@ -184,6 +201,7 @@ public class GuiMain extends GuiCommandBox{
 				}
 			}
 		});*/
+		log.entering(this.getClass().getName(), "runUI");
 		frmDoit.setVisible(true);
 	}
 
@@ -199,20 +217,25 @@ public class GuiMain extends GuiCommandBox{
 		private List<Task> data;
 
 		public MyTableModel(List<Task> taskList){
+			log.entering(this.getClass().getName(), "<init>");
 			columnNames = new String[]{"Idx", "", "Start/Deadline", "End", "Task"};
 			data = taskList;
+			log.exiting(this.getClass().getName(), "<init>");
 		}
 
 		public int getColumnCount() {
+			log.fine("column count is " + columnNames.length);
 			return columnNames.length;
 		}
 
 		public int getRowCount() {
 			//return data.length;
+			log.fine("row count is " + data.size());
 			return data.size();
 		}
 
 		public String getColumnName(int col) {
+			log.fine(String.format("name of column %1d is %2s", col, columnNames[col]));
 			return columnNames[col];
 		}
 
@@ -236,16 +259,25 @@ public class GuiMain extends GuiCommandBox{
 
 			switch(col){
 			case COL_INDEX:
-	    		return row+1;
+				int index = row+1;
+				log.finest(String.format("value at row %1d col %2d is %3d", row, col, index));
+	    		return index;
 			case COL_DONE:
-				return task.isDone();
+				boolean isTaskDone = task.isDone();
+				log.finest(String.format("value at row %1d col %2d is %3b", row, col, isTaskDone));
+				return isTaskDone;
 			case COL_START:
+				log.finest(String.format("value at row %1d col %2d is %3s", row, col, start));
 				return start;
 			case COL_END:
+				log.finest(String.format("value at row %1d col %2d is %3s", row, col, end));
 				return end;
 			case COL_TASKNAME:
-				return task.getTaskName();
+				String taskName = task.getTaskName();
+				log.finest(String.format("value at row %1d col %2d is %3s", row, col, taskName));
+				return taskName;
 			default:
+				log.warning("Invalid column number");
 				assert false;
 			}
 			return null;
@@ -253,6 +285,7 @@ public class GuiMain extends GuiCommandBox{
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public Class getColumnClass(int c) {
+			log.fine(String.format("class of column %1d is %2s", c, getValueAt(0, c).getClass()));
 			return getValueAt(0, c).getClass();
 		}
 
@@ -260,8 +293,10 @@ public class GuiMain extends GuiCommandBox{
 			//Note that the data/cell address is constant,
 			//no matter where the cell appears on-screen.
 			if (col == COL_INDEX) {
+				log.fine(String.format("row %1d col %2d is editable: %3b", row, col, false));
 				return false;
 			} else {
+				log.fine(String.format("row %1d col %2d is editable: %3b", row, col, true));
 				return true;
 			}
 		}
@@ -271,7 +306,9 @@ public class GuiMain extends GuiCommandBox{
 		 * data can change.
 		 */
 		public void setValueAt(Object value, int row, int col) {
-
+			log.entering(this.getClass().getName(), "setValueAt");
+			log.info(String.format("Setting row %1d col %2d to %3s", row, col, value));
+			
 			Task task = data.get(row);
 			
 			Parser parser = null;
@@ -282,12 +319,15 @@ public class GuiMain extends GuiCommandBox{
 
 			switch (col) {
 			case COL_INDEX:
+				log.warning("Try to set value of index!");
 				assert false;
 				break;
 			case COL_DONE:
+				log.info("Setting value of done to " + value);
 				task.done((boolean) value);
 				break;
 			case COL_START:
+				log.fine("Setting value of start date with raw value " + value);
 				parser = new Parser();
 				groups = parser.parse(((String) value).replace("-", " "));
 				date = null;
@@ -297,25 +337,33 @@ public class GuiMain extends GuiCommandBox{
 				}
 
 				if (date != null) {
+					log.fine("Managed to parse a date");
 					// Managed to parse out a date
 					if (task.getType() == TaskType.TIMED) {
+						log.info(String.format("Task is timed task, changing times to %1s %2s", date, task.getEndDate()));
 						task.changeStartAndEndDate(date, task.getEndDate());
 					} else if (task.getType() == TaskType.DEADLINE) {
+						log.info(String.format("Task is deadline task, changing times %1s", date));
 						task.changeDeadline(date);
 					} else if (task.getType() == TaskType.FLOATING) {
+						log.info(String.format("Task is floating task, changing to deadline tas with time %1s", date));
 						task.changetoDeadline(date);
 					}
 
 				} else {
+					log.fine("Did not manage to parse a date");
 					// Did not manage to parse out a date
 					if (task.getType() == TaskType.TIMED) {
+						log.info(String.format("Task is timed task, changing to deadline task with time %1s", task.getEndDate()));
 						task.changetoDeadline(task.getEndDate());
 					} else if (task.getType() == TaskType.DEADLINE) {
+						log.info("Task is deadline task, changing to floating task");
 						task.changetoFloating();
 					}
 				}
 				break;
 			case COL_END:
+				log.fine("Setting value of end date with raw value " + value);
 				parser = new Parser();
 				groups = parser.parse(((String) value).replace("-", " "));
 				date = null;
@@ -325,23 +373,32 @@ public class GuiMain extends GuiCommandBox{
 				}
 
 				if (date != null) {
+					log.fine("Managed to parse a date");
+					
 					// Managed to parse out a date
 					if (task.getType() == TaskType.TIMED) {
+						log.info(String.format("Task is timed task, changing times to %1s %2s", task.getStartDate(), date));
 						task.changeStartAndEndDate(task.getStartDate(), date);
 					} else if (task.getType() == TaskType.DEADLINE) {
+						log.info(String.format("Task is deadline task, changing to timed task %1s %2s", task.getDeadline(), date));
 						task.changetoTimed(task.getDeadline(), date);
 					} else if (task.getType() == TaskType.FLOATING) {
+						log.info(String.format("Task is floating task, changing to deadline tas with time %1s", date));
 						task.changetoDeadline(date);
 					}
-				} else {
+				} else {					
+					log.fine("Did not manage to parse a date");
+					
 					// Did not manage to parse out a date
 					if (task.getType() == TaskType.TIMED) {
+						log.info(String.format("Task is timed task, changing to deadline task with time %1s", task.getStartDate()));
 						task.changetoDeadline(task.getStartDate());
 					}
 				}
 
 				break;
 			case COL_TASKNAME:
+				log.info("Changing task name to " + value);
 				task.changeName((String) value);
 				break;
 			default:
@@ -353,21 +410,31 @@ public class GuiMain extends GuiCommandBox{
 			}
 
 			fireTableCellUpdated(row, col);
+			
+			log.exiting(this.getClass().getName(), "setValueAt");
 		}
 	}
 	
 	public int getContentWidth(String content) {
+		log.entering(this.getClass().getName(), "getContentWidth");
+		
 	    JLabel dummylabel = new JLabel();
 	    //dummyEditorPane.setSize(1, Short.MAX_VALUE);
 	    dummylabel.setText(content);
-	    return dummylabel.getPreferredSize().width;
+	    int width = dummylabel.getPreferredSize().width;
+	    
+	    log.finest(String.format("Width of string %1s is %2d", content, width));
+	    
+	    log.exiting(this.getClass().getName(), "getContentWidth");
+		return width;
 	}
 
 	public void showTasksList(List<Task> taskList){
+		log.entering(this.getClass().getName(), "showTasksList");
 		
-		int indexNumberColumnWidth = getContentWidth("9999") + 10;
-		int checkboxColumnWidth = 20;
-		int dateColumnWidth = getContentWidth("WMW 00 MWM 0000 23:59pm") + 10;
+		int indexNumberColumnWidth = getContentWidth(TABLE_COLUMN_WIDTH_INDEX_MAX_TEXT) + TABLE_COLUMN_WIDTH_EXTRA;
+		int checkboxColumnWidth = TABLE_COLUMN_WIDTH_CHECKBOX;
+		int dateColumnWidth = getContentWidth(TABLE_COLUMN_WIDTH_DATE_MAX_TEXT) + TABLE_COLUMN_WIDTH_EXTRA;
 
 		table.setModel(new MyTableModel(taskList));
 		table.getColumnModel().getColumn(0).setMinWidth(indexNumberColumnWidth);
@@ -385,10 +452,16 @@ public class GuiMain extends GuiCommandBox{
 
 			@Override
 			public void tableChanged(TableModelEvent e) {
+				log.entering(this.getClass().getName(), "tableChanged");
+				log.info("Table has been modified");
+				
 				int row = e.getFirstRow();
 				int column = e.getColumn();
+				log.info(String.format("Cell at row %1d and col %2d has been modified", row, column));
+				
 				TableModel model = (TableModel) e.getSource();
 				if (column == MyTableModel.COL_DONE) {
+					log.info("Checkbox clicked");
 					boolean done = (boolean) model.getValueAt(row, column);
 					int index = row + 1;
 					if (done) {
@@ -398,22 +471,30 @@ public class GuiMain extends GuiCommandBox{
 					}
 				}
 				if (column == MyTableModel.COL_START) {
+					log.info("Start date changed");
+					
 					String startTime = (String) model.getValueAt(row, column);
 					startTime = startTime.trim();
 					String endTime = (String) model.getValueAt(row, MyTableModel.COL_END);
 					endTime = endTime.trim();
 					int index = row + 1;
 					
+					log.finer(String.format("New start date %1s, new end date %2s", startTime, endTime));
+					
 					try{
 						if(startTime.isEmpty() && endTime.isEmpty()){
 							// Floating task
+							log.finer("Both start and end time empty");
 							executeCommand("update " + index +" -tofloating");
 						}else if(startTime.isEmpty() || endTime.isEmpty()){
+							log.finer("Either start or end time empty");
 							// Deadline task
 							String deadline;
 							if(startTime.isEmpty()){
+								log.finer("Start is empty, so we set deadline to endTime");
 								deadline = endTime;
 							}else{
+								log.finer("Start is not empty implies endTime is empty, so we set deadline to startTime");
 								deadline = startTime;
 							}
 							
@@ -423,10 +504,13 @@ public class GuiMain extends GuiCommandBox{
 							executeCommand("update " + index +" -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
 						}
 					}catch(Exception ex){
-						ex.printStackTrace();
+						//ex.printStackTrace();
+						log.log(Level.WARNING, "Exception encountered when editing task in table", ex);
 					}
 				}
 				if (column == MyTableModel.COL_END) {
+					log.info("End date changed");
+					
 					String endTime = (String) model.getValueAt(row, column);
 					String startTime = (String) model.getValueAt(row, MyTableModel.COL_START);
 					int index = row + 1;
@@ -461,6 +545,8 @@ public class GuiMain extends GuiCommandBox{
 			}
 
 		});
+		
+		log.exiting(this.getClass().getName(), "showTasksList");
 	}
 
 	public void update(LogicToUi returnValue){
