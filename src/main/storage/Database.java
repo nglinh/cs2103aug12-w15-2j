@@ -81,7 +81,7 @@ public class Database {
 		 * @param terms Input in the form of a search term class
 		 * @return an List<Task> containing all the matched tasks    
 		 */
-
+		@Deprecated
 		public List<Task> search(SearchTerms terms) {
 			List<Task> searchResults = new ArrayList<Task>();
 
@@ -207,8 +207,12 @@ public class Database {
 		
 		public void writeALL(List<Task> incoming) throws IOException, WillNotWriteToCorruptFileException {
 			if(incoming == null){
-				throw new IllegalArgumentException();
+				log.warning("Received null list, exception thrown");
+				throw new IllegalArgumentException("null value");
 			}
+			
+	
+			log.info("Recieved incoming data of size " + incoming.size());
 			
 			verifyFileWritingAbility();
 			
@@ -217,9 +221,14 @@ public class Database {
 				taskStore.add(new Task(currentEntry));
 			}
 			
+			log.info("Incoming data saved to database copy");
+			
 			Collections.sort(taskStore);
 			
+			log.info("Send data to FileMgmt");
 			diskFile.writeDataBaseToFile(taskStore);
+			log.info("FileMgmt saved successfully");
+			
 			
 		}
 
@@ -236,7 +245,8 @@ public class Database {
 		public void add(Task newTask) throws IOException, WillNotWriteToCorruptFileException {
 
 			if(newTask == null){
-				throw new IllegalArgumentException();
+				log.warning("Received null task, exception thrown");
+				throw new IllegalArgumentException("Null task received");
 			}
 
 			verifyFileWritingAbility();
@@ -244,9 +254,13 @@ public class Database {
 			cloneDatabase();
 
 			taskStore.add(newTask);
+			log.info("Task added");
+			
 			Collections.sort(taskStore);
-
+			
+			log.info("Send data to FileMgmt");
 			diskFile.writeDataBaseToFile(taskStore);
+			log.info("FileMgmt saved successful");
 
 
 		}
@@ -261,12 +275,15 @@ public class Database {
 		 */
 
 		public Task locateATask(int serial) throws NoSuchElementException{
+			log.info("Asked to search for this serial " + serial);
 			for(Task toFind : taskStore) {
 				if(toFind.getSerial() == serial) {
+					log.info("Task with this serial " + serial + " found");
 					return new Task(toFind);
 				}
 			}
 
+			log.warning("Task with this serial " + serial + " not found");
 			throw new NoSuchElementException();
 		}
 
@@ -283,8 +300,11 @@ public class Database {
 
 		public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException{
 			if(updated == null) {
-				throw new IllegalArgumentException();
+				log.warning("Null task received, exception thrown");
+				throw new IllegalArgumentException("Null task received");
 			}
+			
+			log.info("Received serial " + originalSerial + " and updated task " + updated.showInfo());
 
 			verifyFileWritingAbility();
 
@@ -295,16 +315,18 @@ public class Database {
 				if(toBeUpdated.getSerial() == originalSerial)	{		
 					toBeUpdated.updateOrClone(updated);
 					isOriginalTaskFound = true;
-
+					log.info("Old task with this serial " + originalSerial + " found");
 					Collections.sort(taskStore);
 					break;
 				}
 			}
 
 			if(isOriginalTaskFound) {
+				log.info("Updated task send to FileMgmt");
 				diskFile.writeDataBaseToFile(taskStore);
 			} else	{
 				undoOperations.pop();
+				log.warning("Cannot find old task, exception thrown");
 				throw new NoSuchElementException();
 			}
 
@@ -315,14 +337,17 @@ public class Database {
 			if(fileAttributes.equals(DB_File_Status.FILE_PERMISSIONS_UNKNOWN)
 					|| fileAttributes.equals(DB_File_Status.FILE_READ_ONLY)
 					|| fileAttributes.equals(DB_File_Status.FILE_IS_LOCKED)) {
+				log.warning("Permissions say no file writing permission");
 				throw new IOException();
 			}
 
 
 			if(fileAttributes.equals(DB_File_Status.FILE_IS_CORRUPT)) {
+				log.warning("File corrupt status");
 				throw new WillNotWriteToCorruptFileException();
 			}
 
+			log.info("Has full permissions");
 			fileAttributes = DB_File_Status.FILE_ALL_OK;
 
 		}
@@ -338,7 +363,8 @@ public class Database {
 		 */
 
 		public void delete(int serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
-
+			log.info("Received this serial " + serial);
+			
 			verifyFileWritingAbility();
 
 			cloneDatabase();
@@ -354,15 +380,19 @@ public class Database {
 					taskStore.remove(i);
 					Collections.sort(taskStore);
 					isOriginalTaskFound = true;
+					log.info("Original Task found");
 					break;
 				}
 
 			}
 
 			if(isOriginalTaskFound) {
+				log.info("Send data to FileMgmt");
 				diskFile.writeDataBaseToFile(taskStore);
+				log.info("FileMgmt save successful");
 			} else	{
 				undoOperations.pop();
+				log.warning("No task with this serial found");
 				throw new NoSuchElementException();
 			}
 
@@ -381,8 +411,11 @@ public class Database {
 			verifyFileWritingAbility();
 
 			cloneDatabase();
+			
 			taskStore.clear();
+			log.info("Send empty list to FileMgmt");
 			diskFile.writeDataBaseToFile(taskStore);
+			log.info("FileMgmt save successful");
 		}
 
 		/**
@@ -392,6 +425,7 @@ public class Database {
 		 * @throws WillNotWriteToCorruptFileException 
 		 */
 
+		@Deprecated
 		public void deleteDone() throws IOException, WillNotWriteToCorruptFileException {
 			verifyFileWritingAbility();
 
@@ -418,7 +452,7 @@ public class Database {
 		 * @throws IOException if cannot commit changes to file, database will not be modified
 		 * @throws WillNotWriteToCorruptFileException 
 		 */
-
+		@Deprecated
 		public void deleteOver() throws IOException, WillNotWriteToCorruptFileException {
 			verifyFileWritingAbility();
 
@@ -475,6 +509,7 @@ public class Database {
 		 * @throws WillNotWriteToCorruptFileException 
 		 */
 
+		@Deprecated
 		public void undo() throws IOException, NoMoreUndoStepsException, WillNotWriteToCorruptFileException {
 
 			verifyFileWritingAbility();
@@ -517,12 +552,14 @@ public class Database {
 
 		 */
 
+		@Deprecated
 		public int getUndoStepsLeft() {
 			return undoOperations.size();
 		}
 		
 		public void unlockFileToExit(){
-				diskFile.closeFile();
+			log.info("Send command to FileMgmt to unlock the file");	
+			diskFile.closeFile();
 		}
 
 		private DB_File_Status parseFileAttributes(FileManagement diskFile) {
