@@ -3,7 +3,6 @@ package main.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import sun.util.logging.resources.logging;
 import main.shared.Task;
 
 public class UndatedTaskListRenderer {

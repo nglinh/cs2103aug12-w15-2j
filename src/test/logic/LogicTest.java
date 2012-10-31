@@ -21,14 +21,12 @@ public class LogicTest {
 				"Wed 26 Sep 2012 9:00PM");
 		assertEquals(expectedResponse,logic.uiCommunicator(command).getString());
 		
-		/*Cannot pass yet due to parser limitation. 
 		// Add normal timed task with starting and ending date but no time.
 		// Assume 12:00am for start time and 23:59pm for end time.
 		command = "add My New Task from 25 Sep 2012 to 26 Sep 2012";
 		expectedResponse = timedTaskResponse("My New Task", "Tue 25 Sep 2012 12:00AM", 
 				"Wed 26 Sep 2012 11:59PM");
 		assertEquals(expectedResponse,logic.uiCommunicator(command).getString());
-		*/
 		
 		// Add normal timed task with starting and ending time and date
 		// but with "from" inside the description
@@ -52,7 +50,6 @@ public class LogicTest {
 				"Tue 26 Mar 2013 10:00PM");
 		assertEquals(expectedResponse, logic.uiCommunicator(command).getString());
 		
-		/*Cannot pass yet due to parser's limitation
 		//Add normal timed task with starting and ending date (no time)
 		//but have a string that is short form of a month. Ex: go to market, "mar" is
 		//short form of March.
@@ -60,7 +57,6 @@ public class LogicTest {
 		expectedResponse = timedTaskResponse("go to market", "Sun 25 Mar 2012 12:00AM", 
 				"Mon 26 Mar 2012 11:59PM");
 		assertEquals(expectedResponse, logic.uiCommunicator(command).getString());
-		*/
 		
 		//Add normal timed task with starting and ending date and time
 		//in which start time and end time are in reverse order
