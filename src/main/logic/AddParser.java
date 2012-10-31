@@ -19,7 +19,7 @@ import com.joestelmach.natty.DateGroup;
  * @author mrlinh
  * 
  */
-public class AddParser implements CommandParser {
+public class AddParser extends CommandParser {
 
 	private static final int SECOND_ENTRY = 1;
 	private static final int FIRST_ENTRY = 0;
@@ -59,7 +59,8 @@ public class AddParser implements CommandParser {
 	/**
 	 * Parse the argument. Extracted results are memorized in private variables
 	 * associate with this AddParser object.
-	 * @throws EmptyDescriptionException 
+	 * 
+	 * @throws EmptyDescriptionException
 	 */
 	public void parse() throws EmptyDescriptionException {
 		String dateString;
@@ -100,6 +101,7 @@ public class AddParser implements CommandParser {
 		determineTaskType();
 		determineEndOfDateString();
 		determineTaskName();
+		adjustStartTimeAndEndTime();
 		if (taskType == TaskType.DEADLINE) {
 			determineDeadline();
 		}
@@ -119,6 +121,43 @@ public class AddParser implements CommandParser {
 	 * 
 	 * }
 	 */
+	private void adjustStartTimeAndEndTime() {
+		if (taskType == TaskType.TIMED) {
+			String dateString;
+			dateString = groups.get(START_INDEX).getText();
+			if (dateString.contains("to")
+					&& !dateString.toLowerCase().contains("am")
+					&& !dateString.toLowerCase().contains("pm")) // second and
+																	// third
+																	// condition
+																	// to check
+																	// if the
+																	// string
+																	// contain a
+																	// number.
+			{
+				String tempStringArray[] = dateString.split("to");
+				if (tempStringArray.length == 2) {
+					groups.get(0)
+							.getDates()
+							.get(START_INDEX)
+							.setTime(
+									parser.parseWithCustomisedBaseDate(00, 00,
+											00, tempStringArray[0]).get(0)
+											.getDates().get(0).getTime());
+					CalendarSource.setBaseDate(new DateTime().withTime(23, 59,
+							00, 00).toDate());
+					groups.get(0)
+							.getDates()
+							.get(SECOND_ENTRY)
+							.setTime(
+									parser.parseWithDefaultBaseDate(
+											tempStringArray[1]).get(0)
+											.getDates().get(0).getTime());
+				}
+			}
+		}
+	}
 
 	private int getToNextNonemptyWord(char[] tempCharArray, int i) {
 		while (i < tempCharArray.length && tempCharArray[i] != ' ') {
@@ -276,8 +315,8 @@ public class AddParser implements CommandParser {
 
 	private void determineEndOfDateString() {
 		if (this.getTaskType() != TaskType.FLOATING) {
-			String tempString = groups.get(groups.size() - 1).getText();
-			dateStringEndPosition = dateStringStartPosition
+			String tempString = groups.get(START_INDEX).getText();
+			dateStringEndPosition = groups.get(START_INDEX).getPosition()
 					+ tempString.length() + 1;
 
 		}

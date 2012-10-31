@@ -10,7 +10,6 @@ import main.storage.WillNotWriteToCorruptFileException;
 import org.joda.time.DateTime;
 
 public class AddHandler extends CommandHandler {
-	private static final String ERROR_TASKDES_EMPTY = "Task name cannot be empty. Please check again :(.";
 	private AddParser parser;
 	private Task newTask;
 

@@ -1,6 +1,7 @@
 package main.logic;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
 
@@ -10,17 +11,12 @@ import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
 
-public class EditParser implements CommandParser{
+public class EditParser extends CommandParser{
 	public boolean willChangeType= false;
 	public boolean willChangeStartTime = false;
 	public boolean willChangeDeadline = false;
 	public boolean willChangeEndTime = false;
 	public boolean willChangeName = false;
-	public boolean canParseStartTime = true;
-	public boolean canParseEndTime = true;
-	public boolean canParseDeadline = true;
-	public boolean canParseName = true;
-	public boolean isIndexValid = true;
 	
 	private String newName;
 	private DateTime newStartTime;
@@ -41,8 +37,7 @@ public class EditParser implements CommandParser{
 		index--; //Since arraylist index starts from 0
 	
 		if((index < 0) || ((index  +  1) > Logic.lastShownToUI.size()) ) {
-			isIndexValid = false;
-			return;
+			throw new NoSuchElementException();
 		}
 		toBeEdited = Logic.lastShownToUI.get(index);
 		String[] tempStringArray = argument.split("-");
@@ -118,12 +113,7 @@ public class EditParser implements CommandParser{
 			break;
 		}
 	}
-	private String removeFirstWord(String string){
-		return string.replaceFirst(getFirstWord(string), "").trim();
-	}
-	private String getFirstWord(String string) {
-		return string.split(" ")[0];
-	}
+	
 	public Task getToBeEdited(){
 		return toBeEdited;
 	}
