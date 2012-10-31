@@ -246,7 +246,6 @@ public class FileManagementTest {
 
 		BufferedWriter writeFile;
 
-		boolean catchIllegalArgument = false;
 		try {
 			writeFile = new BufferedWriter(new FileWriter(fileMgmt.filename));
 			writeFile.write(FILE_GOOD_STRING);
@@ -263,14 +262,13 @@ public class FileManagementTest {
 
 
 		} catch (IOException e) {
-		} catch (IllegalArgumentException e) {
-			catchIllegalArgument = true;
+		} catch (AssertionError e) {
 			fileMgmt.closeFile();
 		} catch (WillNotWriteToCorruptFileException e) {
 			fileMgmt.closeFile();
 		} 
 
-		assertTrue(catchIllegalArgument);
+
 
 	}
 
@@ -278,17 +276,15 @@ public class FileManagementTest {
 	public void readFileAndDetectCorruptionExceptionTest() {
 
 		fileMgmt.prepareDatabaseFile();
-		boolean catchIllegalArgument = false;
 
 		try{
 			fileMgmt.readFileAndDetectCorruption(null);
 			fail();
-		} catch (IllegalArgumentException e){
-			catchIllegalArgument = true;
+		} catch (AssertionError e){
 		}
 
 		fileMgmt.closeFile();
-		assertTrue(catchIllegalArgument);
+
 	}
 
 	@Test
