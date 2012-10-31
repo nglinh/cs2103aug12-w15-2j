@@ -55,8 +55,7 @@ public class GuiMain2 extends GuiCommandBox{
 	protected JEditorPane txtStatus;
 	protected JPopupMenu popupCmdHint;
 	protected JEditorPane txtCmdHint;
-	
-	
+		
 	private JPanel panelCmd;
 	private JScrollPane scrollPaneDated;
 	private JScrollPane scrollPaneUndated;
