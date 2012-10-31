@@ -206,10 +206,7 @@ public class Database {
 		}
 		
 		public void writeALL(List<Task> incoming) throws IOException, WillNotWriteToCorruptFileException {
-			if(incoming == null){
-				log.warning("Received null list, exception thrown");
-				throw new IllegalArgumentException("null value");
-			}
+			assert(incoming != null);
 			
 	
 			log.info("Recieved incoming data of size " + incoming.size());
@@ -243,11 +240,7 @@ public class Database {
 		 */
 
 		public void add(Task newTask) throws IOException, WillNotWriteToCorruptFileException {
-
-			if(newTask == null){
-				log.warning("Received null task, exception thrown");
-				throw new IllegalArgumentException("Null task received");
-			}
+			assert(newTask != null);
 
 			verifyFileWritingAbility();
 
@@ -299,10 +292,7 @@ public class Database {
 		 */
 
 		public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException{
-			if(updated == null) {
-				log.warning("Null task received, exception thrown");
-				throw new IllegalArgumentException("Null task received");
-			}
+			assert(updated != null);
 			
 			log.info("Received serial " + originalSerial + " and updated task " + updated.showInfo());
 

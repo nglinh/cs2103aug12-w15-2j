@@ -111,9 +111,7 @@ public class FileManagement {
 
 
 		public void readFileAndDetectCorruption(List<Task> storeInHere) {
-			if(storeInHere == null) {
-				throw new IllegalArgumentException();
-			}
+			assert(storeInHere != null);
 
 			if((fileAttributes.equals(FileStatus.FILE_ALL_OK)) || (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
 				try {
@@ -395,12 +393,9 @@ public class FileManagement {
 
 
 		public void writeDataBaseToFile(List<Task> toBeWritten) throws IOException, WillNotWriteToCorruptFileException	{
-			log.info("Attempt to write file");
+	         assert(toBeWritten != null);
 			
-			if(toBeWritten == null) {
-				log.warning("Null arguments");
-				throw new IllegalArgumentException("Null arguments");
-			}
+			log.info("Attempt to write file");
 
 			if(fileAttributes.equals(FileStatus.FILE_IS_CORRUPT)) {
 				log.warning("Attempting to write to corrupt file");
