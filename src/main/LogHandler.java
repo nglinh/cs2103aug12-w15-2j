@@ -21,14 +21,14 @@ public class LogHandler {
 
 				// Log everything! (while we're still debugging)...
 				// this should be able to be changed via a command-line argument
-				theOneLogger.setLevel(Level.FINEST);
+				//theOneLogger.setLevel(Level.FINEST);
 				
 				//To disable logging to Standard Error
 				theOneLogger.setUseParentHandlers(false);
 				
 				
 				theOneLogger.addHandler(getFileHandler());
-				//theOneLogger.addHandler(new SocketHandler("127.0.0.1", 8888));
+				theOneLogger.addHandler(new SocketHandler("127.0.0.1", 8888));
 			} catch (SecurityException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

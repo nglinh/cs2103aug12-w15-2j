@@ -20,7 +20,7 @@ public class LogicToUi {
 	private SearchTerms filters = null;
 	
 	//TODO : Change 1 to INVALID_SERIAL once fully implemented by logic. For GUI testing purposes.
-	private int lastChangedSerial = 1;  
+	private int lastChangedSerial = INVALID_SERIAL;  
 	
 	
 	private SortStatus currentSorting = null;
