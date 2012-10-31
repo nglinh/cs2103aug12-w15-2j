@@ -111,7 +111,16 @@ public class AddParser {
 		if (taskType == TaskType.TIMED) {
 			String dateString;
 			dateString = groups.get(START_INDEX).getText();
-			if (dateString.contains("to") && !dateString.matches(".*\\d.*")) //second condition to check if the string contain a number.
+			if (dateString.contains("to")
+					&& !dateString.toLowerCase().contains("am")
+					&& !dateString.toLowerCase().contains("pm")) // second and
+																	// third
+																	// condition
+																	// to check
+																	// if the
+																	// string
+																	// contain a
+																	// number.
 			{
 				String tempStringArray[] = dateString.split("to");
 				if (tempStringArray.length == 2) {
