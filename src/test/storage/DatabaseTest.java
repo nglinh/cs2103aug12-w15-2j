@@ -128,12 +128,13 @@ public class DatabaseTest {
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+
 	public void testWriteAll(){
 		try {
 			db.writeALL(null);
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
+		} catch (AssertionError e){
 		}
 	}
 
@@ -146,7 +147,7 @@ public class DatabaseTest {
 			fail();
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
-		} catch (IllegalArgumentException e){
+		} catch (AssertionError e){
 		}
 
 		try {
@@ -246,7 +247,7 @@ public class DatabaseTest {
 			fail();
 		} catch (NoSuchElementException | IOException| WillNotWriteToCorruptFileException e) {
 			fail();
-		} catch(IllegalArgumentException e){
+		} catch(AssertionError e){
 		}
 		
 		try {
