@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
-import com.joestelmach.natty.Parser;
 import com.joestelmach.natty.DateGroup;
 
+import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
 
@@ -27,14 +27,14 @@ public class EditParser implements CommandParser{
 	private DateTime newEndTime;
 	private DateTime newDeadline;
 	private TaskType newType;
-	private Parser parser;
+	private NattyParserWrapper parser;
 	private Task toBeEdited;
 	private String argument;
 	public EditParser(String arg) {
 		argument = arg;
 	}
 	@Override
-	public void parse(){
+	public void parse() throws EmptyDescriptionException, CannotParseDateException{
 		int index;
 		index = Integer.parseInt(getFirstWord(argument));
 		argument = removeFirstWord(argument);
@@ -55,10 +55,10 @@ public class EditParser implements CommandParser{
 			}
 		}
 	}
-	private void updateField(String commandArgument, String newField){
-		parser = new Parser();
+	private void updateField(String commandArgument, String newField) throws EmptyDescriptionException, CannotParseDateException{
+		parser = NattyParserWrapper.getInstance();
 		List<DateGroup> groupsOfDates;
-		groupsOfDates = parser.parse(newField);
+		groupsOfDates = parser.parseWithDefaultBaseDate(newField);
 		switch(commandArgument.toLowerCase()){
 		case "name":
 			//fall through
@@ -66,8 +66,7 @@ public class EditParser implements CommandParser{
 			willChangeName = true;
 			newName = newField;
 			if(newName.length()==0){
-				canParseName = false;
-				break;
+				throw new EmptyDescriptionException();
 			}
 			break;
 		case "begintime":
@@ -82,8 +81,7 @@ public class EditParser implements CommandParser{
 				newStartTime =  new DateTime(groupsOfDates.get(0).getDates().get(0));
 			}
 			else{
-				canParseStartTime = false;
-				return;
+				throw new CannotParseDateException();
 			}
 			break;
 		case "endtime":
@@ -98,8 +96,7 @@ public class EditParser implements CommandParser{
 				newEndTime =  new DateTime(groupsOfDates.get(0).getDates().get(0));
 			}
 			else{
-				canParseEndTime = false;
-				return;
+				throw new CannotParseDateException();
 			}
 			break;
 		case "deadline":
@@ -110,8 +107,7 @@ public class EditParser implements CommandParser{
 				newDeadline =  new DateTime(groupsOfDates.get(0).getDates().get(0));
 			}
 			else{
-				canParseDeadline = false;
-				return;
+				throw new CannotParseDateException();
 			}
 			break;
 		case "tofloating":
