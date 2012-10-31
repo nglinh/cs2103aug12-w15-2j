@@ -34,6 +34,7 @@ import main.storage.WillNotWriteToCorruptFileException;
 public class FileManagementTest {
 	private static final String NAME_ONLY = "name only super long super long super long super long super long super long super long super long super long super long super long super long super long super long";
 	private static final String NAME_TRUE = "name true";
+	private static final String NAME_FALSE = "name false";
 	private static final String NAME_1MONTH = "name +1month";
 	private static final String NAME_1MONTH_TRUE = "name -1month true";
 	private static final String NAME_FROM_YESTERDAY_TO_TOMORROW = "name from yesterday to tomorrow";
@@ -73,7 +74,8 @@ public class FileManagementTest {
 
 	Task name;
 	Task nameTrue;
-
+	Task nameFalse;
+	
 	Task nameDeadline;
 	Task nameDeadlineTrue;
 
@@ -90,6 +92,8 @@ public class FileManagementTest {
 	public void runBeforeEveryTest() {
 		name = new Task(NAME_ONLY);
 		nameTrue = new Task(NAME_TRUE, true);
+		nameFalse = new Task(NAME_FALSE, false);
+
 
 		nameDeadline = new Task(NAME_1MONTH, DEADLINE);
 		nameDeadlineTrue = new Task(NAME_1MONTH_TRUE, DEADLINE_TRUE, true);
@@ -108,7 +112,7 @@ public class FileManagementTest {
 		filledListing.add(nameDeadlineTrue);
 
 		filledListing.add(nameTimed);
-		filledListing.add(name);
+		filledListing.add(nameFalse);
 
 
 		shortListing = new ArrayList<Task>();
