@@ -217,6 +217,8 @@ public class Database {
 				taskStore.add(new Task(currentEntry));
 			}
 			
+			Collections.sort(taskStore);
+			
 			diskFile.writeDataBaseToFile(taskStore);
 			
 		}
