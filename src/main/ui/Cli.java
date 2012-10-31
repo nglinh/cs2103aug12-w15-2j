@@ -108,7 +108,7 @@ public class Cli extends UI{
 			outputLine = parseHelp(command);
 			break;
 		default :
-			log.info("Message goes to logic parsed");
+			log.info("Message suppose to send to logic");
 			outputLine = passMessageToLogic(lineFromInput);
 
 		}
