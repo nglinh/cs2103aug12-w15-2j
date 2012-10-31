@@ -9,8 +9,6 @@ import main.shared.Task.TaskType;
 import main.storage.WillNotWriteToCorruptFileException;
 
 public class EditHandler extends CommandHandler {
-	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change to timed task, you need to specify"
-			+ "both start time and end time.";
 	private EditParser parser;
 	private Task toBeEdited;
 
@@ -25,10 +23,6 @@ public class EditHandler extends CommandHandler {
 		try {
 			parser.parse();
 			toBeEdited = parser.getToBeEdited();
-			feedback = checkParseResult();
-			if (feedback != null) {
-				return feedback;
-			}
 			changeDeadline();
 			changename();
 			changeStartTime();
@@ -47,11 +41,11 @@ public class EditHandler extends CommandHandler {
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
 		} catch (EmptyDescriptionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 		} catch (CannotParseDateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			feedback = new LogicToUi(ERROR_CANNOT_PARSE_DATE);
+		} catch (DoNotChangeBothSTimeAndETimeException e) {
+			feedback = new LogicToUi(ERROR_MUST_CHANGE_BOTH_TIME);
 		}
 		return feedback;
 	}
@@ -62,9 +56,12 @@ public class EditHandler extends CommandHandler {
 		}
 	}
 
-	private void changeEndTime() {
+	private void changeEndTime() throws DoNotChangeBothSTimeAndETimeException {
 		if (parser.willChangeEndTime) {
 			if (toBeEdited.getType() != TaskType.TIMED) {
+				if (!parser.willChangeStartTime) {
+					throw new DoNotChangeBothSTimeAndETimeException();
+				}
 				toBeEdited.changetoTimed(parser.getNewStartTime(),
 						parser.getNewEndTime());
 			} else {
@@ -74,9 +71,12 @@ public class EditHandler extends CommandHandler {
 		}
 	}
 
-	private void changeStartTime() {
+	private void changeStartTime() throws DoNotChangeBothSTimeAndETimeException {
 		if (parser.willChangeStartTime) {
 			if (toBeEdited.getType() != TaskType.TIMED) {
+				if (!parser.willChangeEndTime) {
+					throw new DoNotChangeBothSTimeAndETimeException();
+				}
 				toBeEdited.changetoTimed(parser.getNewStartTime(),
 						parser.getNewEndTime());
 			} else {
@@ -100,34 +100,5 @@ public class EditHandler extends CommandHandler {
 				toBeEdited.changeDeadline(parser.getNewDeadline());
 			}
 		}
-	}
-
-	private LogicToUi checkParseResult() {
-		if (!parser.isIndexValid) {
-			return new LogicToUi(
-					"Please check your index. It's not in the list.");
-		}
-		if (!parser.canParseDeadline) {
-			return new LogicToUi(
-					"Please check the new deadline. I cannot parse it :(.");
-		}
-		if (!parser.canParseName) {
-			return new LogicToUi(
-					"Please check the new name. It cannot be empty.");
-		}
-		if (!parser.canParseEndTime) {
-			return new LogicToUi(
-					"Please check the new end time. I cannot parse it :(.");
-		}
-		if (!parser.canParseStartTime) {
-			return new LogicToUi(
-					"Please check the new start time. I cannot parse it :(.");
-		}
-		if (toBeEdited.getType() != TaskType.TIMED) {
-			if ((!parser.willChangeStartTime && parser.willChangeEndTime)) {
-				return new LogicToUi(ERROR_MUST_CHANGE_BOTH_TIME);
-			}
-		}
-		return null;
 	}
 }
