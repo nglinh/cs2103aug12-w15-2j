@@ -116,6 +116,7 @@ public class GuiMain2 extends GuiCommandBox{
 
 	/**
 	 * Initialize the contents of the frame.
+	 * @wbp.parser.entryPoint
 	 */
 	protected void initialize() {
 		log.entering(this.getClass().getName(), "initialize");
@@ -169,7 +170,8 @@ public class GuiMain2 extends GuiCommandBox{
         styleSheet.addRule("table {color:#000; font-family:Segoe UI;}");
         styleSheet.addRule(".calendarbox {border:1px solid #2A5696; color:#000000; width:40px;}");
         styleSheet.addRule(".calendarbox .calendardayofweek{background-color:#2A5696; color:#FFFFFF; width:40px;}");
-        styleSheet.addRule(".taskbox{margin-bottom:10px;}");
+        styleSheet.addRule(".taskbox{margin-bottom:5px;padding:2px;}");
+        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FBEDA3;padding:2px;}");
         styleSheet.addRule(".separatorfirst{font-size:1px;border-width:0px;}");
         styleSheet.addRule(".separator{font-size:1px;border:1px solid #DDDDDD; border-width:1px 0px 0px 0px;}");
         
@@ -302,11 +304,13 @@ public class GuiMain2 extends GuiCommandBox{
 		log.entering(this.getClass().getName(), "update (LogicToUi)");
 		
 		// Call command to refresh the table
-		showTasksList(sendCommandToLogic("refresh").getList());
-	
-		if (returnValue.containsList()) {
-			log.finer("Return value has list");
-			showTasksList(returnValue.getList());
+		List<Task> taskList = sendCommandToLogic("refresh").getList();
+		
+		log.info("Return value has serial " + returnValue.getLastChangedSerial());
+		if (returnValue.getLastChangedSerial() != LogicToUi.INVALID_SERIAL) {			
+			showTasksList(taskList, returnValue.getLastChangedSerial());
+		}else{
+			showTasksList(taskList);
 		}
 		
 		showStatus(returnValue.getString());
@@ -331,6 +335,10 @@ public class GuiMain2 extends GuiCommandBox{
 	}
 	
 	public void showTasksList(List<Task> taskList){
+		showTasksList(taskList, -1);
+	}
+	
+	public void showTasksList(List<Task> taskList, int highlightSerial){
 		log.entering(this.getClass().getName(), "taskList");
 		
 		// This code moves the current caret position to the middle of the current
@@ -363,11 +371,15 @@ public class GuiMain2 extends GuiCommandBox{
 		}
 				
 		DatedTaskListRenderer dtr = new DatedTaskListRenderer(taskList);
+		if(highlightSerial >= 0){
+			dtr.setHighlightSerial(highlightSerial);
+		}
 		String datedTaskListHtml = dtr.render();
 		log.finest(datedTaskListHtml);
 		txtDatedTasks.setText(datedTaskListHtml);
 				
 		UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(taskList);
+		udtr.setHighlightSerial(highlightSerial);
 		String undatedTaskListHtml = udtr.render();
 		log.finest(undatedTaskListHtml);
 		txtUndatedTasks.setText(undatedTaskListHtml);
@@ -385,6 +397,9 @@ public class GuiMain2 extends GuiCommandBox{
 			//e1.printStackTrace();
 			log.log(Level.WARNING, "Error with caret position after updating list", e1);
 		}
+		
+		txtDatedTasks.scrollToReference("highlight");
+		txtUndatedTasks.scrollToReference("highlight");
 		
 		CalendarRenderer calr = new CalendarRenderer(new DateTime(), taskList);
 		txtCalendar.setText(calr.render());
@@ -480,7 +495,7 @@ public class GuiMain2 extends GuiCommandBox{
                 		public void actionPerformed(ActionEvent e){
                 			//System.out.println(checkboxToIndexMapForUndated.get(e.getSource()));
                 			//System.out.println(((ToggleButtonModel)e.getSource()).isSelected());
-                			log.info(checkboxToIndexMapForDated.get(e.getSource()).toString() + "\n" + ((ToggleButtonModel)e.getSource()).isSelected());
+                			// TODO: --> ??? log.info(checkboxToIndexMapForDated.get(e.getSource()).toString() + "\n" + ((ToggleButtonModel)e.getSource()).isSelected());
                 			boolean isDone = ((ToggleButtonModel)e.getSource()).isSelected();
                 			int index = checkboxToIndexMapForUndated.get(e.getSource());
                 			if(isDone){
