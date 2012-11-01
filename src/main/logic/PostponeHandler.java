@@ -14,7 +14,6 @@ public class PostponeHandler extends CommandHandler {
 	private static final String ERROR_POSTPONE_FLOATING_TASK = "Cannot postpone a floating task. Please check your index.";
 	private PostponeParser parser;
 	private Task toBePostponed;
-	private LogicToUi feedback;
 
 	public PostponeHandler(String str) {
 		parser = new PostponeParser(str);
@@ -38,14 +37,15 @@ public class PostponeHandler extends CommandHandler {
 						parser.getNewEndTime());
 				dataBase.update(toBePostponed.getSerial(), toBePostponed);
 			}
-			feedback = new LogicToUi(
-					oldTaskDesc
-					+ " has been postponed to "
-					+ (toBePostponed.isDeadlineTask() ? 
-							dateToString(parser.getNewDeadline())
-							: (dateToString(parser.getNewStartTime())
-									+ " to " + dateToString(parser.getNewEndTime())
-									)),toBePostponed.getSerial());
+			String feedbackString = oldTaskDesc + " has been postponed to ";
+			if(toBePostponed.isDeadlineTask()){
+				feedbackString += parser.getNewDeadline();
+			}
+			else{
+				feedbackString += parser.getNewStartTime()+ " to "+ parser.getNewEndTime();
+			}
+			undoHistory.push(feedbackString);
+			feedback = new LogicToUi(feedbackString,toBePostponed.getSerial());
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 		} catch (CannotParseDateException e) {
