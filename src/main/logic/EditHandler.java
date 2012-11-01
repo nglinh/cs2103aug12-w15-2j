@@ -9,9 +9,11 @@ import main.shared.Task.TaskType;
 import main.storage.WillNotWriteToCorruptFileException;
 
 public class EditHandler extends CommandHandler {
+	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change to timed task, you need to specify"
+			+ "both start time and end time.";
 	private EditParser parser;
 	private Task toBeEdited;
-
+	
 	public EditHandler(String str) {
 		parser = new EditParser(str);
 
@@ -19,7 +21,6 @@ public class EditHandler extends CommandHandler {
 
 	@Override
 	public LogicToUi execute() {
-		LogicToUi feedback;
 		try {
 			parser.parse();
 			toBeEdited = parser.getToBeEdited();
@@ -31,6 +32,7 @@ public class EditHandler extends CommandHandler {
 			dataBase.update(toBeEdited.getSerial(), toBeEdited);
 			String feedbackString = taskToString(toBeEdited) + " updated.";
 			feedback = new LogicToUi(feedbackString, toBeEdited.getSerial());
+			undoHistory.push(feedbackString);
 			return feedback;
 		} catch (NoSuchElementException e) {
 			feedback = new LogicToUi(

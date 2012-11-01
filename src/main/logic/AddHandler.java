@@ -20,7 +20,6 @@ public class AddHandler extends CommandHandler {
 
 	@Override
 	public LogicToUi execute() {
-		LogicToUi feedback;
 		try {
 			parser.parse();
 			if (!parser.isTaskNameNonempty) {

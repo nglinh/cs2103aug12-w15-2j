@@ -12,8 +12,6 @@ import main.storage.Database;
 
 public abstract class CommandHandler {
 
-	protected static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change to timed task, you need to specify"
-			+ "both start time and end time.";
 	protected static final String ERROR_CANNOT_PARSE_DATE = "One or more field(s) expects time component. However,"
 			+ "either time component is missing, or DoIt! could not parse it :(."
 			+ "Please check your input";
@@ -23,6 +21,8 @@ public abstract class CommandHandler {
 	protected static Stack<String> undoHistory = new Stack<String>();
 	protected Database dataBase = Database.getInstance();
 	protected String latestCommandFromUI = null;
+
+	protected LogicToUi feedback;
 
 	public LogicToUi execute() {
 		return null; // To be overriden by child classes.
@@ -48,11 +48,4 @@ public abstract class CommandHandler {
 		return LINE_DATE_FORMATTER.print(inputDate);
 	}
 
-	protected void pushCommandToUndoHistoryStack() {
-		if (latestCommandFromUI == null) {
-			return;
-		}
-
-		undoHistory.push(latestCommandFromUI);
-	}
 }
