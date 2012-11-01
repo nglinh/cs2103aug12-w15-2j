@@ -47,7 +47,7 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	Logger log = LogHandler.getLogInstance();
 
-	private JFrame frame;
+	private JFrame frmDoit;
 	protected JEditorPane txtDatedTasks;
 	protected JEditorPane txtUndatedTasks;
 	protected JEditorPane txtCalendar;
@@ -120,11 +120,12 @@ public class GuiMain2 extends GuiCommandBox{
 	protected void initialize() {
 		log.entering(this.getClass().getName(), "initialize");
 				
-		frame = new JFrame();
-		frame.setBounds(100, 100, 600, 620);
+		frmDoit = new JFrame();
+		frmDoit.setTitle("DoIt!");
+		frmDoit.setBounds(100, 100, 600, 620);
 		
 		JSplitPane splitPane = new JSplitPane();
-		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
+		frmDoit.getContentPane().add(splitPane, BorderLayout.CENTER);
 		splitPane.setDividerLocation(350);
 		
 		scrollPaneDated = new JScrollPane();
@@ -141,7 +142,7 @@ public class GuiMain2 extends GuiCommandBox{
 		scrollPaneDated.setViewportView(txtDatedTasks);
 		
 		panelCmd = new JPanel();
-		frame.getContentPane().add(panelCmd, BorderLayout.SOUTH);
+		frmDoit.getContentPane().add(panelCmd, BorderLayout.SOUTH);
 		panelCmd.setLayout(new BorderLayout(0, 0));
 		
 		txtCmd = new JTextField();
@@ -170,10 +171,10 @@ public class GuiMain2 extends GuiCommandBox{
         styleSheet.addRule(".calendarbox {border:1px solid #2A5696; color:#000000; width:40px;}");
         styleSheet.addRule(".calendarbox .calendardayofweek{background-color:#2A5696; color:#FFFFFF; width:40px;}");
         styleSheet.addRule(".taskbox{margin-bottom:5px;padding:2px;}");
-        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FBEDA3;padding:2px;}");
+        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FFAA00;padding:2px;}");
         styleSheet.addRule(".separatorfirst{font-size:1px;border-width:0px;}");
         styleSheet.addRule(".separator{font-size:1px;border:1px solid #DDDDDD; border-width:1px 0px 0px 0px;}");
-        
+     
         Document doc = kit.createDefaultDocument();
         txtDatedTasks.setDocument(doc);
 		
@@ -231,15 +232,17 @@ public class GuiMain2 extends GuiCommandBox{
 		txtCalendar.setContentType("text/html");
 		panel.add(txtCalendar, BorderLayout.SOUTH);
 		
-		StyleSheet styleSheet2 = kit.getStyleSheet();
-        styleSheet2.addRule(".calendar td{text-align:right;}");
-        styleSheet2.addRule("a {color:#2A5696;text-decoration:none;}");
-        
+		HTMLEditorKit kit3 = new HTMLEditorKit();
+        StyleSheet styleSheet3 = kit3.getStyleSheet();
+        styleSheet3.addRule(".calendar td{text-align:right;}");
+        styleSheet3.addRule("a {color:#2A5696;text-decoration:none;}");
+        styleSheet3.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
+        //styleSheet3.addRule(".calendarDate{padding-right;5px;}");
         Document doc3 = kit.createDefaultDocument();
         txtCalendar.setDocument(doc3);
         
         menuBar = new JMenuBar();
-        frame.setJMenuBar(menuBar);
+        frmDoit.setJMenuBar(menuBar);
         
         mnDebug = new JMenu("Debug");
         menuBar.add(mnDebug);
@@ -293,7 +296,15 @@ public class GuiMain2 extends GuiCommandBox{
 		// executeCommand("list");
 		// Note we do not use executeCommand here, as doing so will cause a further update
 		// request to be propagated to all windows.
-		showTasksList(sendCommandToLogic("refresh").getList());
+		
+		// First launch
+		List<Task> firstLaunchTasks = sendCommandToLogic("refresh").getList();
+		if(firstLaunchTasks.isEmpty()){
+			txtDatedTasks.setText(Hint.getInstance().helpForThisCommandHTML("help"));
+		}else{
+			showTasksList(firstLaunchTasks);
+		}
+		
 		showStatus(fileStatus);
 		
 		log.exiting(this.getClass().getName(), "initialize");
@@ -521,7 +532,7 @@ public class GuiMain2 extends GuiCommandBox{
 				try {
 					//GuiMain2 window = new GuiMain2();
 					GuiMain2 window = GuiMain2.getInstance();
-					window.frame.setVisible(true);
+					window.frmDoit.setVisible(true);
 				} catch (Exception e) {
 					//e.printStackTrace();
 					log.log(Level.WARNING, "Error launching GuiMain2", e);

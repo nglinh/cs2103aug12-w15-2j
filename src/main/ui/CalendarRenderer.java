@@ -47,7 +47,7 @@ public class CalendarRenderer{
 		sb.append("<td width=1><a href=\"http://doit/gotoMonth/"+DateTimeFormat.forPattern("yyyy-M").print(dt.minusMonths(1))+"\">&lt;</a></td>");
 		sb.append("<td align=center>"+DateTimeFormat.forPattern("MMMM yyyy").print(dt)+"</td>");
 		sb.append("<td width=1><a href=\"http://doit/gotoMonth/"+DateTimeFormat.forPattern("yyyy-M").print(dt.plusMonths(1))+"\">&gt;</a></td></tr></table>");
-		sb.append("<table width=100% class=calendar cellpadding=1 cellspacing=1>");
+		sb.append("<table width=100% class=calendar cellpadding=2 cellspacing=1>");
 		sb.append("<tr><td>S</td><td>M</td><td>T</td><td>W</td><td>T</td><td>F</td><td>S</td></tr>");
 		sb.append("<tr>");
 		
@@ -59,9 +59,9 @@ public class CalendarRenderer{
 			}
 			log.finest(currentDay + " " + startingDay.plusMonths(1));
 			if(datesWithTasks.containsKey(currentDay.withTimeAtStartOfDay())){
-				sb.append("<td align=right><a href=\"http://doit/showTasksForDay/"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\">"+currentDay.getDayOfMonth()+"</a></td>");
+				sb.append("<td align=right class=calendarDateWithTask><a href=\"http://doit/showTasksForDay/"+DateTimeFormat.forPattern("yyyy-M-d").print(currentDay)+"\">"+currentDay.getDayOfMonth()+"</a></td>");
 			}else{
-				sb.append("<td align=right>"+currentDay.getDayOfMonth()+"</td>");
+				sb.append("<td align=right class=calendarDate>"+currentDay.getDayOfMonth()+"</td>");
 			}
 
 			currentDay = currentDay.plusDays(1);
