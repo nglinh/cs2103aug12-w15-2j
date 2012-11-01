@@ -1,6 +1,7 @@
 package main.ui;
 
 import java.awt.AWTException;
+import java.awt.Event;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -15,6 +16,9 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+
+import com.melloware.jintellitype.HotkeyListener;
+import com.melloware.jintellitype.JIntellitype;
 
 import main.LogHandler;
 
@@ -75,6 +79,12 @@ public class GuiTrayIcon extends UI {
 		        public void actionPerformed(ActionEvent e) {
 		        	log.info(e.getActionCommand());
 		        	log.info("Exiting...");
+		        	
+		        	try{
+		        		JIntellitype.getInstance().unregisterHotKey(1);
+				    }catch(Exception e1){
+				    	
+				    }
 		            exit();
 		        }
 		    };
@@ -131,6 +141,21 @@ public class GuiTrayIcon extends UI {
 		        tray.add(trayIcon);
 		    } catch (AWTException e) {
 		    	log.severe("TrayIcon could not be added.");
+		    }
+		    
+		    try{
+		    	JIntellitype.getInstance().registerHotKey(1, JIntellitype.MOD_WIN,
+						(int) 'A');
+		    	JIntellitype.getInstance().addHotKeyListener(new HotkeyListener() {
+		           	// listen for hotkey
+			    	public void onHotKey(int aIdentifier) {
+			    	    if (aIdentifier == 1){
+			    	       GuiQuickAdd.getInstance().showOrHideUI();
+			    	    }
+			    	}
+			    });
+		    }catch(Exception e){
+		    	e.printStackTrace();
 		    }
 		    
 		    GuiMain.getInstance().runUI();
