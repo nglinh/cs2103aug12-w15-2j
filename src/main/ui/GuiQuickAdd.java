@@ -129,6 +129,16 @@ public class GuiQuickAdd extends UI{
 	
 	public void runUI(){
 		frmDoit.setVisible(true);
+		textCmd.requestFocus();
+	}
+	
+	public void showOrHideUI(){
+		if(frmDoit.isVisible()){
+			frmDoit.setVisible(false);
+		}else{
+			frmDoit.setVisible(true);
+			textCmd.requestFocus();
+		}
 	}
 	
 	public void executeCommand(String text) {
