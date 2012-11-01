@@ -30,8 +30,6 @@ public class LogHandler {
 				theOneLogger.addHandler(getFileHandler());
 				theOneLogger.addHandler(new SocketHandler("127.0.0.1", 8888));
 			} catch (SecurityException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 		return theOneLogger;
