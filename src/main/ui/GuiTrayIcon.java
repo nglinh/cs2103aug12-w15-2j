@@ -115,9 +115,11 @@ public class GuiTrayIcon extends UI {
 
 		    ActionListener actionListener = new ActionListener() {
 		        public void actionPerformed(ActionEvent e) {
+		        	/*
 		            trayIcon.displayMessage("Action Event", 
 		                "An Action Event Has Been Performed!",
-		                TrayIcon.MessageType.INFO);
+		                TrayIcon.MessageType.INFO); */
+		        	GuiQuickAdd.getInstance().runUI();
 		        }
 		    };
 		            

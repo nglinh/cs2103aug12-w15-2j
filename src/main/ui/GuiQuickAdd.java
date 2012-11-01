@@ -71,6 +71,12 @@ public class GuiQuickAdd extends UI{
 	 */
 	public void initialize() {
 		frmDoit = new JFrame();
+		frmDoit.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				
+			}
+		});
 		frmDoit.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -96,7 +102,11 @@ public class GuiQuickAdd extends UI{
 			@Override
 			public void keyReleased(KeyEvent arg0) {
 				if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-					executeCommand(textCmd.getText());
+					executeCommand("add "+textCmd.getText());
+				}
+				if(arg0.isControlDown() && arg0.getKeyCode() == java.awt.event.KeyEvent.VK_Z){
+					System.out.println("Ctrl-z pressed");
+					executeCommand("undo");
 				}
 			}
 		});
@@ -124,7 +134,7 @@ public class GuiQuickAdd extends UI{
 	public void executeCommand(String text) {
 
 		// Call command parser
-		LogicToUi returnValue = sendCommandToLogic("add " +text);
+		LogicToUi returnValue = sendCommandToLogic(text);
 
 		// Set command text box to empty
 		textCmd.setText("Type a new task here...");
