@@ -28,10 +28,6 @@ public class PostponeHandler extends CommandHandler {
 			
 			// inside parser.
 			toBePostponed = parser.getToBePostponed();
-			
-			if(toBePostponed.isFloatingTask()){
-				return new LogicToUi("Cannot Postpone a floating task");
-			}
 		
 
 			String oldTaskDesc = taskToString(toBePostponed);
