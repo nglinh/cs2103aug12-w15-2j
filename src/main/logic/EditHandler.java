@@ -14,13 +14,16 @@ public class EditHandler extends CommandHandler {
 	private EditParser parser;
 	private Task toBeEdited;
 	
-	public EditHandler(String str) {
-		parser = new EditParser(str);
+	public EditHandler(String arguments) {
+		super(arguments);
+		parser = new EditParser(arguments);
 
 	}
 
 	@Override
 	public LogicToUi execute() {
+		boolean commandSuccess = true;
+		
 		try {
 			parser.parse();
 			toBeEdited = parser.getToBeEdited();
@@ -29,26 +32,37 @@ public class EditHandler extends CommandHandler {
 			changeStartTime();
 			changeEndTime();
 			changeToFloat();
+			pushCurrentTaskListToUndoStack();
 			dataBase.update(toBeEdited.getSerial(), toBeEdited);
-			String feedbackString = taskToString(toBeEdited) + " updated.";
+			String taskDetails = taskToString(toBeEdited);
+			String feedbackString = taskDetails + " updated.";
+			
 			feedback = new LogicToUi(feedbackString, toBeEdited.getSerial());
-			undoHistory.push(feedbackString);
+			
+			String undoMessage = "update to \"" + taskDetails + "\"";
+			pushUndoStatusMessage(undoMessage);
 			return feedback;
 		} catch (NoSuchElementException e) {
-			feedback = new LogicToUi(
-					"Sorry this index number or parameter you provided is not valid. "
-							+ "Please try again with a correct number or refresh the list.");
+			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
+			commandSuccess = false;
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
+			commandSuccess = false;
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 		} catch (CannotParseDateException e) {
 			feedback = new LogicToUi(ERROR_CANNOT_PARSE_DATE);
 		} catch (DoNotChangeBothSTimeAndETimeException e) {
 			feedback = new LogicToUi(ERROR_MUST_CHANGE_BOTH_TIME);
+		} finally {
+			if(commandSuccess == false ) {
+				undoClones.pop();
+			}
 		}
+		
+		
 		return feedback;
 	}
 

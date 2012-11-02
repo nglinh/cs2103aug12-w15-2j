@@ -26,20 +26,21 @@ public class EditParser extends CommandParser{
 	private NattyParserWrapper parser;
 	private Task toBeEdited;
 	private String argument;
-	public EditParser(String arg) {
-		argument = arg;
+	public EditParser(String arguments) {
+		super(arguments);
+		argument = arguments;
 	}
 	@Override
-	public void parse() throws EmptyDescriptionException, CannotParseDateException{
+	public void parse() throws EmptyDescriptionException, CannotParseDateException, NumberFormatException{
 		int index;
 		index = Integer.parseInt(getFirstWord(argument));
 		argument = removeFirstWord(argument);
 		index--; //Since arraylist index starts from 0
 	
-		if((index < 0) || ((index  +  1) > Logic.lastShownToUI.size()) ) {
+		if((index < 0) || ((index  +  1) > CommandHandler.getSizeofLastShownToUiList()) ) {
 			throw new NoSuchElementException();
 		}
-		toBeEdited = Logic.lastShownToUI.get(index);
+		toBeEdited = CommandHandler.getTaskFromLastShownToUi(index);
 		String[] tempStringArray = argument.split("-");
 		for(int i =0;i<tempStringArray.length;++i){
 			if(tempStringArray[i]!=null&&

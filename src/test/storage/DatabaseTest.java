@@ -334,7 +334,13 @@ public class DatabaseTest {
 				}
 			}
 			
+		} catch (IOException | WillNotWriteToCorruptFileException e) {
+			fail();
+		} catch (NoSuchElementException e) {
+			fail();
+		}
 			
+		try{	
 			db.delete(nameFalse.getSerial());
 			
 			initialClearListing = db.readAll();

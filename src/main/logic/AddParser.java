@@ -44,8 +44,9 @@ public class AddParser extends CommandParser {
 	 * @param arg
 	 *            : the string argument of add command.
 	 */
-	public AddParser(String arg) {
-		argument = arg;
+	public AddParser(String arguments) {
+		super(arguments);
+		argument = arguments;
 		parser = NattyParserWrapper.getInstance();
 		groups = new ArrayList<DateGroup>();
 		taskType = null;

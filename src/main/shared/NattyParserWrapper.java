@@ -10,8 +10,8 @@ import com.joestelmach.natty.Parser;
 import com.joestelmach.natty.DateGroup;
 
 public class NattyParserWrapper {
-	static NattyParserWrapper theOne = null;
-	Parser nattyParser = null;
+	private static NattyParserWrapper theOne = null;
+	private static Parser nattyParser = null;
 
 	private NattyParserWrapper() {
 		nattyParser = new Parser(TimeZone.getDefault());
@@ -40,6 +40,7 @@ public class NattyParserWrapper {
 	public static NattyParserWrapper getInstance() {
 		if (theOne == null) {
 			theOne = new NattyParserWrapper();
+			nattyParser.parse("Dummy Command for Natty now");
 		}
 		return theOne;
 	}

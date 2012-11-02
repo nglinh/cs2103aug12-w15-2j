@@ -1,3 +1,4 @@
+//@author A0081007U
 package main.storage;
 
 /**  
@@ -10,7 +11,6 @@ package main.storage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
@@ -30,11 +30,7 @@ public class Database {
 	public static enum DB_File_Status {	FILE_ALL_OK, FILE_READ_ONLY, 
 		FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT, FILE_IS_LOCKED};
 
-		public static final int MAX_UNDO_STEPS = 1000;
-
 		private List<Task> taskStore = new ArrayList<Task>();
-
-		private LinkedList<List<Task>> undoOperations = new LinkedList<List<Task>>();
 
 		private FileManagement diskFile;
 		private DB_File_Status fileAttributes;
@@ -71,7 +67,7 @@ public class Database {
 		
 		
 		
-
+	
 		/**
 		 * To give the results based on a search term.
 		 * <p>
@@ -81,7 +77,6 @@ public class Database {
 		 * @param terms Input in the form of a search term class
 		 * @return an List<Task> containing all the matched tasks    
 		 */
-		@Deprecated
 		public List<Task> search(SearchTerms terms) {
 			List<Task> searchResults = new ArrayList<Task>();
 
@@ -213,18 +208,24 @@ public class Database {
 			
 			verifyFileWritingAbility();
 			
-			taskStore.clear();
+			List<Task> newList = new ArrayList<Task>();
+			
 			for(Task currentEntry : incoming)	{
-				taskStore.add(new Task(currentEntry));
+				newList.add(new Task(currentEntry));
 			}
 			
-			log.info("Incoming data saved to database copy");
+			log.info("Incoming data saved to temporary copy");
 			
-			Collections.sort(taskStore);
+			Collections.sort(newList);
 			
 			log.info("Send data to FileMgmt");
-			diskFile.writeDataBaseToFile(taskStore);
-			log.info("FileMgmt saved successfully");
+			diskFile.writeDataBaseToFile(newList);
+			
+			log.info("FileMgmt saved successfully, permanently use new list");
+			taskStore = newList;
+			
+			
+			
 			
 			
 		}
@@ -243,17 +244,26 @@ public class Database {
 			assert(newTask != null);
 
 			verifyFileWritingAbility();
-
-			cloneDatabase();
-
-			taskStore.add(newTask);
-			log.info("Task added");
 			
-			Collections.sort(taskStore);
+			
+			List<Task> newList = new ArrayList<Task>();
+			
+			for(Task currentEntry : taskStore)	{
+				newList.add(new Task(currentEntry));
+			}
+			
+			newList.add(newTask);
+			
+			log.info("Incoming task saved to temporary copy");
+			
+			Collections.sort(newList);
 			
 			log.info("Send data to FileMgmt");
-			diskFile.writeDataBaseToFile(taskStore);
-			log.info("FileMgmt saved successful");
+			diskFile.writeDataBaseToFile(newList);
+			
+			log.info("FileMgmt saved successfully, permanently use new list");
+			taskStore = newList;
+		
 
 
 		}
@@ -297,28 +307,42 @@ public class Database {
 			log.info("Received serial " + originalSerial + " and updated task " + updated.showInfo());
 
 			verifyFileWritingAbility();
+			
+			
+			List<Task> newList = new ArrayList<Task>();
+			
+			for(Task currentEntry : taskStore)	{
+				newList.add(new Task(currentEntry));
+			}
+			
 
-			cloneDatabase();
 
 			boolean isOriginalTaskFound = false;
-			for(Task toBeUpdated : taskStore) {
+			for(Task toBeUpdated : newList) {
 				if(toBeUpdated.getSerial() == originalSerial)	{		
 					toBeUpdated.updateOrClone(updated);
 					isOriginalTaskFound = true;
 					log.info("Old task with this serial " + originalSerial + " found");
-					Collections.sort(taskStore);
 					break;
 				}
 			}
+			
+			log.info("Incoming data saved to temporary copy");
+			
+			Collections.sort(newList);
 
 			if(isOriginalTaskFound) {
-				log.info("Updated task send to FileMgmt");
-				diskFile.writeDataBaseToFile(taskStore);
+				log.info("Send data to FileMgmt");
+				diskFile.writeDataBaseToFile(newList);
+				log.info("FileMgmt saved successfully, permanently use new list");
+				taskStore = newList;
 			} else	{
-				undoOperations.pop();
 				log.warning("Cannot find old task, exception thrown");
 				throw new NoSuchElementException();
 			}
+			
+			
+
 
 		}
 
@@ -356,19 +380,23 @@ public class Database {
 			log.info("Received this serial " + serial);
 			
 			verifyFileWritingAbility();
-
-			cloneDatabase();
-
+			
+			List<Task> newList = new ArrayList<Task>();
+			
+			for(Task currentEntry : taskStore)	{
+				newList.add(new Task(currentEntry));
+			}
+			
+		
 			boolean isOriginalTaskFound = false;
 
 			Task currentTask;
 
-			for(int i = 0; i < taskStore.size(); i++) {
-				currentTask = taskStore.get(i);
+			for(int i = 0; i < newList.size(); i++) {
+				currentTask = newList.get(i);
 
 				if(currentTask.getSerial() == serial) {
-					taskStore.remove(i);
-					Collections.sort(taskStore);
+					newList.remove(i);
 					isOriginalTaskFound = true;
 					log.info("Original Task found");
 					break;
@@ -377,14 +405,17 @@ public class Database {
 			}
 
 			if(isOriginalTaskFound) {
+		
 				log.info("Send data to FileMgmt");
-				diskFile.writeDataBaseToFile(taskStore);
-				log.info("FileMgmt save successful");
+				diskFile.writeDataBaseToFile(newList);
+				
+				log.info("FileMgmt saved successfully, permanently use new list");
+				taskStore = newList;
 			} else	{
-				undoOperations.pop();
 				log.warning("No task with this serial found");
 				throw new NoSuchElementException();
 			}
+		
 
 
 		}
@@ -399,13 +430,12 @@ public class Database {
 
 		public void deleteAll() throws IOException, WillNotWriteToCorruptFileException {
 			verifyFileWritingAbility();
-
-			cloneDatabase();
 			
+			log.info("Send data to FileMgmt");
+			diskFile.writeDataBaseToFile(new ArrayList<Task>());
+			
+			log.info("FileMgmt saved successfully, permanently use new list");
 			taskStore.clear();
-			log.info("Send empty list to FileMgmt");
-			diskFile.writeDataBaseToFile(taskStore);
-			log.info("FileMgmt save successful");
 		}
 
 		/**
@@ -418,8 +448,6 @@ public class Database {
 		@Deprecated
 		public void deleteDone() throws IOException, WillNotWriteToCorruptFileException {
 			verifyFileWritingAbility();
-
-			cloneDatabase();
 
 			List<Task> onlyUndoneTasks = new ArrayList<Task>();
 
@@ -445,8 +473,6 @@ public class Database {
 		@Deprecated
 		public void deleteOver() throws IOException, WillNotWriteToCorruptFileException {
 			verifyFileWritingAbility();
-
-			cloneDatabase();
 
 			DateTime currentTime = DateTime.now();
 
@@ -476,46 +502,6 @@ public class Database {
 		}
 
 
-
-		private void cloneDatabase() {
-			List<Task> newCopy = new ArrayList<Task>();
-			for(Task currentTask : taskStore) {
-				newCopy.add(new Task(currentTask));
-			}
-
-			while(undoOperations.size() >= MAX_UNDO_STEPS) {
-				undoOperations.removeFirst();
-			}
-			
-			undoOperations.push(newCopy);
-
-		}
-
-		/**
-		 * To undo the last write operation in database   
-		 *                        
-		 * @throws IOException if cannot commit changes to file, database will not be modified
-		 * @throws NoMoreUndoStepsException if no more steps left to undo since program start
-		 * @throws WillNotWriteToCorruptFileException 
-		 */
-
-		@Deprecated
-		public void undo() throws IOException, NoMoreUndoStepsException, WillNotWriteToCorruptFileException {
-
-			verifyFileWritingAbility();
-
-
-			if(undoOperations.isEmpty()) {
-				throw new NoMoreUndoStepsException();
-			} else {
-				taskStore = undoOperations.pop();
-				diskFile.writeDataBaseToFile(taskStore);
-			}
-
-
-
-		}
-
 		/**
 		 * To get file permissions of database like read-only or full access. Should run this method on startup.
 		 * <p>
@@ -535,18 +521,7 @@ public class Database {
 			return fileAttributes;
 		}
 
-		/**
-		 * Get the number of undo operations remaining
-		 * 
-		 * @return number of undo steps left
-
-		 */
-
-		@Deprecated
-		public int getUndoStepsLeft() {
-			return undoOperations.size();
-		}
-		
+	
 		public void unlockFileToExit(){
 			log.info("Send command to FileMgmt to unlock the file");	
 			diskFile.closeFile();
