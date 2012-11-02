@@ -17,7 +17,7 @@ import main.ui.GuiTrayIcon;
 import main.ui.UI;
 
 
-public class DoITstart {
+public class DoItStart {
 	
 	
 	public static void main(String[] args){
