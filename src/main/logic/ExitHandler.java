@@ -12,6 +12,7 @@ public class ExitHandler extends CommandHandler {
 	@Override
 	public LogicToUi execute() {
 		dataBase.unlockFileToExit();
+		System.exit(0);
 		return new LogicToUi("Exiting DoIt");
 	}
 
