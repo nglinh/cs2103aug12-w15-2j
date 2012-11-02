@@ -1,47 +1,68 @@
 package main.logic;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
 
-import com.joestelmach.natty.Parser;
 import com.joestelmach.natty.DateGroup;
 
+import main.shared.NattyParserWrapper;
+import main.shared.Task;
 import main.shared.Task.TaskType;
 
-public class EditParser {
+public class EditParser extends CommandParser{
 	public boolean willChangeType= false;
 	public boolean willChangeStartTime = false;
 	public boolean willChangeDeadline = false;
 	public boolean willChangeEndTime = false;
 	public boolean willChangeName = false;
+	
 	private String newName;
 	private DateTime newStartTime;
 	private DateTime newEndTime;
 	private DateTime newDeadline;
 	private TaskType newType;
-	private Parser parser;
-	public EditParser(String arguments) throws CannotParseDateException {
-		String[] tempStringArray = arguments.split("-");
+	private NattyParserWrapper parser;
+	private Task toBeEdited;
+	private String argument;
+	public EditParser(String arg) {
+		argument = arg;
+	}
+	@Override
+	public void parse() throws EmptyDescriptionException, CannotParseDateException{
+		int index;
+		index = Integer.parseInt(getFirstWord(argument));
+		argument = removeFirstWord(argument);
+		index--; //Since arraylist index starts from 0
+	
+		if((index < 0) || ((index  +  1) > Logic.lastShownToUI.size()) ) {
+			throw new NoSuchElementException();
+		}
+		toBeEdited = Logic.lastShownToUI.get(index);
+		String[] tempStringArray = argument.split("-");
 		for(int i =0;i<tempStringArray.length;++i){
 			if(tempStringArray[i]!=null&&
 					tempStringArray[i].length()!=0){
 				String commandArgument = getFirstWord(tempStringArray[i]);
-				String updatedField = removeFisrtWord(tempStringArray[i]);
+				String updatedField = removeFirstWord(tempStringArray[i]);
 				updateField(commandArgument,updatedField);
 			}
 		}
 	}
-	private void updateField(String commandArgument, String newField) throws CannotParseDateException {
-		parser = new Parser();
+	private void updateField(String commandArgument, String newField) throws EmptyDescriptionException, CannotParseDateException{
+		parser = NattyParserWrapper.getInstance();
 		List<DateGroup> groupsOfDates;
-		groupsOfDates = parser.parse(newField);
+		groupsOfDates = parser.parseWithDefaultBaseDate(newField);
 		switch(commandArgument.toLowerCase()){
 		case "name":
 			//fall through
 		case "n":
 			willChangeName = true;
 			newName = newField;
+			if(newName.length()==0){
+				throw new EmptyDescriptionException();
+			}
 			break;
 		case "begintime":
 			//fall through
@@ -92,11 +113,9 @@ public class EditParser {
 			break;
 		}
 	}
-	private String removeFisrtWord(String string){
-		return string.replaceFirst(getFirstWord(string), "").trim();
-	}
-	private String getFirstWord(String string) {
-		return string.split(" ")[0];
+	
+	public Task getToBeEdited(){
+		return toBeEdited;
 	}
 	public String getNewName(){
 		return newName;
