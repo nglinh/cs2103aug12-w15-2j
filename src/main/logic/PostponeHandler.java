@@ -24,13 +24,14 @@ public class PostponeHandler extends CommandHandler {
 		boolean commandSuccess = true;
 		try {
 			parser.parse();
-			if(toBePostponed.isFloatingTask()){
-				return new LogicToUi("Cannot Postpone a floating task");
-			}
-			
+
 			
 			// inside parser.
 			toBePostponed = parser.getToBePostponed();
+			
+			if(toBePostponed.isFloatingTask()){
+				return new LogicToUi("Cannot Postpone a floating task");
+			}
 		
 
 			String oldTaskDesc = taskToString(toBePostponed);
@@ -39,11 +40,11 @@ public class PostponeHandler extends CommandHandler {
 			pushCurrentTaskListToUndoStack();
 			if (toBePostponed.isDeadlineTask()) {
 				toBePostponed.changeDeadline(parser.getNewDeadline());
-				feedbackString += parser.getNewDeadline();
+				feedbackString += dateToString(parser.getNewDeadline());
 				dataBase.update(toBePostponed.getSerial(), toBePostponed);
 			} else if (toBePostponed.isTimedTask()) {
 				toBePostponed.changeStartAndEndDate(parser.getNewStartTime(), parser.getNewEndTime());
-				feedbackString += parser.getNewStartTime()+ " to "+ parser.getNewEndTime();
+				feedbackString += dateToString(parser.getNewStartTime())+ " to "+ dateToString(parser.getNewEndTime());
 				dataBase.update(toBePostponed.getSerial(), toBePostponed);
 			}
 			
