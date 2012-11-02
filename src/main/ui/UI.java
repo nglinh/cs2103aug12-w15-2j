@@ -14,6 +14,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import main.shared.LogicToUi;
+import main.shared.NattyParserWrapper;
 import main.logic.Logic;
 
 public abstract class UI {
@@ -32,6 +33,7 @@ public abstract class UI {
 	private static Hint hint = Hint.getInstance();
 	
 	protected static List<String> commandList = hint.getCommands();
+	protected static NattyParserWrapper nattyParser = NattyParserWrapper.getInstance();
 	
 	//This is the first method that will run the UI after it is constructed. DoITstart will run this.
 	public abstract void runUI();
@@ -69,7 +71,7 @@ public abstract class UI {
 	
 	protected void exit(){
 		sendCommandToLogic(COMMAND_EXIT);
-		//System.exit(0);
+		System.exit(0);
 	}
 
 

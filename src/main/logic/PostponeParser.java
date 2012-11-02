@@ -22,8 +22,9 @@ public class PostponeParser extends CommandParser {
 	private DateTime newStartTime;
 	private DateTime newEndTime;
 
-	PostponeParser(String str) {
-		argument = str;
+	public PostponeParser(String arguments) {
+		super(arguments);
+		argument = arguments;
 		parser = NattyParserWrapper.getInstance();
 	}
 
@@ -35,13 +36,13 @@ public class PostponeParser extends CommandParser {
 		argument = removeFirstWord(argument);
 		index--; // Since arraylist index starts from 0
 
-		if ((index < 0) || ((index + 1) > Logic.lastShownToUI.size())) {
+		if ((index < 0) || ((index + 1) > CommandHandler.getSizeofLastShownToUiList())) {
 			throw new NoSuchElementException();
 		}
 		if (argument.length() == 0) {
 			throw new CannotParseDateException();
 		}
-		toBePostponed = Logic.lastShownToUI.get(index);
+		toBePostponed = CommandHandler.getTaskFromLastShownToUi(index);
 		if (toBePostponed.getType() == TaskType.FLOATING) {
 			throw new CannotPostponeFloatingException();
 		}

@@ -9,17 +9,20 @@ import main.storage.WillNotWriteToCorruptFileException;
 
 import org.joda.time.DateTime;
 
-public class AddHandler extends CommandHandler {
+class AddHandler extends CommandHandler {
 	private AddParser parser;
 	private Task newTask;
 
-	public AddHandler(String str) {
-		parser = new AddParser(str);
 
+	public AddHandler(String arguments) {
+		super(arguments);
+		parser = new AddParser(arguments);
 	}
 
 	@Override
 	public LogicToUi execute() {
+		boolean commandSuccess = true;
+		
 		try {
 			parser.parse();
 			if (!parser.isTaskNameNonempty) {
@@ -46,9 +49,10 @@ public class AddHandler extends CommandHandler {
 						"I could not determine the type of your event. Can you be more specific?");
 			}
 			dataBase.add(newTask);
-			String feedbackString = taskToString(newTask) + " added";
+			String taskDetails = taskToString(newTask);
+			String feedbackString = taskDetails + " added";
 			feedback = new LogicToUi(feedbackString, newTask.getSerial());
-			undoHistory.push(feedbackString);
+			pushUndoStatusMessage("addition of task \"" + taskDetails + "\"");
 		} catch (WillNotWriteToCorruptFileException e) {
 			return null;
 		} catch (IOException e) {

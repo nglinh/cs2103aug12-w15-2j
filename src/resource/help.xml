@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <hint>
-	<intro>To store the contents for DoIT's help. Hint class depends on this. @author Yeo Kheng Meng</intro>
+	<intro>To store the contents for DoIT's help. Hint class depends on this. //@author A0081007U</intro>
 	<command>
 		<name><![CDATA[<h1>Help</h1>]]></name>
 		<summary><![CDATA[For graphical interface users, just type the command to see the drop down help.<br>For command-line users, type "help [command]" for detailed usage for "command"]]></summary>		
@@ -68,7 +68,7 @@
 		<name><![CDATA[<h1>Undo</h1>]]></name>
 		<summary>Undos the last change you made to the database.</summary>
 		<usage><![CDATA[<b>undo</b>]]></usage>
-		<extra>DoIT supports up to 1000 undo steps</extra>
+		<extra>DoIT supports up to 50 undo steps</extra>
 	</command>
 		<command>
 		<name><![CDATA[<h1>Refresh</h1>]]></name>

@@ -15,36 +15,42 @@ public class PostponeHandler extends CommandHandler {
 	private PostponeParser parser;
 	private Task toBePostponed;
 
-	public PostponeHandler(String str) {
-		parser = new PostponeParser(str);
+	public PostponeHandler(String arguments) {
+		super(arguments);
+		parser = new PostponeParser(arguments);
 	}
 
 	public LogicToUi execute() {
-
+		boolean commandSuccess = true;
 		try {
 			parser.parse();
-			assert toBePostponed.isFloatingTask(); // should throw exception
+			if(toBePostponed.isFloatingTask()){
+				return new LogicToUi("Cannot Postpone a floating task");
+			}
+			
+			
 			// inside parser.
 			toBePostponed = parser.getToBePostponed();
+		
 
 			String oldTaskDesc = taskToString(toBePostponed);
+			String feedbackString = oldTaskDesc + " has been postponed to ";
 
+			pushCurrentTaskListToUndoStack();
 			if (toBePostponed.isDeadlineTask()) {
 				toBePostponed.changeDeadline(parser.getNewDeadline());
+				feedbackString += parser.getNewDeadline();
 				dataBase.update(toBePostponed.getSerial(), toBePostponed);
 			} else if (toBePostponed.isTimedTask()) {
-				toBePostponed.changeStartAndEndDate(parser.getNewStartTime(),
-						parser.getNewEndTime());
+				toBePostponed.changeStartAndEndDate(parser.getNewStartTime(), parser.getNewEndTime());
+				feedbackString += parser.getNewStartTime()+ " to "+ parser.getNewEndTime();
 				dataBase.update(toBePostponed.getSerial(), toBePostponed);
 			}
-			String feedbackString = oldTaskDesc + " has been postponed to ";
-			if(toBePostponed.isDeadlineTask()){
-				feedbackString += parser.getNewDeadline();
-			}
-			else{
-				feedbackString += parser.getNewStartTime()+ " to "+ parser.getNewEndTime();
-			}
-			undoHistory.push(feedbackString);
+			
+
+			String taskDetails = taskToString(toBePostponed);
+			String undoMessage = "postponement of task \"" + taskDetails + "\"";
+			pushUndoStatusMessage(undoMessage);
 			feedback = new LogicToUi(feedbackString,toBePostponed.getSerial());
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
@@ -54,10 +60,17 @@ public class PostponeHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_POSTPONE_FLOATING_TASK);
 		} catch (NoSuchElementException e) {
 			feedback = new LogicToUi(ERROR_INVALID_INDEX);
+			commandSuccess = false;
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
+			commandSuccess = false;
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
+			commandSuccess = false;
+		} finally {
+			if(commandSuccess == false ) {
+				undoClones.pop();
+			}
 		}
 		return feedback;
 

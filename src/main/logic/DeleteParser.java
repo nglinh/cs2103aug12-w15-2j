@@ -12,11 +12,12 @@ public class DeleteParser extends CommandParser {
 	String arg;
 	Task toBeDeleted;
 
-	DeleteParser(String str) {
+	public DeleteParser(String arguments) {
+		super(arguments);
 		isOver = false;
 		isDone = false;
 		isAll = false;
-		arg = str;
+		arg = arguments;
 	}
 
 	public void parse() throws NumberFormatException {
@@ -32,10 +33,11 @@ public class DeleteParser extends CommandParser {
 			return;
 		}
 		index = Integer.parseInt(arg);
-		if ((index < 0) || ((index + 1) > Logic.lastShownToUI.size())) {
+		index--; //To account for index starting from 1
+		if ((index < 0) || ((index + 1) > CommandHandler.getSizeofLastShownToUiList())) {
 			throw new NoSuchElementException();
 		}
-		toBeDeleted = Logic.lastShownToUI.get(index);
+		toBeDeleted = CommandHandler.getTaskFromLastShownToUi(index);
 
 	}
 	public Task getToBeDeleted(){

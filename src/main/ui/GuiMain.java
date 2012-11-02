@@ -26,7 +26,6 @@ import javax.swing.table.TableModel;
 import org.joda.time.DateTime;
 
 import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
 
 import main.LogHandler;
 import main.shared.LogicToUi;
@@ -311,7 +310,7 @@ public class GuiMain extends GuiCommandBox{
 			
 			Task task = data.get(row);
 			
-			Parser parser = null;
+
 			List<DateGroup> groups = null;
 			DateTime date;
 			
@@ -328,8 +327,7 @@ public class GuiMain extends GuiCommandBox{
 				break;
 			case COL_START:
 				log.fine("Setting value of start date with raw value " + value);
-				parser = new Parser();
-				groups = parser.parse(((String) value).replace("-", " "));
+				groups = nattyParser.parseWithDefaultBaseDate(((String) value).replace("-", " "));
 				date = null;
 
 				if (groups != null && !groups.isEmpty()) {
@@ -364,8 +362,7 @@ public class GuiMain extends GuiCommandBox{
 				break;
 			case COL_END:
 				log.fine("Setting value of end date with raw value " + value);
-				parser = new Parser();
-				groups = parser.parse(((String) value).replace("-", " "));
+				groups = nattyParser.parseWithDefaultBaseDate(((String) value).replace("-", " "));
 				date = null;
 
 				if (groups != null && !groups.isEmpty()) {
