@@ -71,7 +71,6 @@ public abstract class UI {
 	
 	protected void exit(){
 		sendCommandToLogic(COMMAND_EXIT);
-		System.exit(0);
 	}
 
 
