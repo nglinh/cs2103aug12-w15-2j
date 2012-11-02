@@ -2,15 +2,14 @@ package main.logic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 
+import main.shared.NattyParserWrapper;
 import main.shared.Task.TaskType;
 
 import com.joestelmach.natty.CalendarSource;
 import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
 
 /**
  * This class defines the parser for add command. Each AddParser object
@@ -20,15 +19,18 @@ import com.joestelmach.natty.Parser;
  * @author mrlinh
  * 
  */
-public class AddParser {
+public class AddParser extends CommandParser {
 
 	private static final int SECOND_ENTRY = 1;
 	private static final int FIRST_ENTRY = 0;
 	private static final int START_INDEX = 0;
 
+	public boolean isTaskNameNonempty = true;
+
 	private List<DateGroup> groups;
-	private Parser parser; // natty parser to be used internally.
+	private NattyParserWrapper parser; // natty parser to be used internally.
 	private String argument; // passed in by logic.
+	private String taskName;
 	private TaskType taskType;
 	private int dateStringStartPosition;
 	private int dateStringEndPosition;
@@ -44,7 +46,7 @@ public class AddParser {
 	 */
 	public AddParser(String arg) {
 		argument = arg;
-		parser = new Parser(TimeZone.getDefault());
+		parser = NattyParserWrapper.getInstance();
 		groups = new ArrayList<DateGroup>();
 		taskType = null;
 		dateStringStartPosition = 0;
@@ -57,8 +59,10 @@ public class AddParser {
 	/**
 	 * Parse the argument. Extracted results are memorized in private variables
 	 * associate with this AddParser object.
+	 * 
+	 * @throws EmptyDescriptionException
 	 */
-	public void parse() {
+	public void parse() throws EmptyDescriptionException {
 		String dateString;
 		if (hasAposPair()) {
 			dateString = removeTextInsideApostrophe();
@@ -68,35 +72,35 @@ public class AddParser {
 
 		CalendarSource.setBaseDate(new DateTime().withTime(23, 59, 00, 00)
 				.toDate());
-		groups = parser.parse(dateString);
+		groups = parser.parseWithDefaultBaseDate(dateString);
 		if (groups.size() != 0) {
 			dateStringStartPosition = groups.get(0).getPosition();
 			while (!checkSeparatedBySpace()) {
 				char[] tempCharArray = dateString.toCharArray();
 				String tempString = "";
 				int i = dateStringStartPosition;
-				i = advanceToNextToken(tempCharArray, i);
+				i = getToNextNonemptyWord(tempCharArray, i);
 				if (i == tempCharArray.length) {
 					dateStringStartPosition = argument.length();
-					groups = parser.parse("");
+					groups = parser.parseWithDefaultBaseDate("");
 					break;
 				}
 				dateStringStartPosition = i;
-				for (int k = i; k < dateString.length(); k++) {
-					tempString = tempString + tempCharArray[k];
+				for (; i < dateString.length(); i++) {
+					tempString = tempString + tempCharArray[i];
 				}
 				dateString = tempString;
-				groups = parser.parse(dateString);
+				groups = parser.parseWithDefaultBaseDate(dateString);
 				if (groups.size() == 0) {
 					break;
 				}
 				dateStringStartPosition += groups.get(0).getPosition();
 			}
-
 			// adjustTimeBasedOnTriggerWords();
 		}
-		determineEndOfDateString();
 		determineTaskType();
+		determineEndOfDateString();
+		determineTaskName();
 		adjustStartTimeAndEndTime();
 		if (taskType == TaskType.DEADLINE) {
 			determineDeadline();
@@ -104,9 +108,19 @@ public class AddParser {
 		if (taskType == TaskType.TIMED) {
 			determineStartAndEnd();
 		}
-
 	}
 
+	/*
+	 * private void adjustTimeBasedOnTriggerWords() { char[] tempCharArray =
+	 * argument.toCharArray(); String tempString = ""; for(int
+	 * i=0;i<matchingPosition;++i){ tempString += tempCharArray[i]; } String[]
+	 * tempStringArray = tempString.split(" "); int len =
+	 * tempStringArray.length;
+	 * if(tempStringArray[len-1].compareTo("before")==0){
+	 * groups.get(0).getDates().get(0) }
+	 * 
+	 * }
+	 */
 	private void adjustStartTimeAndEndTime() {
 		if (taskType == TaskType.TIMED) {
 			String dateString;
@@ -124,13 +138,12 @@ public class AddParser {
 			{
 				String tempStringArray[] = dateString.split("to");
 				if (tempStringArray.length == 2) {
-					CalendarSource.setBaseDate(new DateTime().withTime(00, 00,
-							00, 00).toDate());
 					groups.get(0)
 							.getDates()
 							.get(START_INDEX)
 							.setTime(
-									parser.parse(tempStringArray[0]).get(0)
+									parser.parseWithCustomisedBaseDate(00, 00,
+											00, tempStringArray[0]).get(0)
 											.getDates().get(0).getTime());
 					CalendarSource.setBaseDate(new DateTime().withTime(23, 59,
 							00, 00).toDate());
@@ -138,14 +151,15 @@ public class AddParser {
 							.getDates()
 							.get(SECOND_ENTRY)
 							.setTime(
-									parser.parse(tempStringArray[1]).get(0)
+									parser.parseWithDefaultBaseDate(
+											tempStringArray[1]).get(0)
 											.getDates().get(0).getTime());
 				}
 			}
 		}
 	}
 
-	private int advanceToNextToken(char[] tempCharArray, int i) {
+	private int getToNextNonemptyWord(char[] tempCharArray, int i) {
 		while (i < tempCharArray.length && tempCharArray[i] != ' ') {
 			i++;
 		}
@@ -154,18 +168,6 @@ public class AddParser {
 		}
 		return i;
 	}
-
-	/*
-	 * private void adjustTimeBasedOnTriggerWords() { char[] tempCharArray =
-	 * argument.toCharArray(); String tempString = ""; for(int
-	 * i=0;i<matchingPosition;++i){ tempString += tempCharArray[i]; } String[]
-	 * tempStringArray = tempString.split(" "); int len =
-	 * tempStringArray.length;
-	 * if(tempStringArray[len-1].compareTo("before")==0){
-	 * groups.get(0).getDates().get(0) }
-	 * 
-	 * }
-	 */
 
 	/**
 	 * 
@@ -293,6 +295,18 @@ public class AddParser {
 		}
 	}
 
+	private void determineTaskName() throws EmptyDescriptionException {
+		if (!hasAposPair()) {
+			if (taskType == TaskType.FLOATING)
+				taskName = argument;
+			else {
+				taskName = buildTaskNameString();
+			}
+		} else {
+			taskName = getStringInsideApostrophe();
+		}
+	}
+
 	/**
 	 * Determine the end of the date string. This comes in handy when there is
 	 * text AFTER the date string that needs to be added to the task
@@ -301,9 +315,10 @@ public class AddParser {
 
 	private void determineEndOfDateString() {
 		if (this.getTaskType() != TaskType.FLOATING) {
-			String tempString = groups.get(0).getText();
-			dateStringEndPosition = dateStringStartPosition
+			String tempString = groups.get(START_INDEX).getText();
+			dateStringEndPosition = groups.get(START_INDEX).getPosition()
 					+ tempString.length() + 1;
+
 		}
 
 	}
@@ -339,39 +354,10 @@ public class AddParser {
 			result += tempCharArray[i];
 		}
 		result = result.trim();
-		if (result.compareTo("") == 0)
+		if (result.compareTo("") == 0) {
 			throw new EmptyDescriptionException();
-		else
-			return result;
-	}
-
-	/*
-	 * ==========================================================================
-	 * ========= ====== Below are API to extract the interpreted information out
-	 * of the parser======
-	 * ======================================================
-	 * =============================
-	 */
-
-	public TaskType getTaskType() {
-		if (groups.size() == 0)
-			taskType = TaskType.FLOATING;
-		else if (groups.get(START_INDEX).getDates().size() == 1) {
-			taskType = TaskType.DEADLINE;
-		} else
-			taskType = TaskType.TIMED;
-		return taskType;
-	}
-
-	public String getTaskDescription() throws EmptyDescriptionException {
-		if (!hasAposPair()) {
-			if (taskType == TaskType.FLOATING)
-				return argument;
-			else {
-				return buildTaskNameString();
-			}
 		} else {
-			return getStringInsideApostrophe();
+			return result;
 		}
 	}
 
@@ -384,6 +370,22 @@ public class AddParser {
 		}
 		result.trim();
 		return result;
+	}
+
+	/*
+	 * ==========================================================================
+	 * ========= ====== Below are API to extract the interpreted information out
+	 * of the parser======
+	 * ======================================================
+	 * =============================
+	 */
+
+	public TaskType getTaskType() {
+		return taskType;
+	}
+
+	public String getTaskName() {
+		return taskName;
 	}
 
 	public DateTime getBeginTime() {
