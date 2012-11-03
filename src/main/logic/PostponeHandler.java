@@ -32,7 +32,8 @@ public class PostponeHandler extends CommandHandler {
 
 			String oldTaskDesc = taskToString(toBePostponed);
 			String feedbackString = oldTaskDesc + " has been postponed to ";
-
+			assert(!toBePostponed.isFloatingTask());
+			
 			pushCurrentTaskListToUndoStack();
 			if (toBePostponed.isDeadlineTask()) {
 				toBePostponed.changeDeadline(parser.getNewDeadline());
