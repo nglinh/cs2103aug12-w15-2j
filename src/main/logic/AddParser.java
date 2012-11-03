@@ -306,6 +306,10 @@ public class AddParser extends CommandParser {
 		} else {
 			taskName = getStringInsideApostrophe();
 		}
+		
+		if(taskName == null || taskName.isEmpty()) {
+			throw new EmptyDescriptionException();
+		}
 	}
 
 	/**
