@@ -21,9 +21,10 @@ class AddHandler extends CommandHandler {
 
 	@Override
 	public LogicToUi execute() {
-		boolean commandSuccess = true;
+		boolean commandSuccess = false;
 		
 		try {
+			pushCurrentTaskListToUndoStack();
 			parser.parse();
 			if (!parser.isTaskNameNonempty) {
 				return new LogicToUi("Task description cannot be empty");
@@ -49,6 +50,7 @@ class AddHandler extends CommandHandler {
 						"I could not determine the type of your event. Can you be more specific?");
 			}
 			dataBase.add(newTask);
+			commandSuccess = true;
 			String taskDetails = taskToString(newTask);
 			String feedbackString = taskDetails + " added";
 			feedback = new LogicToUi(feedbackString, newTask.getSerial());
@@ -60,6 +62,10 @@ class AddHandler extends CommandHandler {
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 			e.printStackTrace();
+		} finally {
+			if(commandSuccess == false ) {
+				undoClones.pop();
+			}
 		}
 		return feedback;
 	}

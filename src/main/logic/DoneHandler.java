@@ -20,12 +20,14 @@ public class DoneHandler extends CommandHandler{
 
 	@Override
 	public LogicToUi execute() {
-		boolean commandSuccess = true;
+		
 		
 		if (arguments.length() == 0) {
 			return new LogicToUi(
 					ERROR_INDEX_NUMBER_NOT_VALID);
 		}
+
+		
 
 		int index;
 
@@ -42,7 +44,7 @@ public class DoneHandler extends CommandHandler{
 			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		}
 
-
+		boolean commandSuccess = false;
 		try{
 			
 			Task toBeUpdated =  lastShownToUI.get(index);
@@ -60,18 +62,15 @@ public class DoneHandler extends CommandHandler{
 
 			String taskDetails = taskToString(toBeUpdated);
 			String undoMessage = "marking of task \"" + taskDetails + "\" as done";
-			
+			commandSuccess = true;
 			pushUndoStatusMessage(undoMessage);
 			return new LogicToUi(taskDetails + " has been marked as done.", serial);
 
 		} catch (NoSuchElementException e) {
-			commandSuccess = false;
 			return new LogicToUi(	ERROR_INDEX_NUMBER_NOT_VALID);
 		} catch (IOException e) {
-			commandSuccess = false;
 			return new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
-			commandSuccess = false;
 			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		} finally {
 			if(commandSuccess == false ) {
