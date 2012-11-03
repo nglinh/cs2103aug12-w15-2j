@@ -57,7 +57,7 @@ public class EditHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_MUST_CHANGE_BOTH_TIME);
 		} finally {
 			if(commandSuccess == false ) {
-				undoClones.pop();
+				popUndoClones();
 			}
 		}
 		

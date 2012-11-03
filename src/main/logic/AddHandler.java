@@ -63,7 +63,7 @@ class AddHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 		} finally {
 			if(commandSuccess == false ) {
-				undoClones.pop();
+				popUndoClones();
 			}
 		}
 		return feedback;

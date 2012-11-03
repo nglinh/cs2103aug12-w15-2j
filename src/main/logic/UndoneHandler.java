@@ -76,7 +76,7 @@ public class UndoneHandler extends CommandHandler{
 			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		} finally {
 			if(commandSuccess == false ) {
-				undoClones.pop();
+				popUndoClones();
 			}
 		}
 	}

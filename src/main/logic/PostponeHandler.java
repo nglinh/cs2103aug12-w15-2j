@@ -65,7 +65,7 @@ public class PostponeHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
 		} finally {
 			if(commandSuccess == false ) {
-				undoClones.pop();
+				popUndoClones();
 			}
 		}
 		return feedback;

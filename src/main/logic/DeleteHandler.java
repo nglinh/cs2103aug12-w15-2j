@@ -61,7 +61,7 @@ public class DeleteHandler extends CommandHandler {
 			commandSuccess = false;
 		} finally {
 			if(commandSuccess == false ) {
-				undoClones.pop();
+				popUndoClones();
 			}
 		}
 
