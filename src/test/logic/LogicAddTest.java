@@ -93,6 +93,12 @@ public class LogicAddTest{
 		assertEquals(expected.showInfo(), actual.showInfo());
 	}
 	
+	@Test
+	public void taskWithEmptyName() {
+	//	CommandTester("add ");
+	
+	}
+	//Todo: return logicToUi after each add command. Its better to test the return message to see if the correct error has been found. 
 	public Task CommandTester(String command) {
 		List<Task> backup = Database.getInstance().readAll();
 		Logic.getInstance().uiCommunicator("delete all");
