@@ -25,21 +25,21 @@ public class DeleteHandler extends CommandHandler {
 				dataBase.deleteAll();
 				feedback = new LogicToUi("All tasks have been deleted");
 				String undoMessage = "deletion of all tasks";
-				pushUndoStatusMessage(undoMessage);
+				super.pushUndoStatusMessage(undoMessage);
 			} else if (parser.isDone) {
 
 				dataBase.deleteDone();
 				feedback = new LogicToUi(
 						"All completed tasks have been deleted");
 				String undoMessage = "deletion of done tasks";
-				pushUndoStatusMessage(undoMessage);
+				super.pushUndoStatusMessage(undoMessage);
 			} else if (parser.isOver) {
 
 				dataBase.deleteOver();
 				feedback = new LogicToUi(
 						"All tasks that has ended before this moment have been deleted");
 				String undoMessage = "deletion of tasks before this moment";
-				pushUndoStatusMessage(undoMessage);
+				super.pushUndoStatusMessage(undoMessage);
 			} else {
 
 				toBeDeleted = parser.getToBeDeleted();
@@ -47,7 +47,7 @@ public class DeleteHandler extends CommandHandler {
 				String taskDetails = taskToString(toBeDeleted);
 				feedback = new LogicToUi(taskDetails + " has been deleted");
 				String undoMessage = "deletion of task \"" + taskDetails + "\"";
-				pushUndoStatusMessage(undoMessage);
+				super.pushUndoStatusMessage(undoMessage);
 			}
 
 		} catch (IOException e) {
@@ -61,7 +61,7 @@ public class DeleteHandler extends CommandHandler {
 			commandSuccess = false;
 		} finally {
 			if(commandSuccess == false ) {
-				popUndoClones();
+				super.popUndoClones();
 			}
 		}
 

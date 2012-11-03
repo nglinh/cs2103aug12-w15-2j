@@ -49,7 +49,7 @@ public class PostponeHandler extends CommandHandler {
 
 			String taskDetails = taskToString(toBePostponed);
 			String undoMessage = "postponement of task \"" + taskDetails + "\"";
-			pushUndoStatusMessage(undoMessage);
+			super.pushUndoStatusMessage(undoMessage);
 			feedback = new LogicToUi(feedbackString,toBePostponed.getSerial());
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
@@ -65,7 +65,7 @@ public class PostponeHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
 		} finally {
 			if(commandSuccess == false ) {
-				popUndoClones();
+				super.popUndoClones();
 			}
 		}
 		return feedback;

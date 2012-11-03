@@ -64,7 +64,7 @@ public class DoneHandler extends CommandHandler{
 			String taskDetails = taskToString(toBeUpdated);
 			String undoMessage = "marking of task \"" + taskDetails + "\" as done";
 			commandSuccess = true;
-			pushUndoStatusMessage(undoMessage);
+			super.pushUndoStatusMessage(undoMessage);
 			return new LogicToUi(taskDetails + " has been marked as done.", serial);
 
 		} catch (NoSuchElementException e) {
@@ -75,7 +75,7 @@ public class DoneHandler extends CommandHandler{
 			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		} finally {
 			if(commandSuccess == false ) {
-				popUndoClones();
+				super.popUndoClones();
 			}
 		}
 	}

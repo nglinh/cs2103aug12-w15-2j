@@ -16,17 +16,17 @@ public class UndoHandler extends CommandHandler{
 	private static final String ERROR_NO_MORE_UNDO = "You don't have any more undo steps left";
 
 	public LogicToUi execute(){
-		if(undoStepsRemaining() == 0){
+		if(super.undoStepsRemaining() == 0){
 			return new LogicToUi(ERROR_NO_MORE_UNDO);
 		}
 
 
 		try {
-			List<Task> previous = peekUndoClones();
+			List<Task> previous = super.peekUndoClones();
 			dataBase.writeALL(previous);
-			String status = "The " + popAndGetPrevUndoMsg() + " has been undone";
+			String status = "The " + super.popAndGetPrevUndoMsg() + " has been undone";
 
-			popUndoClones();
+			super.popUndoClones();
 			feedback = new LogicToUi(status);
 
 		} catch (IOException e) {

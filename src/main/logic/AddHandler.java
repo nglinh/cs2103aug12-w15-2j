@@ -54,7 +54,7 @@ class AddHandler extends CommandHandler {
 			String taskDetails = taskToString(newTask);
 			String feedbackString = taskDetails + " added";
 			feedback = new LogicToUi(feedbackString, newTask.getSerial());
-			pushUndoStatusMessage("addition of task \"" + taskDetails + "\"");
+			super.pushUndoStatusMessage("addition of task \"" + taskDetails + "\"");
 		} catch (WillNotWriteToCorruptFileException e) {
 			return null;
 		} catch (IOException e) {
@@ -63,7 +63,7 @@ class AddHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 		} finally {
 			if(commandSuccess == false ) {
-				popUndoClones();
+				super.popUndoClones();
 			}
 		}
 		return feedback;
