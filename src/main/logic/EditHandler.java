@@ -22,7 +22,7 @@ public class EditHandler extends CommandHandler {
 
 	@Override
 	public LogicToUi execute() {
-		boolean commandSuccess = true;
+		boolean commandSuccess = false;
 		
 		try {
 			parser.parse();
@@ -40,16 +40,15 @@ public class EditHandler extends CommandHandler {
 			feedback = new LogicToUi(feedbackString, toBeEdited.getSerial());
 			
 			String undoMessage = "update to \"" + taskDetails + "\"";
+			commandSuccess = true;
 			pushUndoStatusMessage(undoMessage);
 			return feedback;
 		} catch (NoSuchElementException e) {
 			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
-			commandSuccess = false;
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
-			commandSuccess = false;
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 		} catch (CannotParseDateException e) {

@@ -20,7 +20,7 @@ public class UndoneHandler extends CommandHandler{
 
 	@Override
 	public LogicToUi execute() {
-		boolean commandSuccess = true;
+		
 		
 		if (arguments.length() == 0) {
 			return new LogicToUi(
@@ -28,6 +28,8 @@ public class UndoneHandler extends CommandHandler{
 		}
 
 		int index;
+		
+		
 
 		try{
 			parser.parse();
@@ -42,7 +44,7 @@ public class UndoneHandler extends CommandHandler{
 			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		}
 
-
+		boolean commandSuccess = false;
 		try{
 			
 			Task toBeUpdated =  lastShownToUI.get(index);
@@ -61,18 +63,16 @@ public class UndoneHandler extends CommandHandler{
 			String taskDetails = taskToString(toBeUpdated);
 			
 			String undoMessage = "marking of task \"" + taskDetails + "\" as undone";
+			commandSuccess = true;
 			pushUndoStatusMessage(undoMessage);
 			
 			return new LogicToUi(taskDetails + " has been marked as undone.", serial);
 
 		} catch (NoSuchElementException e) {
-			commandSuccess = false;
 			return new LogicToUi(	ERROR_INDEX_NUMBER_NOT_VALID);
 		} catch (IOException e) {
-			commandSuccess = false;
 			return new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
-			commandSuccess = false;
 			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		} finally {
 			if(commandSuccess == false ) {
