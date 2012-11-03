@@ -26,8 +26,8 @@ public abstract class CommandHandler {
 	protected static final String ERROR_INDEX_NUMBER_NOT_VALID = "Sorry you did not provide an index number or the number you provided is not valid. Please try again with a correct number or refresh the list.";
 	
 	
-	protected static LinkedList<String> undoMsgHistory = new LinkedList<String>();
-	protected static LinkedList<List<Task>> undoClones = new LinkedList<List<Task>>();
+	private static LinkedList<String> undoMsgHistory = new LinkedList<String>();
+	private static LinkedList<List<Task>> undoClones = new LinkedList<List<Task>>();
 	
 	protected static Database dataBase = Database.getInstance();
 	protected static String latestCommandFromUI = null;
@@ -76,6 +76,22 @@ public abstract class CommandHandler {
 		
 	}
 	
+	
+	protected List<Task> peekUndoClones(){
+		return undoClones.peek();
+	}
+	
+	protected void popUndoClones(){
+		undoClones.pop();
+	}
+	
+	protected int undoStepsRemaining(){
+		return undoClones.size();
+	}
+	
+	protected String popAndGetPrevUndoMsg() {
+		return undoMsgHistory.pop();
+	}
 	protected void pushCurrentTaskListToUndoStack() {
 		List<Task> currentCopy = new ArrayList<Task>();
 		
