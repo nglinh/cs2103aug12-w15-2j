@@ -41,7 +41,7 @@ public abstract class CommandHandler {
 
 	protected LogicToUi feedback;
 	
-	public static int MAX_UNDO_STEPS = 50;
+	public static final int MAX_UNDO_STEPS = 50;
 	
 	private Logic logic = Logic.getInstance();
 
@@ -70,10 +70,23 @@ public abstract class CommandHandler {
 	protected void pushUndoStatusMessage(String undoMsg){
 		undoMsgHistory.push(undoMsg);
 
-		while(undoMsgHistory.size() >= MAX_UNDO_STEPS) {
+		while(undoMsgHistory.size() > MAX_UNDO_STEPS) {
 			undoMsgHistory.removeFirst();
 		}
 		
+	}
+	
+	protected void pushCurrentTaskListToUndoStack() {
+		List<Task> currentCopy = new ArrayList<Task>();
+		
+		currentCopy = dataBase.readAll();
+		
+		undoClones.push(currentCopy);
+
+		while(undoClones.size() > MAX_UNDO_STEPS) {
+			undoClones.removeFirst();
+		}
+
 	}
 	
 	
@@ -92,18 +105,7 @@ public abstract class CommandHandler {
 	protected String popAndGetPrevUndoMsg() {
 		return undoMsgHistory.pop();
 	}
-	protected void pushCurrentTaskListToUndoStack() {
-		List<Task> currentCopy = new ArrayList<Task>();
-		
-		currentCopy = dataBase.readAll();
-		
-		undoClones.push(currentCopy);
 
-		while(undoClones.size() >= MAX_UNDO_STEPS) {
-			undoClones.removeFirst();
-		}
-
-	}
 
 
 	protected String taskToString(Task toBeConverted) {
