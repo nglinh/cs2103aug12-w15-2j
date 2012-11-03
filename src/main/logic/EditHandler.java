@@ -41,7 +41,7 @@ public class EditHandler extends CommandHandler {
 			
 			String undoMessage = "update to \"" + taskDetails + "\"";
 			commandSuccess = true;
-			pushUndoStatusMessage(undoMessage);
+			super.pushUndoStatusMessage(undoMessage);
 			return feedback;
 		} catch (NoSuchElementException e) {
 			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
@@ -57,7 +57,7 @@ public class EditHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_MUST_CHANGE_BOTH_TIME);
 		} finally {
 			if(commandSuccess == false ) {
-				popUndoClones();
+				super.popUndoClones();
 			}
 		}
 		

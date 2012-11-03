@@ -64,7 +64,7 @@ public class UndoneHandler extends CommandHandler{
 			
 			String undoMessage = "marking of task \"" + taskDetails + "\" as undone";
 			commandSuccess = true;
-			pushUndoStatusMessage(undoMessage);
+			super.pushUndoStatusMessage(undoMessage);
 			
 			return new LogicToUi(taskDetails + " has been marked as undone.", serial);
 
@@ -76,7 +76,7 @@ public class UndoneHandler extends CommandHandler{
 			return new LogicToUi(ERROR_FILE_CORRUPTED);
 		} finally {
 			if(commandSuccess == false ) {
-				popUndoClones();
+				super.popUndoClones();
 			}
 		}
 	}
