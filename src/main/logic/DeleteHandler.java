@@ -2,6 +2,7 @@ package main.logic;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import main.shared.LogicToUi;
 import main.shared.Task;
@@ -57,7 +58,7 @@ public class DeleteHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
-		} catch (NumberFormatException e){
+		} catch (NumberFormatException | NoSuchElementException e){
 			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		}
 
