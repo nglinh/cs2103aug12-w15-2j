@@ -1,6 +1,7 @@
 package main.logic;
 
 import java.io.IOException;
+import java.util.List;
 
 import main.shared.LogicToUi;
 import main.shared.Task;
@@ -21,10 +22,9 @@ class AddHandler extends CommandHandler {
 
 	@Override
 	public LogicToUi execute() {
-		boolean commandSuccess = false;
 		
 		try {
-			pushCurrentTaskListToUndoStack();
+			List<Task> currentTaskList = super.getCurrentTaskList();
 			parser.parse();
 			if (!parser.isTaskNameNonempty) {
 				return new LogicToUi("Task description cannot be empty");
@@ -50,22 +50,20 @@ class AddHandler extends CommandHandler {
 						"I could not determine the type of your event. Can you be more specific?");
 			}
 			dataBase.add(newTask);
-			commandSuccess = true;
+
 			String taskDetails = taskToString(newTask);
 			String feedbackString = taskDetails + " added";
 			feedback = new LogicToUi(feedbackString, newTask.getSerial());
-			super.pushUndoStatusMessage("addition of task \"" + taskDetails + "\"");
+			String undoMessage = "addition of task \"" + taskDetails + "\"";
+			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
 		} catch (WillNotWriteToCorruptFileException e) {
 			return null;
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
-		} finally {
-			if(commandSuccess == false ) {
-				super.popUndoClones();
-			}
-		}
+		} 
+
 		return feedback;
 	}
 }

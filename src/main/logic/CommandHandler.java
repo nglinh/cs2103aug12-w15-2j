@@ -67,26 +67,24 @@ public abstract class CommandHandler {
 
 	public abstract LogicToUi execute();
 	
-	protected void pushUndoStatusMessage(String undoMsg){
+	protected void pushUndoStatusMessageAndTaskList(String undoMsg, List<Task> currentCopy){
 		undoMsgHistory.push(undoMsg);
+		undoClones.push(currentCopy);
 
 		while(undoMsgHistory.size() > MAX_UNDO_STEPS) {
 			undoMsgHistory.removeFirst();
 		}
 		
-	}
-	
-	protected void pushCurrentTaskListToUndoStack() {
-		List<Task> currentCopy = new ArrayList<Task>();
-		
-		currentCopy = dataBase.readAll();
-		
-		undoClones.push(currentCopy);
 
 		while(undoClones.size() > MAX_UNDO_STEPS) {
 			undoClones.removeFirst();
 		}
-
+		
+	}
+	
+	
+	protected List<Task> getCurrentTaskList(){
+		return dataBase.readAll();
 	}
 	
 	
