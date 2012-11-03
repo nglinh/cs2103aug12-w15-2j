@@ -46,7 +46,7 @@ public class UndoneHandler extends CommandHandler{
 
 		boolean commandSuccess = false;
 		try{
-			
+			pushCurrentTaskListToUndoStack();
 			Task toBeUpdated =  lastShownToUI.get(index);
 
 			if(!toBeUpdated.isDone()){
@@ -57,7 +57,7 @@ public class UndoneHandler extends CommandHandler{
 			toBeUpdated.done(false);
 			int serial = toBeUpdated.getSerial();
 			
-			pushCurrentTaskListToUndoStack();
+			
 			dataBase.update(serial, toBeUpdated);
 
 			String taskDetails = taskToString(toBeUpdated);
