@@ -47,6 +47,7 @@ public class DoneHandler extends CommandHandler{
 		boolean commandSuccess = false;
 		try{
 			
+			pushCurrentTaskListToUndoStack();
 			Task toBeUpdated =  lastShownToUI.get(index);
 
 			if(toBeUpdated.isDone()){
@@ -57,7 +58,7 @@ public class DoneHandler extends CommandHandler{
 			toBeUpdated.done(true);
 			int serial = toBeUpdated.getSerial();
 			
-			pushCurrentTaskListToUndoStack();
+			
 			dataBase.update(serial, toBeUpdated);
 
 			String taskDetails = taskToString(toBeUpdated);
