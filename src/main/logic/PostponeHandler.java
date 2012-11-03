@@ -23,6 +23,7 @@ public class PostponeHandler extends CommandHandler {
 	public LogicToUi execute() {
 		boolean commandSuccess = false;
 		try {
+			pushCurrentTaskListToUndoStack();
 			parser.parse();
 
 			
@@ -34,7 +35,7 @@ public class PostponeHandler extends CommandHandler {
 			String feedbackString = oldTaskDesc + " has been postponed to ";
 			assert(!toBePostponed.isFloatingTask());
 			
-			pushCurrentTaskListToUndoStack();
+			
 			if (toBePostponed.isDeadlineTask()) {
 				toBePostponed.changeDeadline(parser.getNewDeadline());
 				feedbackString += dateToString(parser.getNewDeadline());
