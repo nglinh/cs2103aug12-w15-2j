@@ -61,7 +61,6 @@ class AddHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
-			e.printStackTrace();
 		} finally {
 			if(commandSuccess == false ) {
 				undoClones.pop();
