@@ -1,6 +1,7 @@
 package main.logic;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import main.shared.LogicToUi;
@@ -22,7 +23,6 @@ public class EditHandler extends CommandHandler {
 
 	@Override
 	public LogicToUi execute() {
-		boolean commandSuccess = false;
 		
 		try {
 			parser.parse();
@@ -32,7 +32,7 @@ public class EditHandler extends CommandHandler {
 			changeStartTime();
 			changeEndTime();
 			changeToFloat();
-			pushCurrentTaskListToUndoStack();
+			List<Task> currentTaskList = super.getCurrentTaskList();
 			dataBase.update(toBeEdited.getSerial(), toBeEdited);
 			String taskDetails = taskToString(toBeEdited);
 			String feedbackString = taskDetails + " updated.";
@@ -40,8 +40,8 @@ public class EditHandler extends CommandHandler {
 			feedback = new LogicToUi(feedbackString, toBeEdited.getSerial());
 			
 			String undoMessage = "update to \"" + taskDetails + "\"";
-			commandSuccess = true;
-			super.pushUndoStatusMessage(undoMessage);
+			
+			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
 			return feedback;
 		} catch (NoSuchElementException e) {
 			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
@@ -55,10 +55,6 @@ public class EditHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_CANNOT_PARSE_DATE);
 		} catch (DoNotChangeBothSTimeAndETimeException e) {
 			feedback = new LogicToUi(ERROR_MUST_CHANGE_BOTH_TIME);
-		} finally {
-			if(commandSuccess == false ) {
-				super.popUndoClones();
-			}
 		}
 		
 		

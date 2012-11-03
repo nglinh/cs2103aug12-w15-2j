@@ -1,6 +1,7 @@
 package main.logic;
 
 import java.io.IOException;
+import java.util.List;
 
 import main.shared.LogicToUi;
 import main.shared.Task;
@@ -15,54 +16,49 @@ public class DeleteHandler extends CommandHandler {
 	}
 
 	public LogicToUi execute() {
-		boolean commandSuccess = true;
+
 		try {
 			
-			pushCurrentTaskListToUndoStack();
+			List<Task> currentTaskList = super.getCurrentTaskList();
 			parser.parse();
+			String undoMessage;
+			
 			if (parser.isAll) {
 
 				dataBase.deleteAll();
 				feedback = new LogicToUi("All tasks have been deleted");
-				String undoMessage = "deletion of all tasks";
-				super.pushUndoStatusMessage(undoMessage);
+				undoMessage = "deletion of all tasks";
+
 			} else if (parser.isDone) {
 
 				dataBase.deleteDone();
 				feedback = new LogicToUi(
 						"All completed tasks have been deleted");
-				String undoMessage = "deletion of done tasks";
-				super.pushUndoStatusMessage(undoMessage);
+				undoMessage = "deletion of done tasks";
+
 			} else if (parser.isOver) {
 
 				dataBase.deleteOver();
 				feedback = new LogicToUi(
 						"All tasks that has ended before this moment have been deleted");
-				String undoMessage = "deletion of tasks before this moment";
-				super.pushUndoStatusMessage(undoMessage);
+				undoMessage = "deletion of tasks before this moment";
+
 			} else {
 
 				toBeDeleted = parser.getToBeDeleted();
 				dataBase.delete(toBeDeleted.getSerial());
 				String taskDetails = taskToString(toBeDeleted);
 				feedback = new LogicToUi(taskDetails + " has been deleted");
-				String undoMessage = "deletion of task \"" + taskDetails + "\"";
-				super.pushUndoStatusMessage(undoMessage);
+				undoMessage = "deletion of task \"" + taskDetails + "\"";
+				
 			}
-
+			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
-			commandSuccess = false;
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
-			commandSuccess = false;
 		} catch (NumberFormatException e){
 			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
-			commandSuccess = false;
-		} finally {
-			if(commandSuccess == false ) {
-				super.popUndoClones();
-			}
 		}
 
 		return feedback;

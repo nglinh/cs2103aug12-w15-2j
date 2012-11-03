@@ -1,6 +1,7 @@
 package main.logic;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import main.shared.LogicToUi;
@@ -44,9 +45,9 @@ public class UndoneHandler extends CommandHandler{
 			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		}
 
-		boolean commandSuccess = false;
+
 		try{
-			pushCurrentTaskListToUndoStack();
+			List<Task> currentTaskList = super.getCurrentTaskList();
 			Task toBeUpdated =  lastShownToUI.get(index);
 
 			if(!toBeUpdated.isDone()){
@@ -63,8 +64,8 @@ public class UndoneHandler extends CommandHandler{
 			String taskDetails = taskToString(toBeUpdated);
 			
 			String undoMessage = "marking of task \"" + taskDetails + "\" as undone";
-			commandSuccess = true;
-			super.pushUndoStatusMessage(undoMessage);
+
+			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
 			
 			return new LogicToUi(taskDetails + " has been marked as undone.", serial);
 
@@ -74,11 +75,7 @@ public class UndoneHandler extends CommandHandler{
 			return new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
 			return new LogicToUi(ERROR_FILE_CORRUPTED);
-		} finally {
-			if(commandSuccess == false ) {
-				super.popUndoClones();
-			}
-		}
+		} 
 	}
 
 }

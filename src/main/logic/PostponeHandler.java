@@ -2,6 +2,7 @@ package main.logic;
 
 import java.io.IOException;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import main.shared.LogicToUi;
@@ -21,9 +22,8 @@ public class PostponeHandler extends CommandHandler {
 	}
 
 	public LogicToUi execute() {
-		boolean commandSuccess = false;
 		try {
-			pushCurrentTaskListToUndoStack();
+			List<Task> currentTaskList = super.getCurrentTaskList();
 			parser.parse();
 
 			
@@ -40,18 +40,16 @@ public class PostponeHandler extends CommandHandler {
 				toBePostponed.changeDeadline(parser.getNewDeadline());
 				feedbackString += dateToString(parser.getNewDeadline());
 				dataBase.update(toBePostponed.getSerial(), toBePostponed);
-				commandSuccess = true;
 			} else if (toBePostponed.isTimedTask()) {
 				toBePostponed.changeStartAndEndDate(parser.getNewStartTime(), parser.getNewEndTime());
 				feedbackString += dateToString(parser.getNewStartTime())+ " to "+ dateToString(parser.getNewEndTime());
 				dataBase.update(toBePostponed.getSerial(), toBePostponed);
-				commandSuccess = true;
 			}
 			
 
 			String taskDetails = taskToString(toBePostponed);
 			String undoMessage = "postponement of task \"" + taskDetails + "\"";
-			super.pushUndoStatusMessage(undoMessage);
+			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
 			feedback = new LogicToUi(feedbackString,toBePostponed.getSerial());
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
@@ -65,11 +63,7 @@ public class PostponeHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
-		} finally {
-			if(commandSuccess == false ) {
-				super.popUndoClones();
-			}
-		}
+		} 
 		return feedback;
 
 	}
