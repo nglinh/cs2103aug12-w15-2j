@@ -11,7 +11,7 @@
 		<usage>delete</usage>
 		<usage>undo</usage>
 		<usage>exit</usage>
-		<extra>Terminology:</extra>
+		<extra>Terms:</extra>
 		<extra>Floating tasks: Tasks which have no time component.</extra>
 		<extra>Deadline tasks: Tasks which have one time as deadline.</extra>
 		<extra>Timed tasks: Tasks which have a start and end time.</extra>
@@ -72,7 +72,7 @@
 	</command>
 		<command>
 		<name><![CDATA[<h1>Refresh</h1>]]></name>
-		<summary>Refreshes your list base on latest, list, sort and search parameters.</summary>
+		<summary>Refreshes your list based on the latest list or search parameters.</summary>
 		<usage><![CDATA[<b>undo</b>]]></usage>
 		<extra>This command has no effect in the graphical interface.</extra>
 	</command>
