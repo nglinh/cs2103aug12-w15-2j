@@ -42,14 +42,9 @@ public abstract class CommandHandler {
 
 	public static final int MAX_UNDO_STEPS = 50;
 
-	private Logic logic = Logic.getInstance();
-
 	public CommandHandler(String arguments) {
 	}
 
-	protected LogicToUi sendCommandToLogicAgain(String commandToSend) {
-		return logic.uiCommunicator(commandToSend);
-	}
 
 	public abstract LogicToUi execute();
 
