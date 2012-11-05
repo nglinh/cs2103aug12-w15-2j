@@ -15,6 +15,9 @@ public class SortHandler extends CommandHandler{
 	private String arguments;
 	private SortParser parser;
 	
+	private static Comparator<Task> latestSorter = new SortByStartDate();
+	private static SortStatus latestSorting = SortStatus.START;
+	
 	public SortHandler(String arguments){
 		super(arguments);
 		this.arguments = arguments;
@@ -37,10 +40,10 @@ public class SortHandler extends CommandHandler{
 
 		Comparator<Task> sorter = null;
 
-		LogicToUi fromListCommand = sendCommandToLogicAgain(latestRefreshCommandForUI);
+		LogicToUi fromLatestListCommand = latestRefreshHandlerForUI.execute();
 		
-		SearchTerms searchFilters = fromListCommand.getFilters();
-		String listStatusMsg = fromListCommand.getString();
+		SearchTerms searchFilters = fromLatestListCommand.getFilters();
+		String listStatusMsg = fromLatestListCommand.getString();
 
 		String statusMsg = null;
 

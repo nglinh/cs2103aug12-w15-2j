@@ -24,7 +24,6 @@ public class Logic {
 		LogicToUi feedback;
 		try {
 
-			CommandHandler.latestCommandFromUI = command;
 			CommandType commandType = parseCommand(command);
 
 			String arguments = command.replaceFirst(

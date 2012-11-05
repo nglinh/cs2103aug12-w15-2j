@@ -1,7 +1,6 @@
 package main.logic;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,8 +10,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import main.shared.LogicToUi;
 import main.shared.Task;
-import main.shared.LogicToUi.SortStatus;
-import main.shared.Task.SortByStartDate;
 import main.storage.Database;
 
 public abstract class CommandHandler {
@@ -30,13 +27,11 @@ public abstract class CommandHandler {
 	private static LinkedList<List<Task>> undoClones = new LinkedList<List<Task>>();
 	
 	protected static Database dataBase = Database.getInstance();
-	protected static String latestCommandFromUI = null;
 	
 	protected static List<Task> lastShownToUI = new ArrayList<Task>();
-	protected static String latestRefreshCommandForUI = "list";
+	protected static CommandHandler latestRefreshHandlerForUI = new ListHandler("");
 	
-	protected static Comparator<Task> latestSorter = new SortByStartDate();
-	protected static SortStatus latestSorting = SortStatus.START;
+
 	protected static String latestSortArgument = "start";
 
 	protected LogicToUi feedback;
