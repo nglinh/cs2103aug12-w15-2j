@@ -11,6 +11,7 @@ package main.storage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
@@ -34,17 +35,17 @@ public class Database {
 
 		private FileManagement diskFile;
 		private DB_File_Status fileAttributes;
-		
+
 		private Logger log = LogHandler.getLogInstance();
 
-		
+
 		private static Database theOne = null;
-		
+
 		public static Database getInstance(){
 			if(theOne == null){
 				theOne = new Database();
 			}
-			
+
 			return theOne;
 		}
 
@@ -56,18 +57,18 @@ public class Database {
 
 		private Database() {
 			log.info("Database instance created, now starting FileMgmt");
-			
+
 			diskFile = FileManagement.getInstance();
 			diskFile.prepareDatabaseFile();
 			diskFile.readFileAndDetectCorruption(taskStore);
 			fileAttributes = parseFileAttributes(diskFile);
-			
+
 			log.info("FileMgmt started");
 		}
-		
-		
-		
-	
+
+
+
+
 		/**
 		 * To give the results based on a search term.
 		 * <p>
@@ -156,7 +157,7 @@ public class Database {
 		private boolean dateMatching(Task currentEntry, SearchTerms terms) {
 			DateTime startRange = terms.getStartDate();
 			DateTime endRange = terms.getEndDate();
-			
+
 			return currentEntry.clashesWithRange(startRange, endRange);
 
 		}
@@ -188,46 +189,46 @@ public class Database {
 
 		public List<Task> readAll() {
 			log.info("Retrieving entire database");
-			
+
 			List<Task> result = new ArrayList<Task>();
 
 			for(Task currentEntry : taskStore)	{
 				result.add(new Task(currentEntry));
 			}
-			
+
 			log.info("Database of size " + result.size() + " returned");
 
 			return result;
 		}
-		
+
 		public void writeALL(List<Task> incoming) throws IOException, WillNotWriteToCorruptFileException {
 			assert(incoming != null);
-			
-	
+
+
 			log.info("Recieved incoming data of size " + incoming.size());
-			
+
 			verifyFileWritingAbility();
-			
+
 			List<Task> newList = new ArrayList<Task>();
-			
+
 			for(Task currentEntry : incoming)	{
 				newList.add(new Task(currentEntry));
 			}
-			
+
 			log.info("Incoming data saved to temporary copy");
-			
+
 			Collections.sort(newList);
-			
+
 			log.info("Send data to FileMgmt");
 			diskFile.writeDataBaseToFile(newList);
-			
+
 			log.info("FileMgmt saved successfully, permanently use new list");
 			taskStore = newList;
-			
-			
-			
-			
-			
+
+
+
+
+
 		}
 
 
@@ -244,26 +245,26 @@ public class Database {
 			assert(newTask != null);
 
 			verifyFileWritingAbility();
-			
-			
+
+
 			List<Task> newList = new ArrayList<Task>();
-			
+
 			for(Task currentEntry : taskStore)	{
 				newList.add(new Task(currentEntry));
 			}
-			
+
 			newList.add(newTask);
-			
+
 			log.info("Incoming task saved to temporary copy");
-			
+
 			Collections.sort(newList);
-			
+
 			log.info("Send data to FileMgmt");
 			diskFile.writeDataBaseToFile(newList);
-			
+
 			log.info("FileMgmt saved successfully, permanently use new list");
 			taskStore = newList;
-		
+
 
 
 		}
@@ -303,18 +304,18 @@ public class Database {
 
 		public void update(int originalSerial, Task updated) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException{
 			assert(updated != null);
-			
+
 			log.info("Received serial " + originalSerial + " and updated task " + updated.showInfo());
 
 			verifyFileWritingAbility();
-			
-			
+
+
 			List<Task> newList = new ArrayList<Task>();
-			
+
 			for(Task currentEntry : taskStore)	{
 				newList.add(new Task(currentEntry));
 			}
-			
+
 
 
 			boolean isOriginalTaskFound = false;
@@ -326,9 +327,9 @@ public class Database {
 					break;
 				}
 			}
-			
+
 			log.info("Incoming data saved to temporary copy");
-			
+
 			Collections.sort(newList);
 
 			if(isOriginalTaskFound) {
@@ -340,8 +341,8 @@ public class Database {
 				log.warning("Cannot find old task, exception thrown");
 				throw new NoSuchElementException();
 			}
-			
-			
+
+
 
 
 		}
@@ -378,16 +379,16 @@ public class Database {
 
 		public void delete(int serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
 			log.info("Received this serial " + serial);
-			
+
 			verifyFileWritingAbility();
-			
+
 			List<Task> newList = new ArrayList<Task>();
-			
+
 			for(Task currentEntry : taskStore)	{
 				newList.add(new Task(currentEntry));
 			}
-			
-		
+
+
 			boolean isOriginalTaskFound = false;
 
 			Task currentTask;
@@ -405,20 +406,76 @@ public class Database {
 			}
 
 			if(isOriginalTaskFound) {
-		
+
 				log.info("Send data to FileMgmt");
 				diskFile.writeDataBaseToFile(newList);
-				
+
 				log.info("FileMgmt saved successfully, permanently use new list");
 				taskStore = newList;
 			} else	{
 				log.warning("No task with this serial found");
 				throw new NoSuchElementException();
 			}
-		
+
 
 
 		}
+
+		/**
+		 * To delete given tasks in database   
+		 *                         
+		 * @param serial array of serial numbers of tasks to be deleted
+		 * 
+		 * @throws NoSuchElementException if at least one task by serial number cannot be found
+		 * @throws IOException if cannot commit changes to file, database will not be modified
+		 * @throws WillNotWriteToCorruptFileException 
+		 */
+
+		public void delete(int[] serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
+			log.info("received array of serials of size " + serial.length);
+
+			assert(serial != null);
+
+			verifyFileWritingAbility();
+
+			List<Task> newList = new ArrayList<Task>();
+
+			for(Task currentEntry : taskStore)	{
+				newList.add(new Task(currentEntry));
+			}
+
+
+
+			for(int i = 0; i < serial.length; i++){
+				boolean taskFound = false;
+				
+				for(Iterator<Task> iter = newList.iterator(); iter.hasNext();){
+					Task current = iter.next();
+					if(current.getSerial() == serial[i]){
+						iter.remove();
+						taskFound = true;
+						break; //Break iterator, go to next serial number
+					}
+				}
+				
+				if(!taskFound){
+					log.warning("At least one task is not found, exception thrown");
+					throw new NoSuchElementException();
+				}
+				
+				
+
+			}
+			
+			log.info("Send data to FileMgmt");
+			diskFile.writeDataBaseToFile(newList);
+
+			log.info("FileMgmt saved successfully, permanently use new list");
+			taskStore = newList;
+
+
+		}
+
 
 		/**
 		 * To delete ALL tasks in database   
@@ -430,10 +487,10 @@ public class Database {
 
 		public void deleteAll() throws IOException, WillNotWriteToCorruptFileException {
 			verifyFileWritingAbility();
-			
+
 			log.info("Send data to FileMgmt");
 			diskFile.writeDataBaseToFile(new ArrayList<Task>());
-			
+
 			log.info("FileMgmt saved successfully, permanently use new list");
 			taskStore.clear();
 		}
@@ -521,7 +578,7 @@ public class Database {
 			return fileAttributes;
 		}
 
-	
+
 		public void unlockFileToExit(){
 			log.info("Send command to FileMgmt to unlock the file");	
 			diskFile.closeFile();
