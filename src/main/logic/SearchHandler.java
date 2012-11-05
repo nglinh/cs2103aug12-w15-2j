@@ -36,7 +36,7 @@ public class SearchHandler extends CommandHandler{
 		}
 		
 		lastShownToUI = results;
-		latestRefreshCommandForUI = latestCommandFromUI;
+		latestRefreshHandlerForUI = this;
 
 		return new LogicToUi(results, statusMsg, terms);
 	}

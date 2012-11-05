@@ -87,7 +87,7 @@
 		<usage><![CDATA[<b>sort</b> name (Alphabetical order)]]></usage>
 		<extra><![CDATA[Add "reverse" parameter to sort by descending order instead.]]></extra>
 		<extra><![CDATA[Only up to 1 parameter except "reverse" is allowed. Default is sort by start/deadline.]]></extra>
-		<extra><![CDATA[Does not work for agenda view in graphical interface.]]></extra>	
+		<extra><![CDATA[Sort will not be maintained each time the view is updated]]></extra>	
 	</command>
 		<command>
 		<name><![CDATA[<h1>Postpone</h1>]]></name>

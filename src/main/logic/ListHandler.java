@@ -11,12 +11,9 @@ import main.shared.Task;
 public class ListHandler extends CommandHandler {
 
 	private ListParser parser;
-	private String arguments;
-
 
 	public ListHandler(String arguments) {
 		super(arguments);
-		this.arguments = arguments;
 		parser = new ListParser(arguments);
 	}
 
@@ -38,47 +35,47 @@ public class ListHandler extends CommandHandler {
 			results = dataBase.search(filter);
 
 			String overdueStatusMsg = "Listing based on these parameters: \"overdue\" ";
-			
+
 			lastShownToUI = results;
-			latestRefreshCommandForUI = "list " + arguments;
+			latestRefreshHandlerForUI = this;
 			return new LogicToUi(results, overdueStatusMsg, filter);
 		}
 
-		
-		
+
+
 		if (parser.today && parser.tomorrow) {
-		DateTime startDate = new DateTime().withTimeAtStartOfDay();
-		DateTime endDate = startDate.plusDays(1).withTime(23, 59, 59, 999);
+			DateTime startDate = new DateTime().withTimeAtStartOfDay();
+			DateTime endDate = startDate.plusDays(1).withTime(23, 59, 59, 999);
 
-		filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
-				parser.floating, startDate, endDate);
-	} else if (parser.today) {
+			filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
+					parser.floating, startDate, endDate);
+		} else if (parser.today) {
 
-		DateTime startDate = new DateTime().withTimeAtStartOfDay();
-		DateTime endDate = startDate.withTime(23, 59, 59, 999);
+			DateTime startDate = new DateTime().withTimeAtStartOfDay();
+			DateTime endDate = startDate.withTime(23, 59, 59, 999);
 
-		filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
-				parser.floating, startDate, endDate);
+			filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
+					parser.floating, startDate, endDate);
 
 
-	} else if (parser.tomorrow) {
-		DateTime startDate = new DateTime().plusDays(1)
-				.withTimeAtStartOfDay();
-		DateTime endDate = startDate.plusDays(1).withTime(23, 59, 59, 999);
+		} else if (parser.tomorrow) {
+			DateTime startDate = new DateTime().plusDays(1)
+					.withTimeAtStartOfDay();
+			DateTime endDate = startDate.plusDays(1).withTime(23, 59, 59, 999);
 
-		filter = new SearchTerms(parser.complete,parser.incomplete, parser.timed, parser.deadline,
-				parser.floating, startDate, endDate);
+			filter = new SearchTerms(parser.complete,parser.incomplete, parser.timed, parser.deadline,
+					parser.floating, startDate, endDate);
 
-	} else {
-		filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
-				parser.floating);
-	}
+		} else {
+			filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
+					parser.floating);
+		}
 
-	results = dataBase.search(filter);
+		results = dataBase.search(filter);
 
-	lastShownToUI = results;
-	latestRefreshCommandForUI = latestCommandFromUI;
-	return new LogicToUi(results, parser.statusMsg, filter);
+		lastShownToUI = results;
+		latestRefreshHandlerForUI = this;
+		return new LogicToUi(results, parser.statusMsg, filter);
 
 
 	}

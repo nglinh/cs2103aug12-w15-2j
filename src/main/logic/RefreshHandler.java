@@ -12,8 +12,7 @@ public class RefreshHandler extends CommandHandler {
 
 	@Override
 	public LogicToUi execute() {
-		CommandHandler sortHandler = new SortHandler(latestSortArgument);
-		return sortHandler.execute();
+		return latestRefreshHandlerForUI.execute();
 		
 	}
 
