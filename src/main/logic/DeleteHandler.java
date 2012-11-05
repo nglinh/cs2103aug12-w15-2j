@@ -25,20 +25,20 @@ public class DeleteHandler extends CommandHandler {
 			String undoMessage;
 			
 			if (parser.isAll) {
-
+//TODO Wait for KM to change Database.
 				dataBase.deleteAll();
 				feedback = new LogicToUi("All tasks have been deleted");
 				undoMessage = "deletion of all tasks";
 
 			} else if (parser.isDone) {
-
+//TODO Wait for KM to change Database.
 				dataBase.deleteDone();
 				feedback = new LogicToUi(
 						"All completed tasks have been deleted");
 				undoMessage = "deletion of done tasks";
 
 			} else if (parser.isOver) {
-
+//TODO Wait for KM to change Database
 				dataBase.deleteOver();
 				feedback = new LogicToUi(
 						"All tasks that has ended before this moment have been deleted");

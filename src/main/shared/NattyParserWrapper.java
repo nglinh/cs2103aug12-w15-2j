@@ -17,13 +17,13 @@ public class NattyParserWrapper {
 		nattyParser = new Parser(TimeZone.getDefault());
 	}
 
-	public List<DateGroup> parseWithDefaultBaseDate(String str) {
+	public List<DateGroup> parseWDefBaseDate(String str) {
 		CalendarSource.setBaseDate(new DateTime().withTime(23, 59, 00, 00)
 				.toDate());
 		return nattyParser.parse(str);
 	}
 
-	public List<DateGroup> parseWithCustomisedBaseDate(int hour, int minute,
+	public List<DateGroup> parseWCustBaseDate(int hour, int minute,
 			int second, String str) {
 		CalendarSource.setBaseDate(new DateTime().withTime(hour, minute,
 				second, 00).toDate());
