@@ -7,6 +7,9 @@ import org.joda.time.DateTime;
 
 import com.joestelmach.natty.DateGroup;
 
+import main.logic.exceptions.CannotParseDateException;
+import main.logic.exceptions.CannotPostponeFloatingException;
+import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
@@ -21,11 +24,13 @@ public class PostponeParser extends CommandParser {
 	private DateTime newDeadline;
 	private DateTime newStartTime;
 	private DateTime newEndTime;
+	private List<Task> lastShownToUi;
 
 	public PostponeParser(String arguments) {
 		super(arguments);
 		argument = arguments;
 		parser = NattyParserWrapper.getInstance();
+		lastShownToUi = LastShownToUI.getInstance();
 	}
 
 	@Override
@@ -36,13 +41,13 @@ public class PostponeParser extends CommandParser {
 		argument = removeFirstWord(argument);
 		index--; // Since arraylist index starts from 0
 
-		if ((index < 0) || ((index + 1) > CommandHandler.getSizeofLastShownToUiList())) {
+		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
 			throw new NoSuchElementException();
 		}
 		if (argument.length() == 0) {
 			throw new CannotParseDateException();
 		}
-		toBePostponed = CommandHandler.getTaskFromLastShownToUi(index);
+		toBePostponed = lastShownToUi.get(index);
 		if (toBePostponed.getType() == TaskType.FLOATING) {
 			throw new CannotPostponeFloatingException();
 		}
@@ -73,13 +78,16 @@ public class PostponeParser extends CommandParser {
 	public Task getToBePostponed() {
 		return toBePostponed;
 	}
-	public DateTime getNewDeadline(){
+
+	public DateTime getNewDeadline() {
 		return newDeadline;
 	}
-	public DateTime getNewStartTime(){
+
+	public DateTime getNewStartTime() {
 		return newStartTime;
 	}
-	public DateTime getNewEndTime(){
+
+	public DateTime getNewEndTime() {
 		return newEndTime;
 	}
 }

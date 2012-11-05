@@ -1,10 +1,12 @@
 package main.logic;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
 
+import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.NattyParserWrapper;
 import main.shared.Task.TaskType;
 
@@ -21,9 +23,11 @@ import com.joestelmach.natty.DateGroup;
  */
 public class AddParser extends CommandParser {
 
-	private static final int SECOND_ENTRY = 1;
-	private static final int FIRST_ENTRY = 0;
-	private static final int START_INDEX = 0;
+	private static final String STRING_PM = "pm";
+	private static final String STRING_AM = "am";
+	private static final String STRING_EMPTY = "";
+	private static final String STRING_TO = "to";
+	
 
 	public boolean isTaskNameNonempty = true;
 
@@ -68,41 +72,22 @@ public class AddParser extends CommandParser {
 		if (hasAposPair()) {
 			dateString = removeTextInsideApostrophe();
 		} else {
-			dateString = removeTriggerWord();
+			dateString = removeTriggerWord(); // To avoid misinterpretation due
+												// to limitations
+												// of Natty.
 		}
 
 		CalendarSource.setBaseDate(new DateTime().withTime(23, 59, 00, 00)
 				.toDate());
-		groups = parser.parseWithDefaultBaseDate(dateString);
+		groups = parser.parseWDefBaseDate(dateString);
 		if (groups.size() != 0) {
 			dateStringStartPosition = groups.get(0).getPosition();
-			while (!checkSeparatedBySpace()) {
-				char[] tempCharArray = dateString.toCharArray();
-				String tempString = "";
-				int i = dateStringStartPosition;
-				i = getToNextNonemptyWord(tempCharArray, i);
-				if (i == tempCharArray.length) {
-					dateStringStartPosition = argument.length();
-					groups = parser.parseWithDefaultBaseDate("");
-					break;
-				}
-				dateStringStartPosition = i;
-				for (; i < dateString.length(); i++) {
-					tempString = tempString + tempCharArray[i];
-				}
-				dateString = tempString;
-				groups = parser.parseWithDefaultBaseDate(dateString);
-				if (groups.size() == 0) {
-					break;
-				}
-				dateStringStartPosition += groups.get(0).getPosition();
-			}
-			// adjustTimeBasedOnTriggerWords();
+			parseFullWordOnly(dateString);
 		}
 		determineTaskType();
 		determineEndOfDateString();
 		determineTaskName();
-		adjustStartTimeAndEndTime();
+		adjustStartAndEndTime();
 		if (taskType == TaskType.DEADLINE) {
 			determineDeadline();
 		}
@@ -111,50 +96,55 @@ public class AddParser extends CommandParser {
 		}
 	}
 
-	/*
-	 * private void adjustTimeBasedOnTriggerWords() { char[] tempCharArray =
-	 * argument.toCharArray(); String tempString = ""; for(int
-	 * i=0;i<matchingPosition;++i){ tempString += tempCharArray[i]; } String[]
-	 * tempStringArray = tempString.split(" "); int len =
-	 * tempStringArray.length;
-	 * if(tempStringArray[len-1].compareTo("before")==0){
-	 * groups.get(0).getDates().get(0) }
-	 * 
-	 * }
-	 */
-	private void adjustStartTimeAndEndTime() {
+	private void parseFullWordOnly(String dateString) {
+		while (!checkSeparatedBySpace()) {
+			char[] tempCharArray = dateString.toCharArray();
+			String tempString = STRING_EMPTY;
+			int i = dateStringStartPosition;
+			i = getToNextNonemptyWord(tempCharArray, i);
+			if (i == tempCharArray.length) {
+				dateStringStartPosition = argument.length();
+				groups = parser.parseWDefBaseDate(STRING_EMPTY);
+				break;
+			}
+			dateStringStartPosition = i;
+			for (; i < dateString.length(); i++) {
+				tempString = tempString + tempCharArray[i];
+			}
+			dateString = tempString;
+			groups = parser.parseWDefBaseDate(dateString);
+			if (groups.size() == 0) {
+				break;
+			}
+			dateStringStartPosition += groups.get(0).getPosition();
+		}
+		return;
+	}
+
+	private void adjustStartAndEndTime() {
 		if (taskType == TaskType.TIMED) {
 			String dateString;
-			dateString = groups.get(START_INDEX).getText();
-			if (dateString.contains("to")
-					&& !dateString.toLowerCase().contains("am")
-					&& !dateString.toLowerCase().contains("pm")) // second and
-																	// third
-																	// condition
-																	// to check
-																	// if the
-																	// string
-																	// contain a
-																	// number.
+			dateString = groups.get(INT_0).getText();
+			if (dateString.contains(STRING_TO)
+					&& !dateString.toLowerCase().contains(STRING_AM)
+					&& !dateString.toLowerCase().contains(STRING_PM))
+			// Second and third condition to check if the string contains exact
+			// time.
 			{
-				String tempStringArray[] = dateString.split("to");
-				if (tempStringArray.length == 2) {
-					groups.get(0)
-							.getDates()
-							.get(START_INDEX)
-							.setTime(
-									parser.parseWithCustomisedBaseDate(00, 00,
-											00, tempStringArray[0]).get(0)
-											.getDates().get(0).getTime());
-					CalendarSource.setBaseDate(new DateTime().withTime(23, 59,
-							00, 00).toDate());
-					groups.get(0)
-							.getDates()
-							.get(SECOND_ENTRY)
-							.setTime(
-									parser.parseWithDefaultBaseDate(
-											tempStringArray[1]).get(0)
-											.getDates().get(0).getTime());
+				String tempStringArray[] = dateString.split(STRING_TO);
+				if (tempStringArray.length == INT_2) {
+					List<DateGroup> tempDateGroup = parser.parseWCustBaseDate(
+							INT_0, INT_0, INT_0, tempStringArray[INT_0]);
+					long tempTime = tempDateGroup.get(INT_0).getDates()
+							.get(INT_0).getTime();
+					Date time1 = groups.get(0).getDates().get(INT_0);
+					Date time2 = groups.get(0).getDates().get(INT_1);
+					time1.setTime(tempTime);
+					tempDateGroup = parser
+							.parseWDefBaseDate(tempStringArray[INT_1]);
+					tempTime = tempDateGroup.get(INT_0).getDates().get(INT_0)
+							.getTime();
+					time2.setTime(tempTime);
 				}
 			}
 		}
@@ -181,7 +171,7 @@ public class AddParser extends CommandParser {
 	 */
 
 	private String removeTriggerWord() {
-		String result = "";
+		String result = STRING_EMPTY;
 		String[] tempStringArray = argument.split(" ");
 		for (int i = 0; i < tempStringArray.length; ++i) {
 			switch (tempStringArray[i].toLowerCase()) {
@@ -225,7 +215,7 @@ public class AddParser extends CommandParser {
 
 	private boolean checkSeparatedBySpace() {
 		char[] tempCharArray = argument.toCharArray();
-		String matchingValue = groups.get(START_INDEX).getText();
+		String matchingValue = groups.get(INT_0).getText();
 		char[] matchingArray = matchingValue.toCharArray();
 		if ((dateStringStartPosition + matchingArray.length < tempCharArray.length && tempCharArray[dateStringStartPosition
 				+ matchingArray.length] != ' ')
@@ -242,7 +232,7 @@ public class AddParser extends CommandParser {
 	 * @return the text outside apostrophe.
 	 */
 	private String removeTextInsideApostrophe() {
-		String result = "";
+		String result = STRING_EMPTY;
 		for (int i = argument.indexOf("\""); i <= argument.lastIndexOf("\""); ++i)
 			result += " ";
 		if (argument.lastIndexOf("\"") < argument.length() - 1) {
@@ -258,8 +248,8 @@ public class AddParser extends CommandParser {
 	 */
 
 	private void determineDeadline() {
-		deadline = new DateTime(groups.get(FIRST_ENTRY).getDates()
-				.get(FIRST_ENTRY));
+		deadline = new DateTime(groups.get(INT_0).getDates()
+				.get(INT_0));
 	}
 
 	/**
@@ -268,10 +258,10 @@ public class AddParser extends CommandParser {
 	 */
 
 	private void determineStartAndEnd() {
-		DateTime time1 = new DateTime(groups.get(FIRST_ENTRY).getDates()
-				.get(FIRST_ENTRY));
-		DateTime time2 = new DateTime(groups.get(FIRST_ENTRY).getDates()
-				.get(SECOND_ENTRY));
+		DateTime time1 = new DateTime(groups.get(INT_0).getDates()
+				.get(INT_0));
+		DateTime time2 = new DateTime(groups.get(INT_0).getDates()
+				.get(INT_1));
 		if (time2.isBefore(time1)) {
 			startDate = time2;
 			endDate = time1;
@@ -289,9 +279,9 @@ public class AddParser extends CommandParser {
 	private void determineTaskType() {
 		if (groups.size() == 0) {
 			taskType = TaskType.FLOATING;
-		} else if (groups.get(FIRST_ENTRY).getDates().size() == 1) {
+		} else if (groups.get(INT_0).getDates().size() == 1) {
 			taskType = TaskType.DEADLINE;
-		} else if (groups.get(FIRST_ENTRY).getDates().size() == 2) {
+		} else if (groups.get(INT_0).getDates().size() == 2) {
 			taskType = TaskType.TIMED;
 		}
 	}
@@ -306,8 +296,8 @@ public class AddParser extends CommandParser {
 		} else {
 			taskName = getStringInsideApostrophe();
 		}
-		
-		if(taskName == null || taskName.isEmpty()) {
+
+		if (taskName == null || taskName.isEmpty()) {
 			throw new EmptyDescriptionException();
 		}
 	}
@@ -320,8 +310,8 @@ public class AddParser extends CommandParser {
 
 	private void determineEndOfDateString() {
 		if (this.getTaskType() != TaskType.FLOATING) {
-			String tempString = groups.get(START_INDEX).getText();
-			dateStringEndPosition = groups.get(START_INDEX).getPosition()
+			String tempString = groups.get(INT_0).getText();
+			dateStringEndPosition = dateStringStartPosition + groups.get(INT_0).getPosition()
 					+ tempString.length() + 1;
 
 		}
@@ -338,7 +328,7 @@ public class AddParser extends CommandParser {
 	 */
 
 	private String buildTaskNameString() throws EmptyDescriptionException {
-		String result = "";
+		String result = STRING_EMPTY;
 		char[] tempCharArray = argument.toCharArray();
 		for (int i = 0; i < dateStringStartPosition; ++i)
 			result = result + tempCharArray[i];
@@ -351,7 +341,7 @@ public class AddParser extends CommandParser {
 				|| tempStringArray[tempStringArray.length - 1].compareTo("at") == 0
 				|| tempStringArray[tempStringArray.length - 1]
 						.compareTo("this") == 0) {
-			result = "";
+			result = STRING_EMPTY;
 			for (int i = 0; i < tempStringArray.length - 1; ++i)
 				result = result + tempStringArray[i] + " ";
 		}
@@ -359,7 +349,7 @@ public class AddParser extends CommandParser {
 			result += tempCharArray[i];
 		}
 		result = result.trim();
-		if (result.compareTo("") == 0) {
+		if (result.compareTo(STRING_EMPTY) == 0) {
 			throw new EmptyDescriptionException();
 		} else {
 			return result;
@@ -367,7 +357,7 @@ public class AddParser extends CommandParser {
 	}
 
 	private String getStringInsideApostrophe() {
-		String result = "";
+		String result = STRING_EMPTY;
 		int firstApostrophePos = argument.indexOf('\"');
 		int lastApostrophePos = argument.lastIndexOf('\"');
 		for (int i = firstApostrophePos + 1; i <= lastApostrophePos - 1; ++i) {
@@ -379,10 +369,13 @@ public class AddParser extends CommandParser {
 
 	/*
 	 * ==========================================================================
-	 * ========= ====== Below are API to extract the interpreted information out
-	 * of the parser======
-	 * ======================================================
-	 * =============================
+	 * ========== Below are API to extract the interpreted information
+	 * out======= ==========================of the
+	 * parser===================================
+	 * ================================
+	 * ==========================================
+	 * ================================
+	 * ==========================================
 	 */
 
 	public TaskType getTaskType() {
@@ -397,14 +390,14 @@ public class AddParser extends CommandParser {
 		if (groups.get(0).getDates().size() == 2) {
 			return startDate;
 		}
-		return new DateTime(groups.get(FIRST_ENTRY).getDates().get(FIRST_ENTRY));
+		return new DateTime(groups.get(INT_0).getDates().get(INT_0));
 	}
 
 	public DateTime getEndTime() {
-		if (groups.get(FIRST_ENTRY).getDates().size() == 2) {
+		if (groups.get(INT_0).getDates().size() == 2) {
 			return endDate;
 		}
-		return new DateTime(groups.get(FIRST_ENTRY).getDates().get(FIRST_ENTRY));
+		return new DateTime(groups.get(INT_0).getDates().get(INT_0));
 	}
 
 	public DateTime getDeadline() {
