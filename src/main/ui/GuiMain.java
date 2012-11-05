@@ -327,7 +327,7 @@ public class GuiMain extends GuiCommandBox{
 				break;
 			case COL_START:
 				log.fine("Setting value of start date with raw value " + value);
-				groups = nattyParser.parseWithDefaultBaseDate(((String) value).replace("-", " "));
+				groups = nattyParser.parseWDefBaseDate(((String) value).replace("-", " "));
 				date = null;
 
 				if (groups != null && !groups.isEmpty()) {
@@ -362,7 +362,7 @@ public class GuiMain extends GuiCommandBox{
 				break;
 			case COL_END:
 				log.fine("Setting value of end date with raw value " + value);
-				groups = nattyParser.parseWithDefaultBaseDate(((String) value).replace("-", " "));
+				groups = nattyParser.parseWDefBaseDate(((String) value).replace("-", " "));
 				date = null;
 
 				if (groups != null && !groups.isEmpty()) {

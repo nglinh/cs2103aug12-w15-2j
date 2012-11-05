@@ -3,6 +3,7 @@ package main.logic;
 import java.io.IOException;
 import java.util.List;
 
+import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.LogicToUi;
 import main.shared.Task;
 import main.shared.Task.TaskType;

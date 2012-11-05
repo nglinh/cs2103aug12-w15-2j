@@ -1,5 +1,6 @@
 package main.logic;
 
+import main.logic.exceptions.NoSuchCommandException;
 import main.shared.LogicToUi;
 
 public class Logic {
@@ -10,6 +11,9 @@ public class Logic {
 	private CommandHandler executor;
 
 	private static Logic theOne = null;
+
+	private Logic() {
+	}
 
 	public static Logic getInstance() {
 		if (theOne == null) {
@@ -154,7 +158,7 @@ public class Logic {
 		executor = new ExitHandler(arguments);
 		return executor.execute();
 	}
-	
+
 	private LogicToUi sort(String arguments) {
 		executor = new SortHandler(arguments);
 		return executor.execute();
@@ -170,8 +174,6 @@ public class Logic {
 		executor = new EditHandler(argument);
 		return executor.execute();
 	}
-
-
 
 	private LogicToUi refresh(String arguments) {
 
@@ -205,7 +207,6 @@ public class Logic {
 		return executor.execute();
 	}
 
-
 	private LogicToUi deleteTask(String arguments) {
 		executor = new DeleteHandler(arguments);
 		return executor.execute();
@@ -216,13 +217,10 @@ public class Logic {
 		executor = new AddHandler(arguments);
 		return executor.execute();
 	}
-	
+
 	private LogicToUi list(String arguments) {
 		executor = new ListHandler(arguments);
 		return executor.execute();
-	}
-
-	private Logic() {
 	}
 
 }

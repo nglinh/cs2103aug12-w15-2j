@@ -7,17 +7,20 @@ import org.joda.time.DateTime;
 
 import com.joestelmach.natty.DateGroup;
 
+import main.logic.exceptions.CannotParseDateException;
+import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
 
-public class EditParser extends CommandParser{
-	public boolean willChangeType= false;
+public class EditParser extends CommandParser {
+	private static final String DASH = "-";
+	public boolean willChangeType = false;
 	public boolean willChangeStartTime = false;
 	public boolean willChangeDeadline = false;
 	public boolean willChangeEndTime = false;
 	public boolean willChangeName = false;
-	
+
 	private String newName;
 	private DateTime newStartTime;
 	private DateTime newEndTime;
@@ -26,111 +29,123 @@ public class EditParser extends CommandParser{
 	private NattyParserWrapper parser;
 	private Task toBeEdited;
 	private String argument;
+	private List<Task> lastShownToUi;
+
 	public EditParser(String arguments) {
 		super(arguments);
 		argument = arguments;
+		lastShownToUi = LastShownToUI.getInstance();
+		parser = NattyParserWrapper.getInstance();
 	}
+
 	@Override
-	public void parse() throws EmptyDescriptionException, CannotParseDateException, NumberFormatException{
+	public void parse() throws EmptyDescriptionException,
+			CannotParseDateException, NumberFormatException {
 		int index;
 		index = Integer.parseInt(getFirstWord(argument));
 		argument = removeFirstWord(argument);
-		index--; //Since arraylist index starts from 0
-	
-		if((index < 0) || ((index  +  1) > CommandHandler.getSizeofLastShownToUiList()) ) {
+		index--; // Since arraylist index starts from 0
+
+		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
 			throw new NoSuchElementException();
 		}
-		toBeEdited = CommandHandler.getTaskFromLastShownToUi(index);
-		String[] tempStringArray = argument.split("-");
-		for(int i =0;i<tempStringArray.length;++i){
-			if(tempStringArray[i]!=null&&
-					tempStringArray[i].length()!=0){
+		toBeEdited = lastShownToUi.get(index);
+		String[] tempStringArray = argument.split(DASH);
+		for (int i = 0; i < tempStringArray.length; ++i) {
+			if (tempStringArray[i] != null && tempStringArray[i].length() != 0) {
 				String commandArgument = getFirstWord(tempStringArray[i]);
 				String updatedField = removeFirstWord(tempStringArray[i]);
-				updateField(commandArgument,updatedField);
+				updateField(commandArgument, updatedField);
 			}
 		}
 	}
-	private void updateField(String commandArgument, String newField) throws EmptyDescriptionException, CannotParseDateException{
-		parser = NattyParserWrapper.getInstance();
+
+	private void updateField(String commandArgument, String newField)
+			throws EmptyDescriptionException, CannotParseDateException {
+
 		List<DateGroup> groupsOfDates;
-		groupsOfDates = parser.parseWithDefaultBaseDate(newField);
-		switch(commandArgument.toLowerCase()){
+		groupsOfDates = parser.parseWDefBaseDate(newField);
+		switch (commandArgument.toLowerCase()) {
 		case "name":
-			//fall through
+			// fall through
 		case "n":
 			willChangeName = true;
 			newName = newField;
-			if(newName.length()==0){
+			if (newName.length() == 0) {
 				throw new EmptyDescriptionException();
 			}
 			break;
 		case "begintime":
-			//fall through
+			// fall through
 		case "starttime":
-			//fall through
+			// fall through
 		case "stime":
-			//fall through
+			// fall through
 		case "st":
 			willChangeStartTime = true;
-			if(groupsOfDates.size()!=0){
-				newStartTime =  new DateTime(groupsOfDates.get(0).getDates().get(0));
-			}
-			else{
+			if (groupsOfDates.size() != 0) {
+				newStartTime = new DateTime(groupsOfDates.get(0).getDates()
+						.get(0));
+			} else {
 				throw new CannotParseDateException();
 			}
 			break;
 		case "endtime":
-			//fall through
+			// fall through
 		case "finishtime":
-			//fall through
+			// fall through
 		case "et":
-			//fall through
+			// fall through
 		case "ft":
 			willChangeEndTime = true;
-			if(groupsOfDates.size()!=0){
-				newEndTime =  new DateTime(groupsOfDates.get(0).getDates().get(0));
-			}
-			else{
+			if (groupsOfDates.size() != 0) {
+				newEndTime = new DateTime(groupsOfDates.get(0).getDates()
+						.get(0));
+			} else {
 				throw new CannotParseDateException();
 			}
 			break;
 		case "deadline":
-			//fall through
+			// fall through
 		case "d":
 			willChangeDeadline = true;
-			if(groupsOfDates.size()!=0){
-				newDeadline =  new DateTime(groupsOfDates.get(0).getDates().get(0));
-			}
-			else{
+			if (groupsOfDates.size() != 0) {
+				newDeadline = new DateTime(groupsOfDates.get(0).getDates()
+						.get(0));
+			} else {
 				throw new CannotParseDateException();
 			}
 			break;
 		case "tofloating":
-			//fall through
+			// fall through
 		case "tofloat":
 			willChangeType = true;
 			newType = TaskType.FLOATING;
 			break;
 		}
 	}
-	
-	public Task getToBeEdited(){
+
+	public Task getToBeEdited() {
 		return toBeEdited;
 	}
-	public String getNewName(){
+
+	public String getNewName() {
 		return newName;
 	}
-	public DateTime getNewStartTime(){
+
+	public DateTime getNewStartTime() {
 		return newStartTime;
 	}
-	public DateTime getNewEndTime(){
+
+	public DateTime getNewEndTime() {
 		return newEndTime;
 	}
-	public DateTime getNewDeadline(){
+
+	public DateTime getNewDeadline() {
 		return newDeadline;
 	}
-	public TaskType getNewType(){
+
+	public TaskType getNewType() {
 		return newType;
 	}
 }

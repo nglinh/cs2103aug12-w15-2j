@@ -1,4 +1,4 @@
-package main.logic;
+package main.logic.exceptions;
 
 public class DoNotChangeBothSTimeAndETimeException extends Exception {
 
