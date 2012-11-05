@@ -8,7 +8,7 @@ import main.shared.LogicToUi;
 import main.shared.Task;
 import main.storage.WillNotWriteToCorruptFileException;
 
-public class DoneHandler extends CommandHandler{
+public class DoneHandler extends CommandHandler {
 
 	private String arguments;
 	private DoneParser parser;
@@ -21,59 +21,45 @@ public class DoneHandler extends CommandHandler{
 
 	@Override
 	public LogicToUi execute() {
-		
-		
+
 		if (arguments.length() == 0) {
-			return new LogicToUi(
-					ERROR_INDEX_NUMBER_NOT_VALID);
-		}
-
-		
-
-		int index;
-
-		try{
-			parser.parse();
-			index = parser.index;
-			index--; //To account for table index starting from 1
-
-			if ((index < 0) || ((index + 1) > lastShownToUI.size())) {
-				throw new NoSuchElementException();
-			}
-
-		} catch (NumberFormatException | NoSuchElementException e){
 			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		}
 
-		try{
-			
-			List<Task> currentTaskList = super.getCurrentTaskList();
-			Task toBeUpdated =  lastShownToUI.get(index);
+		try {
+			parser.parse();
 
-			if(toBeUpdated.isDone()){
-				return new LogicToUi(taskToString(toBeUpdated) + " has been already been marked as done.");
+			List<Task> copyCurrentTaskList = super.getCurrentTaskList();
+			Task toBeUpdated = parser.getToBeDone();
+
+			if (toBeUpdated.isDone()) {
+				return new LogicToUi(taskToString(toBeUpdated)
+						+ " has been already been marked as done.");
 			}
-
 
 			toBeUpdated.done(true);
 			int serial = toBeUpdated.getSerial();
-			
-			
+
 			dataBase.update(serial, toBeUpdated);
 
 			String taskDetails = taskToString(toBeUpdated);
-			String undoMessage = "marking of task \"" + taskDetails + "\" as done";
-			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
-			return new LogicToUi(taskDetails + " has been marked as done.", serial);
+			String undoMessage = "marking of task \"" + taskDetails
+					+ "\" as done";
+			super.pushUndoStatusMessageAndTaskList(undoMessage,
+					copyCurrentTaskList);
+			return new LogicToUi(taskDetails + " has been marked as done.",
+					serial);
 
+		} catch (NumberFormatException e) {
+			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		} catch (NoSuchElementException e) {
-			return new LogicToUi(	ERROR_INDEX_NUMBER_NOT_VALID);
+			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		} catch (IOException e) {
 			return new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
 			return new LogicToUi(ERROR_FILE_CORRUPTED);
-		} 
-		
+		}
+
 	}
 
 }

@@ -1,5 +1,6 @@
 package main.logic;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import main.shared.Task;
@@ -11,6 +12,7 @@ public class DeleteParser extends CommandParser {
 	int index;
 	String arg;
 	Task toBeDeleted;
+	List<Task> lastShownToUi;
 
 	public DeleteParser(String arguments) {
 		super(arguments);
@@ -18,6 +20,7 @@ public class DeleteParser extends CommandParser {
 		isDone = false;
 		isAll = false;
 		arg = arguments;
+		lastShownToUi = LastShownToUI.getInstance();
 	}
 
 	public void parse() throws NumberFormatException {
@@ -34,10 +37,10 @@ public class DeleteParser extends CommandParser {
 		}
 		index = Integer.parseInt(arg);
 		index--; //To account for index starting from 1
-		if ((index < 0) || ((index + 1) > CommandHandler.getSizeofLastShownToUiList())) {
+		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
 			throw new NoSuchElementException();
 		}
-		toBeDeleted = CommandHandler.getTaskFromLastShownToUi(index);
+		toBeDeleted = lastShownToUi.get(index);
 
 	}
 	public Task getToBeDeleted(){
