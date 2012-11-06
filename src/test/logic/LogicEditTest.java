@@ -48,7 +48,7 @@ public class LogicEditTest {
 		System.out.println(returnValue.getString());
 		returnValue = Logic.getInstance().uiCommunicator("list");
 		try {
-			Database.getInstance().writeALL(backup);
+			Database.getInstance().setAll(backup);
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
