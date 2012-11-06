@@ -40,7 +40,6 @@ public abstract class CommandHandler {
 
 	protected LogicToUi feedback;
 
-	public static final int MAX_UNDO_STEPS = 50;
 
 	public CommandHandler(String arguments) {
 	}
@@ -52,14 +51,6 @@ public abstract class CommandHandler {
 			List<Task> currentCopy) {
 		undoMsgHistory.push(undoMsg);
 		undoClones.push(currentCopy);
-
-		while (undoMsgHistory.size() > MAX_UNDO_STEPS) {
-			undoMsgHistory.removeFirst();
-		}
-
-		while (undoClones.size() > MAX_UNDO_STEPS) {
-			undoClones.removeFirst();
-		}
 
 	}
 
