@@ -22,12 +22,12 @@ import com.joestelmach.natty.DateGroup;
  */
 public class AddParser extends CommandParser {
 
-	private static final String TOKEN_NOW = " now";
+	private static final String STRING_NOW_SPACE = "now ";
+	private static final String STRING_SPACE_NOW = " now";
 	private static final String STRING_PM = "pm";
 	private static final String STRING_AM = "am";
 	private static final String STRING_EMPTY = "";
 	private static final String STRING_TO = "to";
-	
 
 	public boolean isTaskNameNonempty = true;
 
@@ -76,11 +76,10 @@ public class AddParser extends CommandParser {
 												// to limitations
 												// of Natty.
 		}
-		
-		if(dateString.contains(TOKEN_NOW)){
+
+		if (dateString.contains(STRING_SPACE_NOW)|| dateString.contains(STRING_NOW_SPACE)) {
 			groups = parser.parseWCurBaseDate(dateString);
-		}
-		else{
+		} else {
 			groups = parser.parseWDefBaseDate(dateString);
 		}
 		if (groups.size() != 0) {
@@ -98,7 +97,6 @@ public class AddParser extends CommandParser {
 			determineStartAndEnd();
 		}
 	}
-
 
 	private void parseFullWordOnly(String dateString) {
 		while (!checkSeparatedBySpace()) {
@@ -132,14 +130,16 @@ public class AddParser extends CommandParser {
 			if (dateString.contains(STRING_TO)
 					&& !dateString.toLowerCase().contains(STRING_AM)
 					&& !dateString.toLowerCase().contains(STRING_PM)
-					&& !dateString.contains(TOKEN_NOW))
+					&& !dateString.contains(STRING_SPACE_NOW)
+					&& !dateString.contains(STRING_NOW_SPACE))
 			// Second and third condition to check if the string contains exact
 			// time.
 			{
 				String tempStringArray[] = dateString.split(STRING_TO);
 				if (tempStringArray.length == INT_2) {
-					List<DateGroup> tempDateGroup = parser.parseWCustomBaseDate(
-							INT_0, INT_0, INT_0, tempStringArray[INT_0]);
+					List<DateGroup> tempDateGroup = parser
+							.parseWCustomBaseDate(INT_0, INT_0, INT_0,
+									tempStringArray[INT_0]);
 					long tempTime = tempDateGroup.get(INT_0).getDates()
 							.get(INT_0).getTime();
 					Date time1 = groups.get(0).getDates().get(INT_0);
@@ -253,8 +253,7 @@ public class AddParser extends CommandParser {
 	 */
 
 	private void determineDeadline() {
-		deadline = new DateTime(groups.get(INT_0).getDates()
-				.get(INT_0));
+		deadline = new DateTime(groups.get(INT_0).getDates().get(INT_0));
 	}
 
 	/**
@@ -263,10 +262,8 @@ public class AddParser extends CommandParser {
 	 */
 
 	private void determineStartAndEnd() {
-		DateTime time1 = new DateTime(groups.get(INT_0).getDates()
-				.get(INT_0));
-		DateTime time2 = new DateTime(groups.get(INT_0).getDates()
-				.get(INT_1));
+		DateTime time1 = new DateTime(groups.get(INT_0).getDates().get(INT_0));
+		DateTime time2 = new DateTime(groups.get(INT_0).getDates().get(INT_1));
 		if (time2.isBefore(time1)) {
 			startDate = time2;
 			endDate = time1;
@@ -316,8 +313,8 @@ public class AddParser extends CommandParser {
 	private void determineEndOfDateString() {
 		if (this.getTaskType() != TaskType.FLOATING) {
 			String tempString = groups.get(INT_0).getText();
-			dateStringEndPosition = dateStringStartPosition + groups.get(INT_0).getPosition()
-					+ tempString.length() + 1;
+			dateStringEndPosition = dateStringStartPosition
+					+ groups.get(INT_0).getPosition() + tempString.length() + 1;
 
 		}
 
