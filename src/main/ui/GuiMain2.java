@@ -44,7 +44,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class GuiMain2 extends GuiCommandBox{
-	
+
 	Logger log = LogHandler.getLogInstance();
 
 	private JFrame frmDoit;
@@ -59,9 +59,6 @@ public class GuiMain2 extends GuiCommandBox{
 	private JPanel panelCmd;
 	private JScrollPane scrollPaneDated;
 	private JScrollPane scrollPaneUndated;
-	private JMenuBar menuBar;
-	private JMenu mnDebug;
-	private JMenuItem mntmGetHtmlOf;
 	//private JEditorPane txtStatus;
 	//private JTextField txtCmd;
 	
@@ -77,7 +74,6 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	Map<ToggleButtonModel, Integer> checkboxToIndexMapForDated;
 	Map<ToggleButtonModel, Integer> checkboxToIndexMapForUndated;
-	private JMenuItem mntmRefresh;
 
 	/**
 	 * Launch the application.
@@ -132,16 +128,36 @@ public class GuiMain2 extends GuiCommandBox{
 		splitPane.setLeftComponent(scrollPaneDated);
 		
 		txtDatedTasks = new JEditorPane();
-		txtDatedTasks.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-			}
-		});
 		txtDatedTasks.setContentType("text/html");
 		txtDatedTasks.setText("<html>\r\n<table>\r\n<tr>\r\n<td width=\"50\"><font face=\"Segoe UI\" size=1>TUE<br>SEP<br> <font size=\"4\">20</font><br> 2012</font></td>\r\n<td>\r\nBy 2:00pm<br>\r\nTask ABCD\r\n</td>\r\n</tr>\r\n</table>");
 		txtDatedTasks.setEditable(false);
+        txtDatedTasks.setEditorKit(generateDatedTasksDocumentStyle());
 		scrollPaneDated.setViewportView(txtDatedTasks);
 		
-		panelCmd = new JPanel();
+		// Panel for right side
+		JPanel panel = new JPanel();
+		splitPane.setRightComponent(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		// Undated tasks pane
+		scrollPaneUndated = new JScrollPane();
+		panel.add(scrollPaneUndated);		
+		
+		txtUndatedTasks = new JEditorPane();
+		txtUndatedTasks.setContentType("text/html");
+		txtUndatedTasks.setEditable(false);
+		scrollPaneUndated.setViewportView(txtUndatedTasks);
+		
+		// Calendar
+		txtCalendar = new JEditorPane();
+		txtCalendar.addHyperlinkListener(new CalendarHyperLinkHandler());
+		txtCalendar.setEditable(false);
+		txtCalendar.setContentType("text/html");
+		panel.add(txtCalendar, BorderLayout.SOUTH);
+		
+        txtCalendar.setEditorKit(generateCalendarDocumentStyle());
+        
+        panelCmd = new JPanel();
 		frmDoit.getContentPane().add(panelCmd, BorderLayout.SOUTH);
 		panelCmd.setLayout(new BorderLayout(0, 0));
 		
@@ -161,136 +177,6 @@ public class GuiMain2 extends GuiCommandBox{
 		log.info("Calling GuiCommandBox to configure widgets");
 		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
 		
-		// Dated tasks pane
-		HTMLEditorKit kit = new HTMLEditorKit();
-        txtDatedTasks.setEditorKit(kit);
-
-        StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body {color:#000; font-family:Segoe UI;}");
-        styleSheet.addRule("table {color:#000; font-family:Segoe UI;}");
-        styleSheet.addRule(".calendarbox {border:1px solid #2A5696; color:#000000; width:40px;}");
-        styleSheet.addRule(".calendarbox .calendardayofweek{background-color:#2A5696; color:#FFFFFF; width:40px;}");
-        styleSheet.addRule(".taskbox{margin-bottom:5px;padding:2px;}");
-        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FFAA00;padding:2px;}");
-        styleSheet.addRule(".separatorfirst{font-size:1px;border-width:0px;}");
-        styleSheet.addRule(".separator{font-size:1px;border:1px solid #DDDDDD; border-width:1px 0px 0px 0px;}");
-     
-        Document doc = kit.createDefaultDocument();
-        txtDatedTasks.setDocument(doc);
-		
-		// Panel for right side
-		JPanel panel = new JPanel();
-		splitPane.setRightComponent(panel);
-		panel.setLayout(new BorderLayout(0, 0));
-		
-		// Undated tasks pane
-		scrollPaneUndated = new JScrollPane();
-		panel.add(scrollPaneUndated);		
-		
-		txtUndatedTasks = new JEditorPane();
-		txtUndatedTasks.setContentType("text/html");
-		txtUndatedTasks.setEditable(false);
-		scrollPaneUndated.setViewportView(txtUndatedTasks);
-		
-		Document doc2 = kit.createDefaultDocument();		
-		txtUndatedTasks.setDocument(doc2);
-		
-		// Calendar
-		txtCalendar = new JEditorPane();
-		txtCalendar.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				log.entering(this.getClass().getName(), "hyperLinkUpdate (calendar)");
-				
-				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					log.finer("Hyperlink activated (calendar) " + e.getURL().getPath());
-					//System.out.println(e.getURL().getPath());
-					if(e.getURL().getPath().startsWith("/gotoMonth/")){
-						log.finer("Hyperlink go to month action (calendar)");
-						String monthToShow = e.getURL().getPath().split("/")[2];
-						int year = Integer.parseInt(monthToShow.split("-")[0]);
-						int month = Integer.parseInt(monthToShow.split("-")[1]);						
-						
-						log.finer("Hyperlink go to month action (calendar)");
-						CalendarRenderer calr = new CalendarRenderer(new DateTime(year, month, 1,0,0), sendCommandToLogic("list").getList());
-						log.info("Rendering calendar for " + new DateTime(year, month, 1,0,0));
-						txtCalendar.setText(calr.render());
-					}else if(e.getURL().getPath().startsWith("/showTasksForDay/")){
-						log.finer("Hyperlink go to date with tasks action (calendar)");
-						String monthToShow = e.getURL().getPath().split("/")[2];
-						int year = Integer.parseInt(monthToShow.split("-")[0]);
-						int month = Integer.parseInt(monthToShow.split("-")[1]);
-						int day = Integer.parseInt(monthToShow.split("-")[2]);
-						
-						String dateReferenceStr = "date-"+year+"-"+month+"-"+day;
-						log.info("Scroll to reference " + dateReferenceStr);
-						txtDatedTasks.scrollToReference(dateReferenceStr);
-					}
-				}
-			}
-		});
-		txtCalendar.setEditable(false);
-		txtCalendar.setContentType("text/html");
-		panel.add(txtCalendar, BorderLayout.SOUTH);
-		
-		HTMLEditorKit kit3 = new HTMLEditorKit();
-        StyleSheet styleSheet3 = kit3.getStyleSheet();
-        styleSheet3.addRule(".calendar td{text-align:right;}");
-        styleSheet3.addRule("a {color:#2A5696;text-decoration:none;}");
-        styleSheet3.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
-        //styleSheet3.addRule(".calendarDate{padding-right;5px;}");
-        Document doc3 = kit.createDefaultDocument();
-        txtCalendar.setDocument(doc3);
-        
-        menuBar = new JMenuBar();
-        frmDoit.setJMenuBar(menuBar);
-        
-        mnDebug = new JMenu("Debug");
-        menuBar.add(mnDebug);
-        
-        mntmGetHtmlOf = new JMenuItem("Get HTML of right pane");
-        mntmGetHtmlOf.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		/*HTMLDocument doc = (HTMLDocument)txtUndatedTasks.getDocument();
-        		ElementIterator it = new ElementIterator(doc);
-                Element element;
-        		
-        		while ( (element = it.next()) != null )
-                {
-                    System.out.println();
-
-                    AttributeSet as = element.getAttributes();
-                    Enumeration<?> enumm = as.getAttributeNames();
-
-                    while( enumm.hasMoreElements() )
-                    {
-                        Object name = enumm.nextElement();
-                        Object value = as.getAttribute( name );
-                        System.out.println( "\t" + name + " : " + value );
-
-                        if (value instanceof ToggleButtonModel)
-                        {
-                        	ToggleButtonModel model = (ToggleButtonModel)value;
-                        	model.addActionListener(new ActionListener(){
-                        		public void actionPerformed(ActionEvent e){
-                        			System.out.println(((ToggleButtonModel)e.getSource()).isSelected());
-                        		}
-                        	});
-                            System.out.println(model.isSelected());
-                        }
-                    }
-                }*/
-        	}
-        });
-        mnDebug.add(mntmGetHtmlOf);
-        
-        mntmRefresh = new JMenuItem("Refresh");
-        mntmRefresh.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		update(null);
-        	}
-        });
-        mnDebug.add(mntmRefresh);
-		
         log.info("Checking file permissions");
 		String fileStatus = checkFilePermissions();		
 		// executeCommand("list");
@@ -309,28 +195,37 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		log.exiting(this.getClass().getName(), "initialize");
 	}
-	
-	public void update(LogicToUi returnValue){
-		log.entering(this.getClass().getName(), "update (LogicToUi)");
-		
-		// Call command to refresh the table
-		List<Task> taskList = sendCommandToLogic("refresh").getList();
-		
-		log.info("Return value has serial " + returnValue.getLastChangedSerial());
-		if (returnValue.getLastChangedSerial() != LogicToUi.INVALID_SERIAL) {			
-			showTasksList(taskList, returnValue.getLastChangedSerial());
-		}else{
-			showTasksList(taskList);
-		}
-		
-		showStatus(returnValue.getString());
-		
-		// Update other windows
-		//GuiMain.getInstance().updateWindow(this);
-		//GuiQuickAdd.getInstance().updateWindow(this);
-		GuiUpdate.update(this);
-		
-		log.exiting(this.getClass().getName(), "update (LogicToUi)");
+
+	private HTMLEditorKit generateCalendarDocumentStyle() {
+		HTMLEditorKit kit = new HTMLEditorKit();
+        StyleSheet styleSheet = kit.getStyleSheet();
+        styleSheet.addRule("table {color:#000; font-family:Arial;}");
+        styleSheet.addRule(".calendar td{text-align:right;}");
+        styleSheet.addRule("a {color:#2A5696;text-decoration:none;}");
+        styleSheet.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
+        //styleSheet3.addRule(".calendarDate{padding-right;5px;}");
+        //Document doc = kit.createDefaultDocument();
+		//return doc;
+        return kit;
+	}
+
+	private HTMLEditorKit generateDatedTasksDocumentStyle() {
+		HTMLEditorKit kit = new HTMLEditorKit();
+        //txtDatedTasks.setEditorKit(kit);
+
+        StyleSheet styleSheet = kit.getStyleSheet();
+        styleSheet.addRule("body {color:#000; font-family:Segoe UI;}");
+        styleSheet.addRule("table {color:#000; font-family:Segoe UI;}");
+        styleSheet.addRule(".calendarbox {border:1px solid #2A5696; color:#000000; width:40px;}");
+        styleSheet.addRule(".calendarbox .calendardayofweek{background-color:#2A5696; color:#FFFFFF; width:40px;}");
+        styleSheet.addRule(".taskbox{margin-bottom:5px;padding:2px;}");
+        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FFAA00;padding:2px;}");
+        styleSheet.addRule(".separatorfirst{font-size:1px;border-width:0px;}");
+        styleSheet.addRule(".separator{font-size:1px;border:1px solid #DDDDDD; border-width:1px 0px 0px 0px;}");
+     
+        //Document doc = kit.createDefaultDocument();
+		//return doc;
+        return kit;
 	}
 	
 	public void updateWindow(Object source) {
@@ -356,30 +251,14 @@ public class GuiMain2 extends GuiCommandBox{
 		// to keep the same view in place.
 		int txtDatedTasksCaretPos = 0, txtUndatedTasksCaretPos = 0;
 		try{
-			log.finer("Dated tasks scroll bar pos:" + ((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue());
-			int txtDatedTasksScrollBarPos = ((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
-			int txtDatedTasksScrollPaneMiddle = ((JScrollPane) txtDatedTasks.getParent().getParent()).getHeight() /2 ;
-			log.fine("Dated tasks caret position: " + txtDatedTasks.getCaretPosition());
-			if (txtDatedTasksScrollBarPos >= 1){
-				txtDatedTasks.setCaretPosition(txtDatedTasks.viewToModel(new Point(0,txtDatedTasksScrollBarPos + txtDatedTasksScrollPaneMiddle)));
-				log.fine("New dated tasks caret position: " + txtDatedTasks.getCaretPosition());
-			}
-			txtDatedTasksCaretPos = txtDatedTasks.getCaretPosition();
-			
-			log.finer("Undated tasks scroll bar pos:" + ((JScrollPane) txtUndatedTasks.getParent().getParent()).getVerticalScrollBar().getValue());
-			int txtUndatedTasksScrollBarPos = ((JScrollPane) txtUndatedTasks.getParent().getParent()).getVerticalScrollBar().getValue();
-			int txtUndatedTasksScrollPaneMiddle = ((JScrollPane) txtUndatedTasks.getParent().getParent()).getHeight() /2 ;
-			log.fine("Undated tasks caret position: " + txtUndatedTasks.getCaretPosition());
-			if (txtUndatedTasksScrollBarPos >= 1){
-				txtUndatedTasks.setCaretPosition(txtUndatedTasks.viewToModel(new Point(0,txtUndatedTasksScrollBarPos + txtUndatedTasksScrollPaneMiddle)));
-				log.fine("New undated tasks caret position: " + txtUndatedTasks.getCaretPosition());
-			}
-			txtUndatedTasksCaretPos = txtUndatedTasks.getCaretPosition();
+			txtDatedTasksCaretPos = moveCaretToMiddleOfScrollPane(txtDatedTasks);
+			txtUndatedTasksCaretPos = moveCaretToMiddleOfScrollPane(txtUndatedTasks);
 		}catch(IllegalArgumentException e){
-			//e.printStackTrace();
 			log.log(Level.WARNING, "Error with caret position before updating list", e);
 		}
-				
+		
+		// Now we render the HTML code that we will display to the user,
+		// and set the JEditorPane to the HTML
 		DatedTaskListRenderer dtr = new DatedTaskListRenderer(taskList);
 		if(highlightSerial >= 0){
 			dtr.setHighlightSerial(highlightSerial);
@@ -389,10 +268,15 @@ public class GuiMain2 extends GuiCommandBox{
 		txtDatedTasks.setText(datedTaskListHtml);
 				
 		UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(taskList);
-		udtr.setHighlightSerial(highlightSerial);
+		if(highlightSerial >= 0){
+			udtr.setHighlightSerial(highlightSerial);
+		}
 		String undatedTaskListHtml = udtr.render();
 		log.finest(undatedTaskListHtml);
 		txtUndatedTasks.setText(undatedTaskListHtml);
+		
+		// After re-rendering the JEditorPane, we set the caret position so that the
+		// JEditorPane does not scroll back to the start
 		
 		// We need to enclose the following in a try-catch block as an exception is thrown
 		// if the caret position requested is beyond the length of the contents
@@ -408,21 +292,13 @@ public class GuiMain2 extends GuiCommandBox{
 			log.log(Level.WARNING, "Error with caret position after updating list", e1);
 		}
 		
+		// In the event there is a highlighted item, we scroll to that
 		txtDatedTasks.scrollToReference("highlight");
 		txtUndatedTasks.scrollToReference("highlight");
 		
+		// Then we render the calendar
 		CalendarRenderer calr = new CalendarRenderer(new DateTime(), taskList);
 		txtCalendar.setText(calr.render());
-		
-		/*
-		try {
-			System.out.println(txtDatedTasks.modelToView(txtDatedTasks.getCaretPosition()));
-			System.out.println((((JScrollPane) txtDatedTasks.getParent().getParent()).getVerticalScrollBar().getValue()));
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
 		
 		log.finest("Dated task index list: " + dtr.getIndexList());
 		log.finest("Undated task index list: " + udtr.getIndexList());
@@ -435,9 +311,16 @@ public class GuiMain2 extends GuiCommandBox{
 		checkboxToIndexMapForUndated = new HashMap<ToggleButtonModel, Integer>();
 		
 		// Checkbox handler for dated tasks column
+		setCheckBoxHandler(txtDatedTasks, checkboxToIndexMapForDated, dtr.getIndexList());
+		setCheckBoxHandler(txtUndatedTasks, checkboxToIndexMapForUndated, udtr.getIndexList());
+		
+		log.exiting(this.getClass().getName(), "showTasksList");
+	}
+
+	private void setCheckBoxHandler(JEditorPane txtTasks, Map<ToggleButtonModel, Integer> checkboxToIndexMap, List<Integer> indexList) {
 		int i = 0;
 			
-		HTMLDocument doc = (HTMLDocument)txtDatedTasks.getDocument();
+		HTMLDocument doc = (HTMLDocument)txtTasks.getDocument();
 		ElementIterator it = new ElementIterator(doc);
         Element element;
 		
@@ -458,70 +341,28 @@ public class GuiMain2 extends GuiCommandBox{
                 if (value instanceof ToggleButtonModel)
                 {
                 	ToggleButtonModel model = (ToggleButtonModel)value;
-                	checkboxToIndexMapForDated.put(model, dtr.getIndexList().get(i++));
-                	model.addActionListener(new ActionListener(){
-                		public void actionPerformed(ActionEvent e){
-                			log.info(checkboxToIndexMapForDated.get(e.getSource()).toString() + "\n" + ((ToggleButtonModel)e.getSource()).isSelected());
-                			boolean isDone = ((ToggleButtonModel)e.getSource()).isSelected();
-                			int index = checkboxToIndexMapForDated.get(e.getSource());
-                			if(isDone){
-                				executeCommand("done " + index);
-                			}else{
-                				executeCommand("undone " + index);
-                			}
-                		}
-                	});
+                	checkboxToIndexMap.put(model, indexList.get(i++));
+                	model.addActionListener(new CheckboxActionHandler(checkboxToIndexMap));
                 	elementEnumeratorDebugString.append(model.isSelected());
                 }
             }
 		}
-		log.finest("Dated element enumerator data: " + elementEnumeratorDebugString.toString());
-		
-		// Checkbox handler for undated tasks column
-		i = 0;
-			
-		HTMLDocument doc2 = (HTMLDocument)txtUndatedTasks.getDocument();
-		it = new ElementIterator(doc2);
-		
-		elementEnumeratorDebugString = new StringBuffer();
-		while ( (element = it.next()) != null )
-        {
-			elementEnumeratorDebugString.append("\n");
+		log.finest("Element enumerator data: " + elementEnumeratorDebugString.toString());
+	}
 
-            AttributeSet as = element.getAttributes();
-            Enumeration<?> enumm = as.getAttributeNames();
-
-            while( enumm.hasMoreElements() )
-            {
-                Object name = enumm.nextElement();
-                Object value = as.getAttribute( name );
-                elementEnumeratorDebugString.append( "\t" + name + " : " + value + "\n");
-
-                if (value instanceof ToggleButtonModel)
-                {
-                	ToggleButtonModel model = (ToggleButtonModel)value;
-                	checkboxToIndexMapForUndated.put(model, udtr.getIndexList().get(i++));
-                	model.addActionListener(new ActionListener(){
-                		public void actionPerformed(ActionEvent e){
-                			//System.out.println(checkboxToIndexMapForUndated.get(e.getSource()));
-                			//System.out.println(((ToggleButtonModel)e.getSource()).isSelected());
-                			// TODO: --> ??? log.info(checkboxToIndexMapForDated.get(e.getSource()).toString() + "\n" + ((ToggleButtonModel)e.getSource()).isSelected());
-                			boolean isDone = ((ToggleButtonModel)e.getSource()).isSelected();
-                			int index = checkboxToIndexMapForUndated.get(e.getSource());
-                			if(isDone){
-                				executeCommand("done " + index);
-                			}else{
-                				executeCommand("undone " + index);
-                			}
-                		}
-                	});
-                    //System.out.println(model.isSelected());
-                }
-            }
+	private int moveCaretToMiddleOfScrollPane(JEditorPane editorPane) {
+		int newCaretPos;
+		JScrollPane scrollPane = (JScrollPane) editorPane.getParent().getParent();
+		log.finer("Scroll bar pos:" + scrollPane.getVerticalScrollBar().getValue());
+		int scrollBarPos = scrollPane.getVerticalScrollBar().getValue();
+		int scrollPaneMiddle = scrollPane.getHeight() /2 ;
+		log.fine("Caret position: " + editorPane.getCaretPosition());
+		if (scrollBarPos >= 1){
+			editorPane.setCaretPosition(editorPane.viewToModel(new Point(0,scrollBarPos + scrollPaneMiddle)));
+			log.fine("New caret position: " + editorPane.getCaretPosition());
 		}
-		log.finest("Undated element enumerator data: " + elementEnumeratorDebugString.toString());
-		
-		log.exiting(this.getClass().getName(), "showTasksList");
+		newCaretPos = editorPane.getCaretPosition();
+		return newCaretPos;
 	}
 
 	@Override
@@ -540,6 +381,58 @@ public class GuiMain2 extends GuiCommandBox{
 			}
 		});
 		log.exiting(this.getClass().getName(), "runUI");
+	}
+	
+	private class CheckboxActionHandler implements ActionListener {
+		
+		Map<ToggleButtonModel, Integer> checkboxToIndexMap;
+		
+		public CheckboxActionHandler(Map<ToggleButtonModel, Integer> c){
+			checkboxToIndexMap = c;
+		}
+		
+		public void actionPerformed(ActionEvent e){
+			log.info(checkboxToIndexMap.get(e.getSource()).toString() + "\n" + ((ToggleButtonModel)e.getSource()).isSelected());
+			boolean isDone = ((ToggleButtonModel)e.getSource()).isSelected();
+			int index = checkboxToIndexMap.get(e.getSource());
+			if(isDone){
+				executeCommand("done " + index);
+			}else{
+				executeCommand("undone " + index);
+			}
+		}
+	}
+
+	private class CalendarHyperLinkHandler implements HyperlinkListener {
+		public void hyperlinkUpdate(HyperlinkEvent e) {
+			log.entering(this.getClass().getName(), "hyperLinkUpdate (calendar)");
+			
+			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				log.finer("Hyperlink activated (calendar) " + e.getURL().getPath());
+				//System.out.println(e.getURL().getPath());
+				if(e.getURL().getPath().startsWith("/gotoMonth/")){
+					log.finer("Hyperlink go to month action (calendar)");
+					String monthToShow = e.getURL().getPath().split("/")[2];
+					int year = Integer.parseInt(monthToShow.split("-")[0]);
+					int month = Integer.parseInt(monthToShow.split("-")[1]);						
+					
+					log.finer("Hyperlink go to month action (calendar)");
+					CalendarRenderer calr = new CalendarRenderer(new DateTime(year, month, 1,0,0), sendCommandToLogic("list").getList());
+					log.info("Rendering calendar for " + new DateTime(year, month, 1,0,0));
+					txtCalendar.setText(calr.render());
+				}else if(e.getURL().getPath().startsWith("/showTasksForDay/")){
+					log.finer("Hyperlink go to date with tasks action (calendar)");
+					String monthToShow = e.getURL().getPath().split("/")[2];
+					int year = Integer.parseInt(monthToShow.split("-")[0]);
+					int month = Integer.parseInt(monthToShow.split("-")[1]);
+					int day = Integer.parseInt(monthToShow.split("-")[2]);
+					
+					String dateReferenceStr = "date-"+year+"-"+month+"-"+day;
+					log.info("Scroll to reference " + dateReferenceStr);
+					txtDatedTasks.scrollToReference(dateReferenceStr);
+				}
+			}
+		}
 	}
 
 }
