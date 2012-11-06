@@ -431,8 +431,8 @@ public class Database {
 		 * @throws WillNotWriteToCorruptFileException 
 		 */
 
-		public void delete(int[] serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
-			log.info("received array of serials of size " + serial.length);
+		public void delete(List<Integer> serial) throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException {
+			log.info("received array of serials of size " + serial.size());
 
 			assert(serial != null);
 
@@ -446,12 +446,12 @@ public class Database {
 
 
 
-			for(int i = 0; i < serial.length; i++){
+			for(Iterator<Integer> currentSerial = serial.iterator(); currentSerial.hasNext();){
 				boolean taskFound = false;
 				
 				for(Iterator<Task> iter = newList.iterator(); iter.hasNext();){
 					Task current = iter.next();
-					if(current.getSerial() == serial[i]){
+					if(current.getSerial() == currentSerial.next()){
 						iter.remove();
 						taskFound = true;
 						break; //Break iterator, go to next serial number
