@@ -239,6 +239,12 @@ public class GuiMain2 extends GuiCommandBox{
 		log.exiting(this.getClass().getName(), "updateWindow");
 	}
 	
+	public void update(LogicToUi returnValue){
+		showTasksList(sendCommandToLogic("refresh").getList());		
+		showStatus(returnValue.getString());
+		GuiUpdate.update(this);
+	}
+	
 	public void showTasksList(List<Task> taskList){
 		showTasksList(taskList, -1);
 	}
