@@ -52,13 +52,13 @@ public class PostponeParser extends CommandParser {
 			throw new CannotPostponeFloatingException();
 		}
 		if (toBePostponed.getType() == TaskType.DEADLINE) {
-			deadlineGroups = parser.parseWithCustomisedBaseDate(
+			deadlineGroups = parser.parseWCustomBaseDate(
 					toBePostponed.getDeadline(), argument);
 			newDeadline = new DateTime(deadlineGroups.get(0).getDates().get(0));
 
 		}
 		if (toBePostponed.getType() == TaskType.TIMED) {
-			startGroups = parser.parseWithCustomisedBaseDate(
+			startGroups = parser.parseWCustomBaseDate(
 					toBePostponed.getStartDate(), argument);
 
 			if (startGroups.size() == 0) {
@@ -66,7 +66,7 @@ public class PostponeParser extends CommandParser {
 			}
 			newStartTime = new DateTime(startGroups.get(0).getDates().get(0));
 
-			endGroups = parser.parseWithCustomisedBaseDate(
+			endGroups = parser.parseWCustomBaseDate(
 					toBePostponed.getEndDate(), argument);
 			if (endGroups.size() == 0) {
 				throw new CannotParseDateException();

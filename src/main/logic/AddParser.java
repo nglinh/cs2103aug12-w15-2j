@@ -10,7 +10,6 @@ import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.NattyParserWrapper;
 import main.shared.Task.TaskType;
 
-import com.joestelmach.natty.CalendarSource;
 import com.joestelmach.natty.DateGroup;
 
 /**
@@ -23,6 +22,7 @@ import com.joestelmach.natty.DateGroup;
  */
 public class AddParser extends CommandParser {
 
+	private static final String TOKEN_NOW = " now";
 	private static final String STRING_PM = "pm";
 	private static final String STRING_AM = "am";
 	private static final String STRING_EMPTY = "";
@@ -76,10 +76,13 @@ public class AddParser extends CommandParser {
 												// to limitations
 												// of Natty.
 		}
-
-		CalendarSource.setBaseDate(new DateTime().withTime(23, 59, 00, 00)
-				.toDate());
-		groups = parser.parseWDefBaseDate(dateString);
+		
+		if(dateString.contains(TOKEN_NOW)){
+			groups = parser.parseWCurBaseDate(dateString);
+		}
+		else{
+			groups = parser.parseWDefBaseDate(dateString);
+		}
 		if (groups.size() != 0) {
 			dateStringStartPosition = groups.get(0).getPosition();
 			parseFullWordOnly(dateString);
@@ -95,6 +98,7 @@ public class AddParser extends CommandParser {
 			determineStartAndEnd();
 		}
 	}
+
 
 	private void parseFullWordOnly(String dateString) {
 		while (!checkSeparatedBySpace()) {
@@ -127,13 +131,14 @@ public class AddParser extends CommandParser {
 			dateString = groups.get(INT_0).getText();
 			if (dateString.contains(STRING_TO)
 					&& !dateString.toLowerCase().contains(STRING_AM)
-					&& !dateString.toLowerCase().contains(STRING_PM))
+					&& !dateString.toLowerCase().contains(STRING_PM)
+					&& !dateString.contains(TOKEN_NOW))
 			// Second and third condition to check if the string contains exact
 			// time.
 			{
 				String tempStringArray[] = dateString.split(STRING_TO);
 				if (tempStringArray.length == INT_2) {
-					List<DateGroup> tempDateGroup = parser.parseWCustBaseDate(
+					List<DateGroup> tempDateGroup = parser.parseWCustomBaseDate(
 							INT_0, INT_0, INT_0, tempStringArray[INT_0]);
 					long tempTime = tempDateGroup.get(INT_0).getDates()
 							.get(INT_0).getTime();
