@@ -23,7 +23,7 @@ public class NattyParserWrapper {
 		return nattyParser.parse(str);
 	}
 
-	public List<DateGroup> parseWCustBaseDate(int hour, int minute,
+	public List<DateGroup> parseWCustomBaseDate(int hour, int minute,
 			int second, String str) {
 		CalendarSource.setBaseDate(new DateTime().withTime(hour, minute,
 				second, 00).toDate());
@@ -31,9 +31,13 @@ public class NattyParserWrapper {
 
 	}
 
-	public List<DateGroup> parseWithCustomisedBaseDate(DateTime dateTime,
+	public List<DateGroup> parseWCustomBaseDate(DateTime dateTime,
 			String str) {
 		CalendarSource.setBaseDate(dateTime.toDate());
+		return nattyParser.parse(str);
+	}
+	public List<DateGroup> parseWCurBaseDate(String str){
+		CalendarSource.setBaseDate((new DateTime()).toDate());
 		return nattyParser.parse(str);
 	}
 
