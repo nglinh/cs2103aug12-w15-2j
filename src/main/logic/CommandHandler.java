@@ -31,8 +31,7 @@ public abstract class CommandHandler {
 	private static LinkedList<List<Task>> undoClones = new LinkedList<List<Task>>();
 
 	protected static Database dataBase = Database.getInstance();
-
-	protected static List<Task> lastShownToUI = LastShownToUI.getInstance();
+	protected static LastShownToUI lastShownObject = LastShownToUI.getInstance();
 	protected static CommandHandler latestRefreshHandlerForUI = new ListHandler("");
 	
 
@@ -64,7 +63,7 @@ public abstract class CommandHandler {
 	}
 
 	protected List<Task> getCurrentTaskList() {
-		return dataBase.readAll();
+		return dataBase.getAll();
 	}
 
 	protected List<Task> peekUndoClones() {
@@ -101,6 +100,9 @@ public abstract class CommandHandler {
 		DateTimeFormatter LINE_DATE_FORMATTER = DateTimeFormat
 				.forPattern(LINE_DATE_FORMAT);
 		return LINE_DATE_FORMATTER.print(inputDate);
+	}
+	protected void setLastShownToUi(List<Task> newList){
+		
 	}
 
 }

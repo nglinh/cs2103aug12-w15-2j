@@ -17,7 +17,7 @@ public class DoneParser extends CommandParser {
 		this.arguments = arguments;
 		index = null;
 		toBeDone = null;
-		lastShownToUi = LastShownToUI.getInstance();
+		lastShownToUi = lastShownObject.getLastShownList();
 	}
 
 
@@ -27,7 +27,7 @@ public class DoneParser extends CommandParser {
 		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
 			throw new NoSuchElementException();
 		}
-		lastShownToUi.get(index);
+		toBeDone = lastShownToUi.get(index);
 	}
 	public Task getToBeDone(){
 		return toBeDone;

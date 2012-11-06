@@ -6,11 +6,21 @@ import java.util.List;
 import main.shared.Task;
 
 public class LastShownToUI {
-	private static List<Task> theOne;
-	public static List<Task> getInstance(){
+	private static LastShownToUI theOne = null;
+	private List<Task> lastShownList = null;
+	public static LastShownToUI getInstance(){
 		if(theOne == null){
-			theOne = new ArrayList<Task>();
+			theOne = new LastShownToUI();
 		}
 		return theOne;	
+	}
+	private LastShownToUI(){
+		lastShownList = new ArrayList<Task>();
+	}
+	public void setLastShownList(List<Task> newList){
+		this.lastShownList = newList;
+	}
+	public List<Task> getLastShownList(){
+		return this.lastShownList;
 	}
 }

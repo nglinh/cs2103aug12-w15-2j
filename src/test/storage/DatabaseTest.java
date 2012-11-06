@@ -86,7 +86,7 @@ public class DatabaseTest {
 		try {
 			//Write Empty database
 			db.writeALL(new ArrayList<Task>());
-			List<Task> readList = db.readAll();
+			List<Task> readList = db.getAll();
 			assertEquals(0, readList.size());
 
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
@@ -110,7 +110,7 @@ public class DatabaseTest {
 		try {
 			//Write filled database
 			db.writeALL(filledListing);
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 
 			//Check the size read back is equal
 			assertEquals(filledListing.size(), initialClearListing.size());
@@ -154,7 +154,7 @@ public class DatabaseTest {
 
 			db.writeALL(new ArrayList<Task>()); //Clear the file
 			db.add(nameTimedFalse);
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 
 			for(Task entry : initialClearListing){
 				assertEquals(nameTimedFalse.showInfo(), entry.showInfo());
@@ -171,7 +171,7 @@ public class DatabaseTest {
 			db.add(nameTimed);
 			db.add(nameFalse);
 
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 
 			assertEquals(filledListing.size(), initialClearListing.size());
 
@@ -264,7 +264,7 @@ public class DatabaseTest {
 			//Add only one task and update it
 			db.add(name);
 			db.update(name.getSerial(), nameTimed);
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 			
 			assertEquals(nameTimed.showInfo(), initialClearListing.get(0).showInfo());
 			
@@ -279,7 +279,7 @@ public class DatabaseTest {
 			db.add(nameTrue);
 			
 			db.update(nameTrue.getSerial(), nameDeadline);
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 			
 			assertEquals(nameDeadline.showInfo(), initialClearListing.get(1).showInfo());
 			
@@ -325,7 +325,7 @@ public class DatabaseTest {
 			db.writeALL(filledListing);
 			db.delete(nameDeadlineTrue.getSerial());
 			
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 			
 			//Ensure Task is deleted
 			for(Task entry : initialClearListing){
@@ -343,7 +343,7 @@ public class DatabaseTest {
 		try{	
 			db.delete(nameFalse.getSerial());
 			
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 			
 			//Ensure Task is deleted
 			for(Task entry : initialClearListing){
@@ -368,19 +368,19 @@ public class DatabaseTest {
 			//Test write empty file
 			db.writeALL(new ArrayList<Task>());
 			db.deleteAll();
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 			assertEquals(0, initialClearListing.size());
 
 			//Delete 1 task
 			db.add(nameTimedFalse);
 			db.deleteAll();
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 			assertEquals(0, initialClearListing.size());
 
 			//Delete wany tasks task
 			db.writeALL(filledListing);
 			db.deleteAll();
-			initialClearListing = db.readAll();
+			initialClearListing = db.getAll();
 			assertEquals(0, initialClearListing.size());			
 
 

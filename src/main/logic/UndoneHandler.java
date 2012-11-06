@@ -12,7 +12,7 @@ public class UndoneHandler extends CommandHandler{
 
 	private String arguments;
 	private UndoneParser parser;
-
+	private List<Task> lastShownToUI = lastShownObject.getLastShownList();
 	public UndoneHandler(String arguments) {
 		super(arguments);
 		this.arguments = arguments;

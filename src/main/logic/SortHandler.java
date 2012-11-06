@@ -2,6 +2,7 @@ package main.logic;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import main.shared.LogicToUi;
 import main.shared.SearchTerms;
@@ -17,6 +18,7 @@ public class SortHandler extends CommandHandler{
 	
 	private static Comparator<Task> latestSorter = new SortByStartDate();
 	private static SortStatus latestSorting = SortStatus.START;
+	private List<Task> lastShownToUI = lastShownObject.getLastShownList(); 
 	
 	public SortHandler(String arguments){
 		super(arguments);

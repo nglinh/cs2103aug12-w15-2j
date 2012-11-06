@@ -34,7 +34,7 @@ public class EditParser extends CommandParser {
 	public EditParser(String arguments) {
 		super(arguments);
 		argument = arguments;
-		lastShownToUi = LastShownToUI.getInstance();
+		lastShownToUi = lastShownObject.getLastShownList();
 		parser = NattyParserWrapper.getInstance();
 	}
 

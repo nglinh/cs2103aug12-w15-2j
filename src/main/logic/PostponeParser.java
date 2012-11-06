@@ -30,7 +30,7 @@ public class PostponeParser extends CommandParser {
 		super(arguments);
 		argument = arguments;
 		parser = NattyParserWrapper.getInstance();
-		lastShownToUi = LastShownToUI.getInstance();
+		lastShownToUi = lastShownObject.getLastShownList();
 	}
 
 	@Override

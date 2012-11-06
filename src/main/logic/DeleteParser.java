@@ -20,7 +20,7 @@ public class DeleteParser extends CommandParser {
 		isDone = false;
 		isAll = false;
 		arg = arguments;
-		lastShownToUi = LastShownToUI.getInstance();
+		lastShownToUi = lastShownObject.getLastShownList();
 	}
 
 	public void parse() throws NumberFormatException {

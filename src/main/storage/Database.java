@@ -187,7 +187,7 @@ public class Database {
 		 * @return an List<Task> containing all the tasks in database   
 		 */
 
-		public List<Task> readAll() {
+		public List<Task> getAll() {
 			log.info("Retrieving entire database");
 
 			List<Task> result = new ArrayList<Task>();

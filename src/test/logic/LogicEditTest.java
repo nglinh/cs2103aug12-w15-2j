@@ -39,7 +39,7 @@ public class LogicEditTest {
 	
 	public Task CommandTester(String addCommand, String editCommand) {		
 		LogicToUi returnValue;
-		List<Task> backup = Database.getInstance().readAll();
+		List<Task> backup = Database.getInstance().getAll();
 		Logic.getInstance().uiCommunicator("delete all");
 		returnValue = Logic.getInstance().uiCommunicator(addCommand);
 		System.out.println(returnValue.getString());
