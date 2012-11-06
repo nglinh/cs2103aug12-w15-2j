@@ -68,7 +68,7 @@
 		<name><![CDATA[<h1>Undo</h1>]]></name>
 		<summary>Undos the last change you made to the database.</summary>
 		<usage><![CDATA[<b>undo</b>]]></usage>
-		<extra>DoIT supports up to 50 undo steps</extra>
+		<extra>DoIT places no limit on the number of undo steps</extra>
 	</command>
 		<command>
 		<name><![CDATA[<h1>Refresh</h1>]]></name>
