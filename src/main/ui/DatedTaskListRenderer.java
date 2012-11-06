@@ -14,10 +14,28 @@ import main.shared.Task.TaskType;
 public class DatedTaskListRenderer{
 	
 	private List<Task> taskList;
-	Map<DateTime, List<Task>> datesWithTasks;
+	Map<DateTime, List<TaskWithIndex>> datesWithTasks;
 
 	private List<Integer> indexList;
 	private int highlightSerial = -1;
+	
+	class TaskWithIndex{
+		Task t;
+		int index;
+		
+		public TaskWithIndex(Task t, int index){
+			this.t = t;
+			this.index = index;
+		}
+
+		public Task getTask() {
+			return t;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+	}
 	
 	public DatedTaskListRenderer(){
 	}
@@ -37,9 +55,9 @@ public class DatedTaskListRenderer{
 		
 		boolean firstEntry = true;
 		StringBuffer sb = new StringBuffer();
-		for(Map.Entry<DateTime, List<Task>> entry : datesWithTasks.entrySet()){
+		for(Map.Entry<DateTime, List<TaskWithIndex>> entry : datesWithTasks.entrySet()){
 			DateTime currentDay = entry.getKey();
-			List<Task> tasksOnCurrentDay = entry.getValue();
+			List<TaskWithIndex> tasksOnCurrentDay = entry.getValue();
 			
 			if(firstEntry){
 				sb.append("<div class=separatorfirst>");
@@ -55,7 +73,7 @@ public class DatedTaskListRenderer{
 			sb.append(renderDate(currentDay));
 			sb.append("</td>");
 			sb.append("<td valign=top>");
-			for (Task t : tasksOnCurrentDay){
+			for (TaskWithIndex t : tasksOnCurrentDay){
 				sb.append(renderTask(t, currentDay));
 			}
 			sb.append("</td>");
@@ -93,10 +111,12 @@ public class DatedTaskListRenderer{
 		return sb.toString();
 	}
 	
-	public String renderTask(Task t, DateTime currentDay){
+	public String renderTask(TaskWithIndex tWithI, DateTime currentDay){
 		StringBuffer sb = new StringBuffer();
 		
-		int taskIndex = taskList.indexOf(t)+1;
+		Task t = tWithI.getTask();		
+		int taskIndex = tWithI.getIndex();
+		
 		String taskName = t.getTaskName();
 		
 		String cssClass = "taskbox";
@@ -204,20 +224,24 @@ public class DatedTaskListRenderer{
 
 		// We collect a list of ALL the dates that the tasks occur on
 		// And we add the tasks occurring on that day to a list
-		datesWithTasks = new TreeMap<DateTime, List<Task>>();
+		datesWithTasks = new TreeMap<DateTime, List<TaskWithIndex>>();
+		int index = 1;
+		
 		for(Task task : taskList){
 			if (task.getType() == Task.TaskType.TIMED){
 				DateTime currentDay = task.getStartDate().withTimeAtStartOfDay();
-				addTaskToMap(currentDay, task);
+				addTaskToMap(currentDay, task, index);
 				
 				while(task.getEndDate().withTimeAtStartOfDay().isAfter(currentDay)){
 					currentDay = currentDay.plusDays(1).withTimeAtStartOfDay();
-					addTaskToMap(currentDay, task);
+					addTaskToMap(currentDay, task, index);
 				}
 			}
 			else if (task.getType() == Task.TaskType.DEADLINE){
-				addTaskToMap(task.getDeadline().withTimeAtStartOfDay(), task);
+				addTaskToMap(task.getDeadline().withTimeAtStartOfDay(), task, index);
 			}
+			
+			index++;
 		}
 		
 		/*for(Map.Entry<DateTime, List<Task>> entry : datesWithTasks.entrySet()){
@@ -229,12 +253,13 @@ public class DatedTaskListRenderer{
 		}*/
 	}
 	
-	public void addTaskToMap(DateTime dateTime, Task task){
+	public void addTaskToMap(DateTime dateTime, Task task, int index){
 		if(datesWithTasks.containsKey(dateTime)){
-			datesWithTasks.get(dateTime).add(task);
+			datesWithTasks.get(dateTime).add(new TaskWithIndex(task, index));
 		}else{
-			datesWithTasks.put(dateTime, new LinkedList<Task>());
-			datesWithTasks.get(dateTime).add(task);
+			List<TaskWithIndex> listOfTasksOnDate = new LinkedList<TaskWithIndex>();
+			listOfTasksOnDate.add(new TaskWithIndex(task, index));
+			datesWithTasks.put(dateTime, listOfTasksOnDate);
 		}
 	}
 	

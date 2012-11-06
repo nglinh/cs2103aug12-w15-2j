@@ -26,19 +26,22 @@ public class UndatedTaskListRenderer {
 	public String render(){
 		
 		StringBuffer sb = new StringBuffer();
+		int index = 1;
+		
 		for(Task task : taskList){
 			if (task.getType() == Task.TaskType.FLOATING){
-				sb.append(renderTask(task));
+				sb.append(renderTask(task, index));
 			}
+			index++;
 		}
 		
 		return sb.toString();
 	}
 	
-	public String renderTask(Task t){
+	public String renderTask(Task t, int index){
 		StringBuffer sb = new StringBuffer();
 		
-		int taskIndex = taskList.indexOf(t)+1;
+		int taskIndex = index;
 		String taskName = t.getTaskName();
 		
 		String cssClass = "taskbox";
