@@ -1,10 +1,11 @@
 package main.logic;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.joda.time.DateTime;
 
 import main.shared.LogicToUi;
 import main.shared.Task;
@@ -13,7 +14,8 @@ import main.storage.WillNotWriteToCorruptFileException;
 public class DeleteHandler extends CommandHandler {
 	private Task toBeDeleted;
 	private DeleteParser parser;
-	public DeleteHandler(String arguments){
+
+	public DeleteHandler(String arguments) {
 		super(arguments);
 		parser = new DeleteParser(arguments);
 	}
@@ -25,29 +27,35 @@ public class DeleteHandler extends CommandHandler {
 			List<Task> currentTaskList = super.getCurrentTaskList();
 			parser.parse();
 			String undoMessage;
-			
+
 			if (parser.isAll) {
 				dataBase.deleteAll();
 				feedback = new LogicToUi("All tasks have been deleted");
 				undoMessage = "deletion of all tasks";
 
-			} /*else if (parser.isDone) {
-//TODO Wait for KM to change Database.
+			} else if (parser.isDone) {
+
 				List<Task> temp = dataBase.getAll();
-				int index = 0;
-				for(Task t: temp){
-					if(t.isDone()){
+				for (Task t : temp) {
+					if (t.isDone()) {
 						arrayOfToBeDeleted.add(t.getSerial());
 					}
 				}
-				dataBase.d
+				dataBase.delete(arrayOfToBeDeleted);
 				feedback = new LogicToUi(
 						"All completed tasks have been deleted");
 				undoMessage = "deletion of done tasks";
 
-			}*/ else if (parser.isOver) {
-//TODO Wait for KM to change Database
-				dataBase.deleteOver();
+			} else if (parser.isOver) {
+				List<Task> temp = dataBase.getAll();
+				DateTime currentTime = DateTime.now();
+				for (Task t : temp) {
+					if (t.isDeadlineTask() && t.getDeadline().isAfter(currentTime)
+							|| t.isTimedTask() && t.getEndDate().isAfter(currentTime)) {
+						arrayOfToBeDeleted.add(t.getSerial());
+					}
+				}
+				dataBase.delete(arrayOfToBeDeleted);
 				feedback = new LogicToUi(
 						"All tasks that has ended before this moment have been deleted");
 				undoMessage = "deletion of tasks before this moment";
@@ -59,14 +67,14 @@ public class DeleteHandler extends CommandHandler {
 				String taskDetails = taskToString(toBeDeleted);
 				feedback = new LogicToUi(taskDetails + " has been deleted");
 				undoMessage = "deletion of task \"" + taskDetails + "\"";
-				
+
 			}
 			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
-		} catch (NumberFormatException | NoSuchElementException e){
+		} catch (NumberFormatException | NoSuchElementException e) {
 			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		}
 
