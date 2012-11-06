@@ -201,7 +201,7 @@ public class Database {
 			return result;
 		}
 
-		public void writeALL(List<Task> incoming) throws IOException, WillNotWriteToCorruptFileException {
+		public void setAll(List<Task> incoming) throws IOException, WillNotWriteToCorruptFileException {
 			assert(incoming != null);
 
 
@@ -321,7 +321,7 @@ public class Database {
 			boolean isOriginalTaskFound = false;
 			for(Task toBeUpdated : newList) {
 				if(toBeUpdated.getSerial() == originalSerial)	{		
-					toBeUpdated.updateOrClone(updated);
+					toBeUpdated.becomeThis(updated);
 					isOriginalTaskFound = true;
 					log.info("Old task with this serial " + originalSerial + " found");
 					break;

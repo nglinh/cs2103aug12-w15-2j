@@ -71,7 +71,7 @@ public class Task implements Comparable<Task> {
 
 		Task newTask = new Task(name);
 		newTask.done(done);
-		this.updateOrClone(newTask);
+		this.becomeThis(newTask);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class Task implements Comparable<Task> {
 
 		Task newTask = new Task(name);
 		newTask.changetoDeadline(deadline);
-		this.updateOrClone(newTask);
+		this.becomeThis(newTask);
 
 	}
 
@@ -101,7 +101,7 @@ public class Task implements Comparable<Task> {
 
 		Task newTask = new Task(name, deadline);
 		newTask.done(done);
-		this.updateOrClone(newTask);
+		this.becomeThis(newTask);
 
 	}
 
@@ -119,7 +119,7 @@ public class Task implements Comparable<Task> {
 
 		Task newTask = new Task(name);
 		newTask.changetoTimed(startDate, endDate);
-		this.updateOrClone(newTask);
+		this.becomeThis(newTask);
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class Task implements Comparable<Task> {
 	public Task(String name, DateTime startDate, DateTime endDate, boolean done) {
 		Task newTask = new Task(name, startDate, endDate);
 		newTask.done(done);
-		this.updateOrClone(newTask);
+		this.becomeThis(newTask);
 	}
 
 
@@ -150,11 +150,11 @@ public class Task implements Comparable<Task> {
 			throw new IllegalArgumentException();
 		}
 
-		this.updateOrClone(toBeCloned);
+		this.becomeThis(toBeCloned);
 	}
 
 	/**
-	 * To clone the current task given to this object.                           
+	 * To clone and become the current task given to this object.                           
 	 *
 	 * All the fields including serial number 
 	 * of the parameter task will be copied to this object
@@ -163,7 +163,7 @@ public class Task implements Comparable<Task> {
 	 * 
 	 */
 
-	public void updateOrClone(Task updated) {
+	public void becomeThis(Task updated) {
 
 		if(updated == null) {
 			throw new IllegalArgumentException();

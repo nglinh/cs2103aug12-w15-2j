@@ -85,7 +85,7 @@ public class DatabaseTest {
 
 		try {
 			//Write Empty database
-			db.writeALL(new ArrayList<Task>());
+			db.setAll(new ArrayList<Task>());
 			List<Task> readList = db.getAll();
 			assertEquals(0, readList.size());
 
@@ -97,7 +97,7 @@ public class DatabaseTest {
 	@After
 	public void clearFileAfterEveryTest(){
 		try {
-			db.writeALL(new ArrayList<Task>());
+			db.setAll(new ArrayList<Task>());
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		}
@@ -109,7 +109,7 @@ public class DatabaseTest {
 
 		try {
 			//Write filled database
-			db.writeALL(filledListing);
+			db.setAll(filledListing);
 			initialClearListing = db.getAll();
 
 			//Check the size read back is equal
@@ -131,7 +131,7 @@ public class DatabaseTest {
 
 	public void testWriteAll(){
 		try {
-			db.writeALL(null);
+			db.setAll(null);
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		} catch (AssertionError e){
@@ -152,7 +152,7 @@ public class DatabaseTest {
 
 		try {
 
-			db.writeALL(new ArrayList<Task>()); //Clear the file
+			db.setAll(new ArrayList<Task>()); //Clear the file
 			db.add(nameTimedFalse);
 			initialClearListing = db.getAll();
 
@@ -160,7 +160,7 @@ public class DatabaseTest {
 				assertEquals(nameTimedFalse.showInfo(), entry.showInfo());
 			}
 
-			db.writeALL(new ArrayList<Task>());
+			db.setAll(new ArrayList<Task>());
 			db.add(name);
 			db.add(nameDeadline);
 			db.add(nameTimedFalse);
@@ -193,7 +193,7 @@ public class DatabaseTest {
 
 		try {
 			//Nothing to get
-			db.writeALL(initialClearListing);
+			db.setAll(initialClearListing);
 			db.locateATask(Task.SERIAL_NUMBER_START);
 			fail();
 		} catch (IOException | WillNotWriteToCorruptFileException e1) {
@@ -204,7 +204,7 @@ public class DatabaseTest {
 
 
 		try {
-			db.writeALL(filledListing);
+			db.setAll(filledListing);
 			assertEquals("Get top of list",nameDeadlineTrue.showInfo(), db.locateATask(nameDeadlineTrue.getSerial()).showInfo());
 			assertEquals("Get middle of list", nameDeadline.showInfo(), db.locateATask(nameDeadline.getSerial()).showInfo());
 			assertEquals("Get bottom of list", nameFalse.showInfo(), db.locateATask(nameFalse.getSerial()).showInfo());
@@ -260,7 +260,7 @@ public class DatabaseTest {
 		}
 		
 		try {
-			db.writeALL(new ArrayList<Task>());
+			db.setAll(new ArrayList<Task>());
 			//Add only one task and update it
 			db.add(name);
 			db.update(name.getSerial(), nameTimed);
@@ -273,7 +273,7 @@ public class DatabaseTest {
 		}
 		
 		try {
-			db.writeALL(new ArrayList<Task>());
+			db.setAll(new ArrayList<Task>());
 			//Add 2 tasks and update 1
 			db.add(nameTimed);
 			db.add(nameTrue);
@@ -313,7 +313,7 @@ public class DatabaseTest {
 		maxSerial++;
 		
 		try {
-			db.writeALL(filledListing);
+			db.setAll(filledListing);
 			db.delete(maxSerial);
 			fail();
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
@@ -322,7 +322,7 @@ public class DatabaseTest {
 		} 
 		
 		try {
-			db.writeALL(filledListing);
+			db.setAll(filledListing);
 			db.delete(nameDeadlineTrue.getSerial());
 			
 			initialClearListing = db.getAll();
@@ -366,7 +366,7 @@ public class DatabaseTest {
 	public void testDeleteAll() {
 		try {
 			//Test write empty file
-			db.writeALL(new ArrayList<Task>());
+			db.setAll(new ArrayList<Task>());
 			db.deleteAll();
 			initialClearListing = db.getAll();
 			assertEquals(0, initialClearListing.size());
@@ -378,7 +378,7 @@ public class DatabaseTest {
 			assertEquals(0, initialClearListing.size());
 
 			//Delete wany tasks task
-			db.writeALL(filledListing);
+			db.setAll(filledListing);
 			db.deleteAll();
 			initialClearListing = db.getAll();
 			assertEquals(0, initialClearListing.size());			

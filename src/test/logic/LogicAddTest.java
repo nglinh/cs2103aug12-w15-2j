@@ -105,7 +105,7 @@ public class LogicAddTest{
 		LogicToUi returnValue = Logic.getInstance().uiCommunicator(command);
 		returnValue = Logic.getInstance().uiCommunicator("list");
 		try {
-			Database.getInstance().writeALL(backup);
+			Database.getInstance().setAll(backup);
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

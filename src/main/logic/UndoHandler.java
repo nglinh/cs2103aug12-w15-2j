@@ -23,7 +23,7 @@ public class UndoHandler extends CommandHandler{
 
 		try {
 			List<Task> previous = super.peekUndoClones();
-			dataBase.writeALL(previous);
+			dataBase.setAll(previous);
 			String status = "The " + super.popAndGetPrevUndoMsg() + " has been undone";
 
 			super.popUndoClones();
