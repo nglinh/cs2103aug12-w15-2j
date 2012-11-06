@@ -204,6 +204,102 @@ public class GuiMain extends GuiCommandBox{
 		frmDoit.setVisible(true);
 	}
 
+	private class TableChangedHandler implements TableModelListener {
+		@Override
+		public void tableChanged(TableModelEvent e) {
+			log.entering(this.getClass().getName(), "tableChanged");
+			log.info("Table has been modified");
+			
+			int row = e.getFirstRow();
+			int column = e.getColumn();
+			log.info(String.format("Cell at row %1d and col %2d has been modified", row, column));
+			
+			TableModel model = (TableModel) e.getSource();
+			if (column == MyTableModel.COL_DONE) {
+				log.info("Checkbox clicked");
+				boolean done = (boolean) model.getValueAt(row, column);
+				int index = row + 1;
+				if (done) {
+					executeCommand("done " + index);
+				} else {
+					executeCommand("undone " + index);
+				}
+			}
+			if (column == MyTableModel.COL_START) {
+				log.info("Start date changed");
+				
+				String startTime = (String) model.getValueAt(row, column);
+				startTime = startTime.trim();
+				String endTime = (String) model.getValueAt(row, MyTableModel.COL_END);
+				endTime = endTime.trim();
+				int index = row + 1;
+				
+				log.finer(String.format("New start date %1s, new end date %2s", startTime, endTime));
+				
+				try{
+					if(startTime.isEmpty() && endTime.isEmpty()){
+						// Floating task
+						log.finer("Both start and end time empty");
+						executeCommand("update " + index +" -tofloating");
+					}else if(startTime.isEmpty() || endTime.isEmpty()){
+						log.finer("Either start or end time empty");
+						// Deadline task
+						String deadline;
+						if(startTime.isEmpty()){
+							log.finer("Start is empty, so we set deadline to endTime");
+							deadline = endTime;
+						}else{
+							log.finer("Start is not empty implies endTime is empty, so we set deadline to startTime");
+							deadline = startTime;
+						}
+						
+						executeCommand("update " + index +" -deadline " + deadline.replace("-", " "));
+					}else{
+						// Timed task
+						executeCommand("update " + index +" -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
+					}
+				}catch(Exception ex){
+					//ex.printStackTrace();
+					log.log(Level.WARNING, "Exception encountered when editing task in table", ex);
+				}
+			}
+			if (column == MyTableModel.COL_END) {
+				log.info("End date changed");
+				
+				String endTime = (String) model.getValueAt(row, column);
+				String startTime = (String) model.getValueAt(row, MyTableModel.COL_START);
+				int index = row + 1;
+				
+				try{
+					if(startTime.isEmpty() && endTime.isEmpty()){
+						// Floating task
+						executeCommand("update " + index +" -tofloating");
+					}else if(startTime.isEmpty() || endTime.isEmpty()){
+						// Deadline task
+						String deadline;
+						if(startTime.isEmpty()){
+							deadline = endTime;
+						}else{
+							deadline = startTime;
+						}
+						
+						executeCommand("update " + index +" -deadline " + deadline.replace("-", " "));
+					} else {
+						// Timed task
+						executeCommand("update " + index + " -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
+					}
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
+			}
+			if (column == MyTableModel.COL_TASKNAME) {
+				String newTaskName = (String) model.getValueAt(row, column);
+				int index = row + 1;
+				executeCommand("update " + index +" -name " + newTaskName);
+			}
+		}
+	}
+
 	class MyTableModel extends AbstractTableModel {
 		public static final long serialVersionUID = 8328597110205703514L;
 		public static final int COL_INDEX = 0;
@@ -445,103 +541,7 @@ public class GuiMain extends GuiCommandBox{
 		table.getColumnModel().getColumn(3).setMaxWidth(dateColumnWidth);
 		//table.getColumnModel().getColumn(4).setPreferredWidth(160);
 		
-		table.getModel().addTableModelListener(new TableModelListener() {
-
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				log.entering(this.getClass().getName(), "tableChanged");
-				log.info("Table has been modified");
-				
-				int row = e.getFirstRow();
-				int column = e.getColumn();
-				log.info(String.format("Cell at row %1d and col %2d has been modified", row, column));
-				
-				TableModel model = (TableModel) e.getSource();
-				if (column == MyTableModel.COL_DONE) {
-					log.info("Checkbox clicked");
-					boolean done = (boolean) model.getValueAt(row, column);
-					int index = row + 1;
-					if (done) {
-						executeCommand("done " + index);
-					} else {
-						executeCommand("undone " + index);
-					}
-				}
-				if (column == MyTableModel.COL_START) {
-					log.info("Start date changed");
-					
-					String startTime = (String) model.getValueAt(row, column);
-					startTime = startTime.trim();
-					String endTime = (String) model.getValueAt(row, MyTableModel.COL_END);
-					endTime = endTime.trim();
-					int index = row + 1;
-					
-					log.finer(String.format("New start date %1s, new end date %2s", startTime, endTime));
-					
-					try{
-						if(startTime.isEmpty() && endTime.isEmpty()){
-							// Floating task
-							log.finer("Both start and end time empty");
-							executeCommand("update " + index +" -tofloating");
-						}else if(startTime.isEmpty() || endTime.isEmpty()){
-							log.finer("Either start or end time empty");
-							// Deadline task
-							String deadline;
-							if(startTime.isEmpty()){
-								log.finer("Start is empty, so we set deadline to endTime");
-								deadline = endTime;
-							}else{
-								log.finer("Start is not empty implies endTime is empty, so we set deadline to startTime");
-								deadline = startTime;
-							}
-							
-							executeCommand("update " + index +" -deadline " + deadline.replace("-", " "));
-						}else{
-							// Timed task
-							executeCommand("update " + index +" -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
-						}
-					}catch(Exception ex){
-						//ex.printStackTrace();
-						log.log(Level.WARNING, "Exception encountered when editing task in table", ex);
-					}
-				}
-				if (column == MyTableModel.COL_END) {
-					log.info("End date changed");
-					
-					String endTime = (String) model.getValueAt(row, column);
-					String startTime = (String) model.getValueAt(row, MyTableModel.COL_START);
-					int index = row + 1;
-					
-					try{
-						if(startTime.isEmpty() && endTime.isEmpty()){
-							// Floating task
-							executeCommand("update " + index +" -tofloating");
-						}else if(startTime.isEmpty() || endTime.isEmpty()){
-							// Deadline task
-							String deadline;
-							if(startTime.isEmpty()){
-								deadline = endTime;
-							}else{
-								deadline = startTime;
-							}
-							
-							executeCommand("update " + index +" -deadline " + deadline.replace("-", " "));
-						} else {
-							// Timed task
-							executeCommand("update " + index + " -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
-						}
-					}catch(Exception ex){
-						ex.printStackTrace();
-					}
-				}
-				if (column == MyTableModel.COL_TASKNAME) {
-					String newTaskName = (String) model.getValueAt(row, column);
-					int index = row + 1;
-					executeCommand("update " + index +" -name " + newTaskName);
-				}
-			}
-
-		});
+		table.getModel().addTableModelListener(new TableChangedHandler());
 		
 		log.exiting(this.getClass().getName(), "showTasksList");
 	}
