@@ -1,9 +1,11 @@
+//@author A0081007U
+
 package main.logic;
 
 public class SearchParser extends CommandParser{
 
 	private String arguments;
-	public String[] keywords = new String[0];
+	private String[] keywords = new String[0];
 	
 	
 	public SearchParser(String arguments) {
@@ -20,6 +22,10 @@ public class SearchParser extends CommandParser{
 		
 		keywords = arguments.split(" ");
 
+	}
+	
+	public String[] getKeyWords(){
+		return keywords;
 	}
 
 }

@@ -1,3 +1,4 @@
+//@author A0081007U
 package main.logic;
 
 
@@ -5,15 +6,15 @@ package main.logic;
 public class ListParser extends CommandParser {
 
 	private String arguments;
-	public String statusMsg;
-	public boolean overdue = false;
-	public boolean complete = false;
-	public boolean incomplete = false;
-	public boolean timed = false;
-	public boolean deadline = false;
-	public boolean floating = false;
-	public boolean today = false;
-	public boolean tomorrow = false;
+	private String statusMsg;
+	private boolean overdue = false;
+	private boolean complete = false;
+	private boolean incomplete = false;
+	private boolean timed = false;
+	private boolean deadline = false;
+	private boolean floating = false;
+	private boolean today = false;
+	private boolean tomorrow = false;
 
 	public ListParser(String arguments) {
 		super(arguments);
@@ -68,14 +69,48 @@ public class ListParser extends CommandParser {
 				tomorrow = true;
 				statusMsg += " \"tomorrow\" ";
 			}
-			
-			
-
-
-
 
 		}
 	}
+	
+	public String getStatusMsg(){
+		return statusMsg;
+	}
+	
+	public boolean isOverdue(){
+		return overdue;
+	}
+	
+	public boolean isComplete(){
+		return complete;
+	}
+	
+	public boolean isIncomplete(){
+		return incomplete;
+	}
+	
+	public boolean isTimed(){
+		return timed;
+	}
+	
+	public boolean isDeadline(){
+		return deadline;
+	}
+	
+	public boolean isFloating(){
+		return floating;
+	}
+	
+	public boolean isToday(){
+		return today;
+	}
+	
+	public boolean isTomorrow(){
+		return tomorrow;
+	}
+	
+	
+
 
 
 }
