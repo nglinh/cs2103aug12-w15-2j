@@ -267,6 +267,9 @@ public class GuiCommandBox extends UI {
 					txtCmd.setText(commandHistoryIterator.next());
 					showHint();
 				}
+			} else if(arg0.isControlDown() && arg0.getKeyCode() == java.awt.event.KeyEvent.VK_Z){
+				log.info("Ctrl-z pressed");
+				executeCommand("undo");
 			} else {
 				showHint();
 			}
