@@ -199,10 +199,9 @@ public class GuiMain2 extends GuiCommandBox{
 	private HTMLEditorKit generateCalendarDocumentStyle() {
 		HTMLEditorKit kit = new HTMLEditorKit();
         StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("table {color:#000; font-family:Arial;}");
         styleSheet.addRule(".calendar td{text-align:right;}");
         styleSheet.addRule("a {color:#2A5696;text-decoration:none;}");
-        styleSheet.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
+        //styleSheet.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
         //styleSheet3.addRule(".calendarDate{padding-right;5px;}");
         //Document doc = kit.createDefaultDocument();
 		//return doc;
