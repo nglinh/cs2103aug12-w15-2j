@@ -1,3 +1,5 @@
+//@author A0081007U
+
 package main.logic;
 
 import java.util.Collections;
@@ -13,7 +15,6 @@ import main.shared.Task.SortByStartDate;
 
 public class SortHandler extends CommandHandler{
 
-	private String arguments;
 	private SortParser parser;
 	
 	private static Comparator<Task> latestSorter = new SortByStartDate();
@@ -22,7 +23,6 @@ public class SortHandler extends CommandHandler{
 	
 	public SortHandler(String arguments){
 		super(arguments);
-		this.arguments = arguments;
 		parser = new SortParser(arguments);
 	}
 	
@@ -30,15 +30,6 @@ public class SortHandler extends CommandHandler{
 	@Override
 	public LogicToUi execute() {
 		parser.parse();
-		
-		if (arguments.length() == 0) {
-			arguments = "start";
-		}
-
-		boolean needToReverse = false;
-		if (arguments.contains("reverse")) {
-			needToReverse = true;
-		}
 
 		Comparator<Task> sorter = null;
 
@@ -50,39 +41,40 @@ public class SortHandler extends CommandHandler{
 		listFromLastListingCommand = fromLatestListCommand.getList();
 		String statusMsg = null;
 
-		if (parser.type) {
+		if (parser.getType()) {
 			sorter = new Task.SortByType();
 			statusMsg = "sorted by Type";
 			latestSorting = SortStatus.TYPE;
 
-		} else if (parser.done) {
+		} else if (parser.getDone()) {
 			sorter = new Task.SortByDone();
 			statusMsg = "sorted by Done";
 			latestSorting = SortStatus.DONE;
 
-		} else if (parser.start) {
+		} else if (parser.getStart()) {
 			sorter = new SortByStartDate();
 			statusMsg = "sorted by Start Date/Deadline";
 			latestSorting = SortStatus.START;
 
-		} else if (parser.end) {
+		} else if (parser.getEnd()) {
 			sorter = new SortByEndDate();
 			statusMsg = "sorted by End Date/Deadline";
 			latestSorting = SortStatus.END;
 
-		} else if (parser.name) {
+		} else if (parser.getName()) {
 			sorter = new Task.SortByName();
 			statusMsg = "sorted by Name";
 			latestSorting = SortStatus.NAME;
 
 		} else {
 			sorter = latestSorter;
-			statusMsg = "Incorrect parameter for sort command";
+			statusMsg = "incorrect parameter, sorted by Start Date/Deadline";
 		}
 
 		latestSorter = sorter;
-		if (needToReverse) {
+		if (parser.getReverse()) {
 			sorter = Collections.reverseOrder(sorter);
+			statusMsg += " in descending order";
 		}
 		
 		latestSortHandlerForUI = this;
@@ -92,10 +84,10 @@ public class SortHandler extends CommandHandler{
 
 		if (searchFilters == null) {
 			return new LogicToUi(listFromLastListingCommand, appendedSortStatus,
-					latestSorting, needToReverse);
+					latestSorting, parser.getReverse());
 		} else {
 			return new LogicToUi(listFromLastListingCommand, appendedSortStatus,
-					searchFilters, latestSorting, needToReverse);
+					searchFilters, latestSorting, parser.getReverse());
 		}
 	}
 

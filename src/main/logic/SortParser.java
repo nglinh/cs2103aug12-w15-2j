@@ -1,52 +1,79 @@
+//@author A0081007U
+
 package main.logic;
 
 
 public class SortParser extends CommandParser {
 
 	private String arguments;
-	
-	public boolean type = false;
-	public boolean done = false;
-	public boolean start = false;
-	public boolean end = false;
-	public boolean name = false;
-	
-	boolean reverse = false;
-	
+
+	private boolean type = false;
+	private boolean done = false;
+	private boolean start = false;
+	private boolean end = false;
+	private boolean name = false;
+
+	private boolean reverse = false;
+
+	private String[] parsed;
+
 	public SortParser(String arguments) {
 		super(arguments);
-		this.arguments = arguments;
+		this.arguments = arguments.toLowerCase();
+		parsed = this.arguments.split(" ");
 	}
 
 	@Override
 	public void parse()  {
-		if (arguments.length() == 0) {
+		if (parsed.length == 0) {
 			start = true;
 			return;
 		}
-		
-		if (arguments.contains("reverse")) {
-			reverse = true;
+
+		for(String param : parsed){
+			if (param.equals("descending")) {
+				reverse = true;
+			}
+
+			if (param.equals("type")) {
+				type = true;
+
+			} else if (param.equals("done")) {
+				done = true;
+
+			} else if (param.equals("start")) {
+				start = true;
+
+			} else if (param.equals("end")) {
+				end = true;
+
+			} else if (param.equals("name")) {
+				name = true;
+
+			} 
+
 		}
+	}
 
-		if (arguments.contains("type")) {
-			type = true;
+	public boolean getType() {
+		return type;
+	}
 
-		} else if (arguments.contains("done")) {
-			done = true;
+	public boolean getDone() {
+		return done;
+	}
 
-		} else if (arguments.contains("start")) {
-			start = true;
-
-		} else if (arguments.contains("end")) {
-			end = true;
-
-		} else if (arguments.contains("name")) {
-			name = true;
-			
-		} 
-
-
+	public boolean getStart() {
+		return start;
+	}
+	public boolean getEnd() {
+		return end;
+	}
+	public boolean getName() {
+		return name;
+	}
+	public boolean getReverse() {
+		return reverse;
 	}
 
 }
