@@ -64,8 +64,9 @@ public class DeleteHandler extends CommandHandler {
 			} else {
 
 				if(parser.onlyOneIndexFound){
-					toBeDeleted = parser.getToBeDeleted();
-					dataBase.delete(toBeDeleted.getSerial());
+					toBeDeleted = dataBase.locateATask(parser.getSerialOfTask());
+					
+					dataBase.delete(parser.getSerialOfTask());
 					String taskDetails = taskToString(toBeDeleted);
 					feedback = new LogicToUi(taskDetails + " has been deleted");
 					undoMessage = "deletion of task \"" + taskDetails + "\"";

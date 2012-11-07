@@ -17,6 +17,7 @@ public class DeleteParser extends CommandParser {
 	List<Task> lastShownToUi;
 	List<Integer> listOfToBeDeletedSerials;
 	List<Integer> listOfToBeDeletedIndexes;
+	int serial;
 
 	public DeleteParser(String arguments) {
 		super(arguments);
@@ -64,12 +65,12 @@ public class DeleteParser extends CommandParser {
 		
 		if(listOfToBeDeletedIndexes.size() == 1){
 			onlyOneIndexFound = true;
-			toBeDeleted = lastShownToUi.get(index);
+			serial = lastShownToUi.get(index).getSerial();
 		}
 	
 
 	}
-	public Task getToBeDeleted(){
-		return toBeDeleted;
+	public int getSerialOfTask(){
+		return serial;
 	}
 }
