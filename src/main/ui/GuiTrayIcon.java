@@ -22,9 +22,16 @@ import com.melloware.jintellitype.JIntellitype;
 
 import main.LogHandler;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class GuiTrayIcon extends UI {
 	
 	Logger log = LogHandler.getLogInstance();
+	File dllFile;
 
 	protected ImageIcon createImageIcon(String path, String description) {
 		java.net.URL imgURL = getClass().getResource(path);
@@ -83,7 +90,6 @@ public class GuiTrayIcon extends UI {
 		        	try{
 		        		JIntellitype.getInstance().unregisterHotKey(1);
 				    }catch(Exception e1){
-				    	
 				    }
 		            exit();
 		        }
@@ -142,6 +148,30 @@ public class GuiTrayIcon extends UI {
 		    } catch (AWTException e) {
 		    	log.severe("TrayIcon could not be added.");
 		    }
+		    
+		    // Extract DLL to temporary folder
+			try {
+				dllFile = File.createTempFile("Doit-JIntellitype-", ".dll");			
+			    FileOutputStream dllFileWriter = new FileOutputStream(dllFile);
+			    InputStream dllStream;
+			    if(System.getProperty("os.arch").equals("amd64")){
+			    	dllStream = this.getClass().getResourceAsStream("/resource/JIntellitype64.dll");
+			    }else{
+			    	dllStream = this.getClass().getResourceAsStream("/resource/JIntellitype.dll");
+			    }
+			    byte[] b = new byte[1024];
+			    int len;
+			    while((len = dllStream.read(b)) >= 0){
+			    	dllFileWriter.write(b, 0, len);
+			    }
+			    dllFileWriter.close();
+			    dllStream.close();
+			    JIntellitype.setLibraryLocation(dllFile.getAbsolutePath());
+			    dllFile.deleteOnExit();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				//e1.printStackTrace();
+			}
 		    
 		    try{
 		    	JIntellitype.getInstance().registerHotKey(1, JIntellitype.MOD_WIN,
