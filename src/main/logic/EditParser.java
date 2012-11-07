@@ -81,6 +81,8 @@ public class EditParser extends CommandParser {
 			// fall through
 		case "stime":
 			// fall through
+		case "start":
+			// fall through
 		case "st":
 			willChangeStartTime = true;
 			if (groupsOfDates.size() != 0) {
@@ -95,6 +97,8 @@ public class EditParser extends CommandParser {
 		case "finishtime":
 			// fall through
 		case "et":
+			// fall through
+		case "end":
 			// fall through
 		case "ft":
 			willChangeEndTime = true;

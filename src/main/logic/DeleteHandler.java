@@ -51,8 +51,8 @@ public class DeleteHandler extends CommandHandler {
 				List<Task> temp = dataBase.getAll();
 				DateTime currentTime = DateTime.now();
 				for (Task t : temp) {
-					if (t.isDeadlineTask() && t.getDeadline().isAfter(currentTime)
-							|| t.isTimedTask() && t.getEndDate().isAfter(currentTime)) {
+					if (t.isDeadlineTask() && t.getDeadline().isBefore(currentTime)
+							|| t.isTimedTask() && t.getEndDate().isBefore(currentTime)) {
 						arrayOfToBeDeleted.add(t.getSerial());
 					}
 				}
