@@ -383,11 +383,12 @@ public class GuiMain2 extends GuiCommandBox{
 		// Note we do not use executeCommand here, as doing so will cause a further update
 		// request to be propagated to all windows.
 		
-		// First launch
+		// First launch 
 		lastShownCalendarDate = new DateTime();
 		List<Task> firstLaunchTasks = sendCommandToLogic("refresh").getList();
 		if(firstLaunchTasks.isEmpty()){
-			txtDatedTasks.setText(Hint.getInstance().helpForThisCommandHTML("help"));
+			//txtDatedTasks.setText(Hint.getInstance().helpForThisCommandHTML("help"));
+			txtDatedTasks.setText("Placeholder text for first launch with no tasks");
 		}else{
 			showTasksList(firstLaunchTasks);
 		}
@@ -469,23 +470,45 @@ public class GuiMain2 extends GuiCommandBox{
 			log.log(Level.WARNING, "Error with caret position before updating list", e);
 		}
 		
-		// Now we render the HTML code that we will display to the user,
-		// and set the JEditorPane to the HTML
-		DatedTaskListRenderer dtr = new DatedTaskListRenderer(taskList);
-		if(highlightSerial >= 0){
-			dtr.setHighlightSerial(highlightSerial);
-		}
-		String datedTaskListHtml = dtr.render();
-		log.finest(datedTaskListHtml);
-		txtDatedTasks.setText(datedTaskListHtml);
-				
-		UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(taskList);
-		if(highlightSerial >= 0){
-			udtr.setHighlightSerial(highlightSerial);
-		}
-		String undatedTaskListHtml = udtr.render();
-		log.finest(undatedTaskListHtml);
-		txtUndatedTasks.setText(undatedTaskListHtml);
+		// We check if there are tasks to show
+		if (taskList.size() > 0){
+		
+			// Now we render the HTML code that we will display to the user,
+			// and set the JEditorPane to the HTML
+			DatedTaskListRenderer dtr = new DatedTaskListRenderer(taskList);
+			if(highlightSerial >= 0){
+				dtr.setHighlightSerial(highlightSerial);
+			}
+			String datedTaskListHtml = dtr.render();
+			log.finest(datedTaskListHtml);
+			txtDatedTasks.setText(datedTaskListHtml);
+					
+			UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(taskList);
+			if(highlightSerial >= 0){
+				udtr.setHighlightSerial(highlightSerial);
+			}
+			String undatedTaskListHtml = udtr.render();
+			log.finest(undatedTaskListHtml);
+			txtUndatedTasks.setText(undatedTaskListHtml);
+			
+			log.finest("Dated task index list: " + dtr.getIndexList());
+			log.finest("Undated task index list: " + udtr.getIndexList());
+			
+			// Checkbox handler
+			
+			// Note that we use HashMap here instead of other Map such as TreeMap
+			// because ToggleButtonModel is not comparable
+			checkboxToIndexMapForDated = new HashMap<ToggleButtonModel, Integer>();
+			checkboxToIndexMapForUndated = new HashMap<ToggleButtonModel, Integer>();
+			
+			// Checkbox handler for dated tasks column
+			setCheckBoxHandler(txtDatedTasks, checkboxToIndexMapForDated, dtr.getIndexList());
+			setCheckBoxHandler(txtUndatedTasks, checkboxToIndexMapForUndated, udtr.getIndexList());
+		
+		}else{
+			txtDatedTasks.setText("Ooops! There nothing to show here. Click the home button to see all your tasks.");
+			txtUndatedTasks.setText("Nothing here");
+		}		
 		
 		// After re-rendering the JEditorPane, we set the caret position so that the
 		// JEditorPane does not scroll back to the start
@@ -511,20 +534,6 @@ public class GuiMain2 extends GuiCommandBox{
 		// Then we render the calendar
 		CalendarRenderer calr = new CalendarRenderer(lastShownCalendarDate, taskList);
 		txtCalendar.setText(calr.render());
-		
-		log.finest("Dated task index list: " + dtr.getIndexList());
-		log.finest("Undated task index list: " + udtr.getIndexList());
-		
-		// Checkbox handler
-		
-		// Note that we use HashMap here instead of other Map such as TreeMap
-		// because ToggleButtonModel is not comparable
-		checkboxToIndexMapForDated = new HashMap<ToggleButtonModel, Integer>();
-		checkboxToIndexMapForUndated = new HashMap<ToggleButtonModel, Integer>();
-		
-		// Checkbox handler for dated tasks column
-		setCheckBoxHandler(txtDatedTasks, checkboxToIndexMapForDated, dtr.getIndexList());
-		setCheckBoxHandler(txtUndatedTasks, checkboxToIndexMapForUndated, udtr.getIndexList());
 		
 		log.exiting(this.getClass().getName(), "showTasksList");
 	}
