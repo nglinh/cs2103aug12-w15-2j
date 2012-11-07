@@ -1,3 +1,4 @@
+//@author A0081007U
 package main.logic;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class SearchHandler extends CommandHandler{
 		}
 		parser.parse();
 		
-		String[] keywords = parser.keywords;
+		String[] keywords = parser.getKeyWords();
 
 		SearchTerms terms = new SearchTerms(keywords);
 		List<Task> results = dataBase.search(terms);

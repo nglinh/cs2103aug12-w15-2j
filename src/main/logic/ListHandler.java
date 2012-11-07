@@ -1,3 +1,4 @@
+//@author A0081007U
 package main.logic;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class ListHandler extends CommandHandler {
 
 		SearchTerms filter;
 
-		if (parser.overdue) {
+		if (parser.isOverdue()) {
 			DateTime startDate = new DateTime(Long.MIN_VALUE);
 			DateTime endDate = new DateTime();
 
@@ -43,39 +44,39 @@ public class ListHandler extends CommandHandler {
 
 
 
-		if (parser.today && parser.tomorrow) {
+		if (parser.isToday() && parser.isTomorrow()) {
 			DateTime startDate = new DateTime().withTimeAtStartOfDay();
 			DateTime endDate = startDate.plusDays(1).withTime(23, 59, 59, 999);
 
-			filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
-					parser.floating, startDate, endDate);
-		} else if (parser.today) {
+			filter = new SearchTerms(parser.isComplete(), parser.isIncomplete(), parser.isTimed(), parser.isDeadline(),
+					parser.isFloating(), startDate, endDate);
+		} else if (parser.isToday()) {
 
 			DateTime startDate = new DateTime().withTimeAtStartOfDay();
 			DateTime endDate = startDate.withTime(23, 59, 59, 999);
 
-			filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
-					parser.floating, startDate, endDate);
+			filter = new SearchTerms(parser.isComplete(), parser.isIncomplete(), parser.isTimed(), parser.isDeadline(),
+					parser.isFloating(), startDate, endDate);
 
 
-		} else if (parser.tomorrow) {
+		} else if (parser.isTomorrow()) {
 			DateTime startDate = new DateTime().plusDays(1)
 					.withTimeAtStartOfDay();
 			DateTime endDate = startDate.plusDays(1).withTime(23, 59, 59, 999);
 
-			filter = new SearchTerms(parser.complete,parser.incomplete, parser.timed, parser.deadline,
-					parser.floating, startDate, endDate);
+			filter = new SearchTerms(parser.isComplete(), parser.isIncomplete(), parser.isTimed(), parser.isDeadline(),
+					parser.isFloating(), startDate, endDate);
 
 		} else {
-			filter = new SearchTerms(parser.complete, parser.incomplete, parser.timed, parser.deadline,
-					parser.floating);
+			filter = new SearchTerms(parser.isComplete(), parser.isIncomplete(), parser.isTimed(), parser.isDeadline(),
+					parser.isFloating());
 		}
 
 		results = dataBase.search(filter);
 
 		lastShownObject.setLastShownList(results);
 		latestListingHandlerForUI = this;
-		return new LogicToUi(results, parser.statusMsg, filter);
+		return new LogicToUi(results, parser.getStatusMsg(), filter);
 
 
 	}
