@@ -6,6 +6,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -21,11 +22,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
-public class GuiQuickAdd extends UI{
+public class GuiQuickAdd extends GuiCommandBox{
 
 	private JFrame frmDoit;
-	private JTextField textCmd;
-	private JEditorPane textStatus;
+	private JTextField txtCmd;
+	private JEditorPane txtStatus;
 
 	/**
 	 * Launch the application.
@@ -80,7 +81,7 @@ public class GuiQuickAdd extends UI{
 		frmDoit.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				textCmd.requestFocus();
+				txtCmd.requestFocus();
 			}
 		});
 		frmDoit.setTitle("DoIt! Quick Add");
@@ -88,36 +89,38 @@ public class GuiQuickAdd extends UI{
 		frmDoit.setAlwaysOnTop(true);
 		frmDoit.setBounds(100, 100, 220, 180);
 		
-		textCmd = new JTextField();
-		textCmd.setText("Type a new task here...");
-		textCmd.addFocusListener(new FocusAdapter() {
+		txtCmd = new JTextField();
+		txtCmd.setText("Type a new task here...");
+		txtCmd.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				if (textCmd.getText().equals("Type a new task here...")) {
-					textCmd.selectAll();
+				if (txtCmd.getText().equals("Type a new task here...")) {
+					txtCmd.selectAll();
 				}
 			}
 		});
-		textCmd.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-					executeCommand("add "+textCmd.getText());
-				}
-				if(arg0.isControlDown() && arg0.getKeyCode() == java.awt.event.KeyEvent.VK_Z){
-					System.out.println("Ctrl-z pressed");
-					executeCommand("undo");
-				}
-			}
-		});
-		frmDoit.getContentPane().add(textCmd, BorderLayout.SOUTH);
-		textCmd.setColumns(10);
+		frmDoit.getContentPane().add(txtCmd, BorderLayout.SOUTH);
+		txtCmd.setColumns(10);
 		
-		textStatus = new JEditorPane();
-		textStatus.setEditable(false);
-		textStatus.setBackground(new Color(0, 0, 0, 0));
-		textStatus.setOpaque(false);
-		frmDoit.getContentPane().add(textStatus, BorderLayout.CENTER);
+		txtStatus = new JEditorPane();
+		txtStatus.setEditable(false);
+		txtStatus.setBackground(new Color(0, 0, 0, 0));
+		txtStatus.setOpaque(false);
+		frmDoit.getContentPane().add(txtStatus, BorderLayout.CENTER);
+		
+		// Popup for hints
+		popupCmdHint = new JPopupMenu();
+		popupCmdHint.setFocusable(false);
+		addPopup(txtCmd, popupCmdHint);
+
+		// Text box in popup for hints
+		txtCmdHint = new JEditorPane();
+		txtCmdHint.setFocusTraversalKeysEnabled(false);
+		txtCmdHint.setFocusCycleRoot(false);
+		txtCmdHint.setFocusable(false);
+		popupCmdHint.add(txtCmdHint);
+		
+		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
 		
 		// Position window
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -129,7 +132,7 @@ public class GuiQuickAdd extends UI{
 	
 	public void runUI(){
 		frmDoit.setVisible(true);
-		textCmd.requestFocus();
+		txtCmd.requestFocus();
 	}
 	
 	public void showOrHideUI(){
@@ -137,7 +140,7 @@ public class GuiQuickAdd extends UI{
 			frmDoit.setVisible(false);
 		}else{
 			frmDoit.setVisible(true);
-			textCmd.requestFocus();
+			txtCmd.requestFocus();
 		}
 	}
 	
@@ -147,10 +150,10 @@ public class GuiQuickAdd extends UI{
 		LogicToUi returnValue = sendCommandToLogic(text);
 
 		// Set command text box to empty
-		textCmd.setText("Type a new task here...");
-		textCmd.selectAll();
+		txtCmd.setText("Type a new task here...");
+		txtCmd.selectAll();
 
-		textStatus.setText(returnValue.getString());
+		txtStatus.setText(returnValue.getString());
 		
 		// Update other windows
 		//GuiMain.getInstance().updateWindow(this);

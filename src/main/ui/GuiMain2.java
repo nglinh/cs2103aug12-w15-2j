@@ -53,6 +53,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -111,7 +113,7 @@ public class GuiMain2 extends GuiCommandBox{
 	private JToggleButton tglbtnListView;
 	private JSeparator separator_1;
 	private JButton btnPreferences;
-	private JPanel panel_1;
+	private JPanel panelCards;
 
 	private JScrollPane scrollPaneTable;
 
@@ -166,6 +168,28 @@ public class GuiMain2 extends GuiCommandBox{
 		frmDoit.setTitle("DoIt!");
 		frmDoit.setBounds(100, 100, 600, 620);
 		
+		frmDoit.addComponentListener(new ComponentListener(){
+			@Override
+			public void componentResized(ComponentEvent e) {
+		        popupCmdHint.setVisible(false);
+		    }
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				popupCmdHint.setVisible(false);		
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				popupCmdHint.setVisible(false);
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				popupCmdHint.setVisible(false);
+			}
+		});
+		
 		toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		frmDoit.getContentPane().add(toolBar, BorderLayout.NORTH);
@@ -195,8 +219,8 @@ public class GuiMain2 extends GuiCommandBox{
 		tglbtnAgendaView = new JToggleButton("Agenda View");
 		tglbtnAgendaView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CardLayout cl = (CardLayout)(panel_1.getLayout());
-				cl.show(panel_1, "agendaCard");
+				CardLayout cl = (CardLayout)(panelCards.getLayout());
+				cl.show(panelCards, "agendaCard");
 				tglbtnAgendaView.setSelected(true);
 				tglbtnListView.setSelected(false);
 			}
@@ -206,8 +230,8 @@ public class GuiMain2 extends GuiCommandBox{
 		tglbtnListView = new JToggleButton("List View");
 		tglbtnListView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CardLayout cl = (CardLayout)(panel_1.getLayout());
-				cl.show(panel_1, "listCard");
+				CardLayout cl = (CardLayout)(panelCards.getLayout());
+				cl.show(panelCards, "listCard");
 				tglbtnAgendaView.setSelected(false);
 				tglbtnListView.setSelected(true);
 			}
@@ -221,16 +245,16 @@ public class GuiMain2 extends GuiCommandBox{
 		btnPreferences = new JButton("Preferences");
 		toolBar.add(btnPreferences);
 		
-		panel_1 = new JPanel();
-		frmDoit.getContentPane().add(panel_1, BorderLayout.CENTER);
-		panel_1.setLayout(new CardLayout(0, 0));
+		panelCards = new JPanel();
+		frmDoit.getContentPane().add(panelCards, BorderLayout.CENTER);
+		panelCards.setLayout(new CardLayout(0, 0));
 		
 		// *************************
 		// * Panel for Agenda View *
 		// *************************
 		
 		JSplitPane splitPane = new JSplitPane();
-		panel_1.add(splitPane, "agendaCard");
+		panelCards.add(splitPane, "agendaCard");
 		splitPane.setDividerLocation(350);
 		
 		scrollPaneDated = new JScrollPane();
@@ -317,7 +341,7 @@ public class GuiMain2 extends GuiCommandBox{
 		table.getColumnModel().getColumn(4).setPreferredWidth(160);
 
 		scrollPane.setViewportView(table);
-		panel_1.add(scrollPane, "listCard");       
+		panelCards.add(scrollPane, "listCard");       
         
         // *************************
         // * Panel for command box *
