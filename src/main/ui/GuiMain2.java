@@ -42,6 +42,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JToolBar;
+import javax.swing.JButton;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
+import javax.swing.JToggleButton;
+import javax.swing.ImageIcon;
+import java.awt.CardLayout;
 
 public class GuiMain2 extends GuiCommandBox{
 
@@ -74,6 +81,15 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	Map<ToggleButtonModel, Integer> checkboxToIndexMapForDated;
 	Map<ToggleButtonModel, Integer> checkboxToIndexMapForUndated;
+	private JToolBar toolBar;
+	private JButton btnHome;
+	private JButton btnUndo;
+	private JSeparator separator;
+	private JToggleButton tglbtnAgendaView;
+	private JToggleButton tglbtnListView;
+	private JSeparator separator_1;
+	private JButton btnPreferences;
+	private JPanel panel_1;
 
 	/**
 	 * Launch the application.
@@ -99,6 +115,7 @@ public class GuiMain2 extends GuiCommandBox{
 		log.entering(this.getClass().getName(), "<init>");
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			//e.printStackTrace();
@@ -120,8 +137,51 @@ public class GuiMain2 extends GuiCommandBox{
 		frmDoit.setTitle("DoIt!");
 		frmDoit.setBounds(100, 100, 600, 620);
 		
+		toolBar = new JToolBar();
+		toolBar.setFloatable(false);
+		frmDoit.getContentPane().add(toolBar, BorderLayout.NORTH);
+		
+		btnHome = new JButton("Home");
+		btnHome.setIcon(new ImageIcon(GuiMain2.class.getResource("/com/sun/java/swing/plaf/windows/icons/UpFolder.gif")));
+		btnHome.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				executeCommand("list");
+				executeCommand("sort");
+			}
+		});
+		toolBar.add(btnHome);
+		
+		btnUndo = new JButton("Undo");
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				executeCommand("undo");
+			}
+		});
+		toolBar.add(btnUndo);
+		
+		separator = new JSeparator();
+		separator.setOrientation(SwingConstants.VERTICAL);
+		toolBar.add(separator);
+		
+		tglbtnAgendaView = new JToggleButton("Agenda View");
+		toolBar.add(tglbtnAgendaView);
+		
+		tglbtnListView = new JToggleButton("List View");
+		toolBar.add(tglbtnListView);
+		
+		separator_1 = new JSeparator();
+		separator_1.setOrientation(SwingConstants.VERTICAL);
+		toolBar.add(separator_1);
+		
+		btnPreferences = new JButton("Preferences");
+		toolBar.add(btnPreferences);
+		
+		panel_1 = new JPanel();
+		frmDoit.getContentPane().add(panel_1, BorderLayout.CENTER);
+		panel_1.setLayout(new CardLayout(0, 0));
+		
 		JSplitPane splitPane = new JSplitPane();
-		frmDoit.getContentPane().add(splitPane, BorderLayout.CENTER);
+		panel_1.add(splitPane, "name_133925802995198");
 		splitPane.setDividerLocation(350);
 		
 		scrollPaneDated = new JScrollPane();
