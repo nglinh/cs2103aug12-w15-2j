@@ -188,12 +188,12 @@ public class GuiTrayIcon extends UI {
 		    	e.printStackTrace();
 		    }
 		    
-		    GuiMain.getInstance().runUI();
+		    GuiMain2.getInstance().runUI();
 
 		} else {
 
 		    //  System Tray is not supported
-			GuiMain.getInstance().runUI();
+			GuiMain2.getInstance().runUI();
 
 		}
 		
