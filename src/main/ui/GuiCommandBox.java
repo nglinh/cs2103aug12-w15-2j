@@ -198,8 +198,7 @@ public class GuiCommandBox extends UI {
 	protected void showStatus(String status) {
 		txtStatus
 				.setText("<html><table align=\"center\"><tr><td valign=\"middle\" align=\"center\"><font size=\"4\">"
-						+ HTMLEncoder.encode(status)
-						+ " &nbsp;&nbsp;&nbsp;<a href=\"http://doit/undo\">undo</a></font></td></tr></table></html>");
+						+ HTMLEncoder.encode(status) + "</font></td></tr></table></html>");
 	}
 
 	public void update(LogicToUi returnValue) {
