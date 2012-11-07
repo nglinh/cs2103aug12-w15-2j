@@ -30,7 +30,7 @@ public class DoneHandler extends CommandHandler {
 			parser.parse();
 
 			List<Task> copyCurrentTaskList = super.getCurrentTaskList();
-			Task toBeUpdated = parser.getToBeDone();
+			Task toBeUpdated = dataBase.locateATask(parser.getSerialOfTask());
 
 			if (toBeUpdated.isDone()) {
 				return new LogicToUi(taskToString(toBeUpdated)
