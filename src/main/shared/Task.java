@@ -367,6 +367,50 @@ public class Task implements Comparable<Task> {
 
 		this.deadline = newDeadline;
 	}
+	
+	public boolean amIEqualToThis(Task toCompare){
+		if(toCompare == null){
+			throw new IllegalArgumentException();
+		}
+		
+		boolean name = false;
+		boolean type = false;
+		boolean start = false;
+		boolean end = false;
+		boolean deadline = false;
+		boolean done = false;
+		boolean serial = false;
+		
+		if(this.taskName.equals(toCompare.getTaskName())){
+			name = true;
+		}
+		
+		if(this.type.equals(toCompare.getType())){
+			type = true;
+		}
+		if(this.startDate.equals(toCompare.getStartDate())){
+			start = true;
+		}
+		
+		if(this.endDate.equals(toCompare.getEndDate())){
+			end = true;
+		}
+		
+		if(this.deadline.equals(toCompare.getDeadline())){
+			deadline = true;
+		}
+		
+		if(this.isCompleted == toCompare.isDone()){
+			done = true;
+		}
+		
+		if(this.serial == toCompare.getSerial()){
+			serial = true;
+		}
+		
+		boolean isEqual = name && type && start && end && deadline && done && serial;
+		return isEqual;
+	}
 
 
 
