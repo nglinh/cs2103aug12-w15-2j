@@ -8,15 +8,14 @@ import main.shared.Task;
 public class DoneParser extends CommandParser {
 
 	private String arguments;
-	public Integer index;
-	private Task toBeDone;
-	List<Task> lastShownToUi;
+	private Integer index;
+	private List<Task> lastShownToUi;
+	private int serial;
 
 	public DoneParser(String arguments) {
 		super(arguments);
 		this.arguments = arguments;
 		index = null;
-		toBeDone = null;
 		lastShownToUi = lastShownObject.getLastShownList();
 	}
 
@@ -27,10 +26,10 @@ public class DoneParser extends CommandParser {
 		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
 			throw new NoSuchElementException();
 		}
-		toBeDone = lastShownToUi.get(index);
+		serial = lastShownToUi.get(index).getSerial();
 	}
-	public Task getToBeDone(){
-		return toBeDone;
+	public int getSerialOfTask(){
+		return serial;
 	}
 
 }

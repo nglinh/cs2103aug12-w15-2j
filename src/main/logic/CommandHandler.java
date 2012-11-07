@@ -92,8 +92,5 @@ public abstract class CommandHandler {
 				.forPattern(LINE_DATE_FORMAT);
 		return LINE_DATE_FORMATTER.print(inputDate);
 	}
-	protected void setLastShownToUi(List<Task> newList){
-		
-	}
 
 }
