@@ -10,6 +10,7 @@ package main.storage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
@@ -439,11 +440,14 @@ public class Database {
 		}
 
 		for (Integer currentSerial : serial) {
-			boolean taskFound = false;
+			boolean taskFound = true;
 
-			for (Task currentTask : newList) {
-				if (currentTask.getSerial() == currentSerial) {
-					newList.remove(currentTask);
+			for(Iterator<Task> iter = newList.iterator(); iter.hasNext();){
+				Task current = iter.next();
+				
+				if(current.getSerial() == currentSerial){
+					iter.remove();
+
 					taskFound = true;
 					break; // Break iterator, go to next serial number
 				}
