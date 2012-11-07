@@ -36,7 +36,7 @@ public class SearchHandler extends CommandHandler{
 		}
 		
 		lastShownObject.setLastShownList(results);
-		latestRefreshHandlerForUI = this;
+		latestListingHandlerForUI = this;
 
 		return new LogicToUi(results, statusMsg, terms);
 	}

@@ -18,7 +18,7 @@ public class SortHandler extends CommandHandler{
 	
 	private static Comparator<Task> latestSorter = new SortByStartDate();
 	private static SortStatus latestSorting = SortStatus.START;
-	private List<Task> lastShownToUI = lastShownObject.getLastShownList(); 
+	private List<Task> listFromLastListingCommand; 
 	
 	public SortHandler(String arguments){
 		super(arguments);
@@ -42,41 +42,37 @@ public class SortHandler extends CommandHandler{
 
 		Comparator<Task> sorter = null;
 
-		LogicToUi fromLatestListCommand = latestRefreshHandlerForUI.execute();
+		LogicToUi fromLatestListCommand = latestListingHandlerForUI.execute();
 		
 		SearchTerms searchFilters = fromLatestListCommand.getFilters();
 		String listStatusMsg = fromLatestListCommand.getString();
 
+		listFromLastListingCommand = fromLatestListCommand.getList();
 		String statusMsg = null;
 
 		if (parser.type) {
 			sorter = new Task.SortByType();
 			statusMsg = "sorted by Type";
-			latestSortArgument = arguments;
 			latestSorting = SortStatus.TYPE;
 
 		} else if (parser.done) {
 			sorter = new Task.SortByDone();
 			statusMsg = "sorted by Done";
-			latestSortArgument = arguments;
 			latestSorting = SortStatus.DONE;
 
 		} else if (parser.start) {
 			sorter = new SortByStartDate();
 			statusMsg = "sorted by Start Date/Deadline";
-			latestSortArgument = arguments;
 			latestSorting = SortStatus.START;
 
 		} else if (parser.end) {
 			sorter = new SortByEndDate();
 			statusMsg = "sorted by End Date/Deadline";
-			latestSortArgument = arguments;
 			latestSorting = SortStatus.END;
 
 		} else if (parser.name) {
 			sorter = new Task.SortByName();
 			statusMsg = "sorted by Name";
-			latestSortArgument = arguments;
 			latestSorting = SortStatus.NAME;
 
 		} else {
@@ -88,15 +84,17 @@ public class SortHandler extends CommandHandler{
 		if (needToReverse) {
 			sorter = Collections.reverseOrder(sorter);
 		}
+		
+		latestSortHandlerForUI = this;
 
-		Collections.sort(lastShownToUI, sorter);
+		Collections.sort(listFromLastListingCommand, sorter);
 		String appendedSortStatus = listStatusMsg + ", " + statusMsg;
 
 		if (searchFilters == null) {
-			return new LogicToUi(lastShownToUI, appendedSortStatus,
+			return new LogicToUi(listFromLastListingCommand, appendedSortStatus,
 					latestSorting, needToReverse);
 		} else {
-			return new LogicToUi(lastShownToUI, appendedSortStatus,
+			return new LogicToUi(listFromLastListingCommand, appendedSortStatus,
 					searchFilters, latestSorting, needToReverse);
 		}
 	}

@@ -32,10 +32,9 @@ public abstract class CommandHandler {
 
 	protected static Database dataBase = Database.getInstance();
 	protected static LastShownToUI lastShownObject = LastShownToUI.getInstance();
-	protected static CommandHandler latestRefreshHandlerForUI = new ListHandler("");
-	
+	protected static CommandHandler latestListingHandlerForUI = new ListHandler("");
+	protected static CommandHandler latestSortHandlerForUI = new SortHandler("");
 
-	protected static String latestSortArgument = "start";
 
 	protected LogicToUi feedback;
 
@@ -72,6 +71,7 @@ public abstract class CommandHandler {
 	protected String popAndGetPrevUndoMsg() {
 		return undoMsgHistory.pop();
 	}
+
 
 	protected String taskToString(Task toBeConverted) {
 		if (toBeConverted.isTimedTask()) {

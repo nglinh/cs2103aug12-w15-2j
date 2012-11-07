@@ -37,7 +37,7 @@ public class ListHandler extends CommandHandler {
 			String overdueStatusMsg = "Listing based on these parameters: \"overdue\" ";
 
 			lastShownObject.setLastShownList(results);
-			latestRefreshHandlerForUI = this;
+			latestListingHandlerForUI = this;
 			return new LogicToUi(results, overdueStatusMsg, filter);
 		}
 
@@ -74,7 +74,7 @@ public class ListHandler extends CommandHandler {
 		results = dataBase.search(filter);
 
 		lastShownObject.setLastShownList(results);
-		latestRefreshHandlerForUI = this;
+		latestListingHandlerForUI = this;
 		return new LogicToUi(results, parser.statusMsg, filter);
 
 
