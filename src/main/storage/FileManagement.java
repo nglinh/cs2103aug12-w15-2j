@@ -16,6 +16,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
@@ -193,15 +194,37 @@ public class FileManagement {
 		assert(fileAttributes.equals(FileStatus.FILE_ALL_OK));
 		
 		DateTime currentTimeStartOfDay = new DateTime();
-		Task welcome = new Task("Welcome to DoIt! It seems to be your first time. Type \"help\" in the box below to see a list of possible commands", currentTimeStartOfDay);
+		DateTime currentTimeTomorrow = currentTimeStartOfDay.plusDays(1);
+		
+		Task welcome = new Task("Welcome to DoIt! It seems to be your first time. Type \"help\" in the box below to see a list of possible commands.", currentTimeStartOfDay);
 		Task experiment = new Task("When you have finished experimenting, type the \"delete all\" command to remove all these and start using DoIt!", currentTimeStartOfDay.plusSeconds(1));
-
+		Task tml3pm = new Task("Deadline task that ends tomorrow at 3pm", currentTimeTomorrow.withTime(15, 00, 00, 00));
+		Task tml5to8pm = new Task("Timed task from 5pm to 8pm tomorrow", currentTimeTomorrow.withTime(17, 00, 00, 00), currentTimeTomorrow.withTime(20, 00, 00, 00));
+		Task bytml = new Task("You have to complete this task by tomorrow!", currentTimeTomorrow.withTime(23, 59, 00, 00));
+		Task threeDay = new Task("This task spans over 3 days starting from 10am Day 1 to 11pm Day 3", currentTimeStartOfDay.plusDays(2).withTime(10, 00, 00, 00), currentTimeStartOfDay.plusDays(4).withTime(23, 00, 00, 00) );
+		
+		
+		Task floating = new Task("Floating tasks are placed here");
+		Task tickRightBox = new Task("To mark task as done. Tick this box >>>");
+		Task completed = new Task("This is a completed floating task", true);
+		Task jumpDate = new Task("You can use the calendar below to jump to a selected date");
 		
 		//TODO: Add more initial tasks
 		
 		List<Task> initialTasks = new ArrayList<Task>();
 		initialTasks.add(welcome);
 		initialTasks.add(experiment);
+		initialTasks.add(tml3pm);
+		initialTasks.add(tml5to8pm);
+		initialTasks.add(bytml);
+		initialTasks.add(threeDay);
+		
+		initialTasks.add(floating);
+		initialTasks.add(tickRightBox);
+		initialTasks.add(completed);
+		initialTasks.add(jumpDate);
+		
+		Collections.sort(initialTasks);
 		
 		try {
 			writeDataBaseToFile(initialTasks);
