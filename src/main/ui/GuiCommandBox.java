@@ -250,6 +250,9 @@ public class GuiCommandBox extends UI {
 
 				executeCommand(txtCmd.getText());
 				popupCmdHint.setVisible(false);
+			} else if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ESCAPE) {
+				log.info("Escape key pressed");
+				popupCmdHint.setVisible(false);
 			} else if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_UP) {
 				log.info("Up key pressed");
 
