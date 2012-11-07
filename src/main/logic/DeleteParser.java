@@ -1,5 +1,6 @@
 package main.logic;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -9,17 +10,24 @@ public class DeleteParser extends CommandParser {
 	public boolean isOver;
 	public boolean isDone;
 	public boolean isAll;
+	public boolean onlyOneIndexFound;
 	int index;
 	String arg;
 	Task toBeDeleted;
 	List<Task> lastShownToUi;
+	List<Integer> listOfToBeDeletedSerials;
+	List<Integer> listOfToBeDeletedIndexes;
 
 	public DeleteParser(String arguments) {
 		super(arguments);
 		isOver = false;
 		isDone = false;
 		isAll = false;
+		onlyOneIndexFound = false;
 		arg = arguments;
+		
+		listOfToBeDeletedIndexes = new LinkedList<Integer>();
+		listOfToBeDeletedSerials = new LinkedList<Integer>();
 		lastShownToUi = lastShownObject.getLastShownList();
 	}
 
@@ -35,12 +43,30 @@ public class DeleteParser extends CommandParser {
 			isAll = true;
 			return;
 		}
-		index = Integer.parseInt(arg);
-		index--; //To account for index starting from 1
-		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
-			throw new NoSuchElementException();
+		
+		
+		
+		String[] indexes = arg.split(" ");
+		
+		
+		for(String indexString : indexes){
+			index = Integer.parseInt(indexString);
+			index--; //To account for index starting from 1
+			if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
+				throw new NoSuchElementException();
+			}
+			
+
+			listOfToBeDeletedSerials.add(lastShownToUi.get(index).getSerial());
+			listOfToBeDeletedIndexes.add(index + 1);
+			
 		}
-		toBeDeleted = lastShownToUi.get(index);
+		
+		if(listOfToBeDeletedIndexes.size() == 1){
+			onlyOneIndexFound = true;
+			toBeDeleted = lastShownToUi.get(index);
+		}
+	
 
 	}
 	public Task getToBeDeleted(){

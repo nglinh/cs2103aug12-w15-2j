@@ -62,11 +62,18 @@ public class DeleteHandler extends CommandHandler {
 
 			} else {
 
-				toBeDeleted = parser.getToBeDeleted();
-				dataBase.delete(toBeDeleted.getSerial());
-				String taskDetails = taskToString(toBeDeleted);
-				feedback = new LogicToUi(taskDetails + " has been deleted");
-				undoMessage = "deletion of task \"" + taskDetails + "\"";
+				if(parser.onlyOneIndexFound){
+					toBeDeleted = parser.getToBeDeleted();
+					dataBase.delete(toBeDeleted.getSerial());
+					String taskDetails = taskToString(toBeDeleted);
+					feedback = new LogicToUi(taskDetails + " has been deleted");
+					undoMessage = "deletion of task \"" + taskDetails + "\"";
+				} else {
+					dataBase.delete(parser.listOfToBeDeletedSerials);
+					
+					undoMessage = "deletion of tasks at indexes " + parser.listOfToBeDeletedIndexes.toString();
+					feedback = new LogicToUi("Tasks at indexes " + parser.listOfToBeDeletedIndexes.toString() + " have been deleted");
+				}
 
 			}
 			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
