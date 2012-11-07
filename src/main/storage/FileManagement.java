@@ -192,9 +192,11 @@ public class FileManagement {
 		log.info("write initial tasks to file");
 		assert(fileAttributes.equals(FileStatus.FILE_ALL_OK));
 		
-		Task welcome = new Task("Welcome to DoIt! It seems to be your first time. Type \"help\" in the box below to see a list of possible commands", (new DateTime()).withTimeAtStartOfDay());
-		Task experiment = new Task("When you have finished experimenting, type the \"delete all\" command to remove all these and start using DoIt!", (new DateTime()).withTimeAtStartOfDay().plusSeconds(1));
+		DateTime currentTimeStartOfDay = new DateTime();
+		Task welcome = new Task("Welcome to DoIt! It seems to be your first time. Type \"help\" in the box below to see a list of possible commands", currentTimeStartOfDay);
+		Task experiment = new Task("When you have finished experimenting, type the \"delete all\" command to remove all these and start using DoIt!", currentTimeStartOfDay.plusSeconds(1));
 
+		
 		//TODO: Add more initial tasks
 		
 		List<Task> initialTasks = new ArrayList<Task>();
