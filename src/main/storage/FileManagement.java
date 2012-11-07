@@ -15,6 +15,7 @@ import java.io.StringReader;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
@@ -50,14 +51,14 @@ public class FileManagement {
 	private final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat
 			.forPattern(LINE_DATE_TIME_FORMAT);
 
-	private final String FILE_LINE_FORMAT = "%1$3d"
+	private final String FILE_LINE_FORMAT = 
+			"%1$3d"
 			+ LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE
 			+ "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s"
 			+ LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE
 			+ "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
 
-	// private final int LINE_POSITION_TASKINDEX = 0; //To indicate that
-	// position 0 is task index
+	// private final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
 	private final int LINE_POSITION_TASKTYPE = 1;
 	private final int LINE_POSITION_DONE = 2;
 	private final int LINE_POSITION_DEADLINE_DATE = 3;
@@ -74,7 +75,7 @@ public class FileManagement {
 			"#  2 |  T   |   -  | ---------------------- | 31-Dec-2012 2359 +0800 | 28-Feb-2013 2248 +0800 | An undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #",
 			"#  3 |  F   |   *  | ---------------------- | ---------------------- | ---------------------- | A done floating task                                           #",
 			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                                         #",
-	"################################################################################################################################################################" };
+			"################################################################################################################################################################" };
 
 	private final String LINE_FLOATING = "F";
 	private final String LINE_DEADLINE = "D";
@@ -134,6 +135,13 @@ public class FileManagement {
 
 		log.info("Prepare database file");
 		assert (databaseFile != null);
+		
+		boolean firstLaunch = false;
+		
+		if(!databaseFile.exists()) {
+			firstLaunch = true;
+			log.info("Missing database file, assume first launch");
+		}
 
 		boolean isRWLockSucessful = true;
 		// Open file as read and write
@@ -158,7 +166,12 @@ public class FileManagement {
 		}
 
 		// If the above is successful, we end this method
-		if (isRWLockSucessful || fileAttributes.equals(FileStatus.FILE_IS_LOCKED)) {
+		if (isRWLockSucessful)   {
+			if(firstLaunch){
+				writeInitialLaunchTasks();
+			}
+			return;
+		} else if (fileAttributes.equals(FileStatus.FILE_IS_LOCKED)){
 			return;
 		}
 
@@ -173,6 +186,25 @@ public class FileManagement {
 			log.severe("Unknown file permissions " + e);
 		}
 
+	}
+
+	private void writeInitialLaunchTasks() {
+		log.info("write initial tasks to file");
+		assert(fileAttributes.equals(FileStatus.FILE_ALL_OK));
+		
+		Task welcome = new Task("Welcome to DoIt! It seems to be your first time. Type \"help\" in the box below to see a list of possible commands", (new DateTime()).withTimeAtStartOfDay());
+		Task experiment = new Task("When you have finished experimenting, type the \"delete all\" command to remove all these and start using DoIt!", (new DateTime()).withTimeAtStartOfDay().plusSeconds(1));
+
+		//TODO: Add more initial tasks
+		
+		List<Task> initialTasks = new ArrayList<Task>();
+		initialTasks.add(welcome);
+		initialTasks.add(experiment);
+		
+		try {
+			writeDataBaseToFile(initialTasks);
+		} catch (IOException | WillNotWriteToCorruptFileException e) {
+		}
 	}
 
 	public FileStatus getFileAttributes() {
