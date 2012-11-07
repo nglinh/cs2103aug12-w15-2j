@@ -15,6 +15,7 @@
 		<extra>Floating tasks: Tasks which have no time component.</extra>
 		<extra>Deadline tasks: Tasks which have one time as deadline.</extra>
 		<extra>Timed tasks: Tasks which have a start and end time.</extra>
+		<extra><![CDATA[<br>To enter the command-line mode, append the "-cli" argument when you launch DoIt!]]></extra>		
 		<extra>For command-line users, you are advised to call a list/refresh operation after every change to the database.</extra>
 	</command>
 	<command>
