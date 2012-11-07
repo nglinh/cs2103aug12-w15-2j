@@ -41,7 +41,7 @@ public class CliWithJline extends Cli{
 	private static final Completer delArguments = new StringsCompleter(new String [] {"all", "over", "done"});
 
 	private static final Completer sortCommand = new StringsCompleter(new String [] {"sort"});
-	private static final Completer sortArguments = new StringsCompleter(new String [] {"type", "done", "start", "end", "name", "reverse"});
+	private static final Completer sortArguments = new StringsCompleter(new String [] {"type", "done", "start", "end", "name", "descending"});
 
 	List<Completer> listSet = new ArrayList<Completer>();
 	ArgumentCompleter listArgCmp;
