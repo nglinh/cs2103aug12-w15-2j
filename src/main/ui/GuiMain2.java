@@ -218,7 +218,7 @@ public class GuiMain2 extends GuiCommandBox{
         styleSheet.addRule(".calendarbox {border:1px solid #2A5696; color:#000000; width:40px;}");
         styleSheet.addRule(".calendarbox .calendardayofweek{background-color:#2A5696; color:#FFFFFF; width:40px;}");
         styleSheet.addRule(".taskbox{margin-bottom:5px;padding:2px;}");
-        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FFAA00;padding:2px;}");
+        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FFFF7F;padding:2px;}");
         styleSheet.addRule(".separatorfirst{font-size:1px;border-width:0px;}");
         styleSheet.addRule(".separator{font-size:1px;border:1px solid #DDDDDD; border-width:1px 0px 0px 0px;}");
      
@@ -239,7 +239,7 @@ public class GuiMain2 extends GuiCommandBox{
 	}
 	
 	public void update(LogicToUi returnValue){
-		showTasksList(sendCommandToLogic("refresh").getList());		
+		showTasksList(sendCommandToLogic("refresh").getList(), returnValue.getLastChangedSerial());		
 		showStatus(returnValue.getString());
 		GuiUpdate.update(this);
 	}
