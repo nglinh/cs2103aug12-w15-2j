@@ -47,7 +47,7 @@ public class GuiMain extends GuiCommandBox{
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
 	private JFrame frmDoit;
 	private JTextField txtCmd;
-	private JScrollPane scrollPane;
+	public JScrollPane scrollPane;
 	private JTable table;
 	private JPopupMenu popupCmdHint;
 	private JMenu mnSomeMenu;
