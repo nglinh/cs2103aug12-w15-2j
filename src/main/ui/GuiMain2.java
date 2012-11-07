@@ -93,6 +93,8 @@ public class GuiMain2 extends GuiCommandBox{
 	//private JEditorPane txtStatus;
 	//private JTextField txtCmd;
 	
+	private DateTime lastShownCalendarDate;
+	
 	private static GuiMain2 theOne = null;
 	public static GuiMain2 getInstance(){
 		LogHandler.getLogInstance().info("Getting instance of GuiMain2");
@@ -120,6 +122,7 @@ public class GuiMain2 extends GuiCommandBox{
 	private JTable table;
 
 	private JScrollPane scrollPane;
+	private JButton btnHelp;
 
 	/**
 	 * Launch the application.
@@ -244,6 +247,14 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		btnPreferences = new JButton("Preferences");
 		toolBar.add(btnPreferences);
+		
+		btnHelp = new JButton("Help");
+		btnHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				GuiHelp.getInstance().runUI();
+			}
+		});
+		toolBar.add(btnHelp);
 		
 		panelCards = new JPanel();
 		frmDoit.getContentPane().add(panelCards, BorderLayout.CENTER);
@@ -373,6 +384,7 @@ public class GuiMain2 extends GuiCommandBox{
 		// request to be propagated to all windows.
 		
 		// First launch
+		lastShownCalendarDate = new DateTime();
 		List<Task> firstLaunchTasks = sendCommandToLogic("refresh").getList();
 		if(firstLaunchTasks.isEmpty()){
 			txtDatedTasks.setText(Hint.getInstance().helpForThisCommandHTML("help"));
@@ -497,7 +509,7 @@ public class GuiMain2 extends GuiCommandBox{
 		txtUndatedTasks.scrollToReference("highlight");
 		
 		// Then we render the calendar
-		CalendarRenderer calr = new CalendarRenderer(new DateTime(), taskList);
+		CalendarRenderer calr = new CalendarRenderer(lastShownCalendarDate, taskList);
 		txtCalendar.setText(calr.render());
 		
 		log.finest("Dated task index list: " + dtr.getIndexList());
@@ -617,7 +629,8 @@ public class GuiMain2 extends GuiCommandBox{
 					int month = Integer.parseInt(monthToShow.split("-")[1]);						
 					
 					log.finer("Hyperlink go to month action (calendar)");
-					CalendarRenderer calr = new CalendarRenderer(new DateTime(year, month, 1,0,0), sendCommandToLogic("list").getList());
+					lastShownCalendarDate = new DateTime(year, month, 1,0,0);
+					CalendarRenderer calr = new CalendarRenderer(lastShownCalendarDate, sendCommandToLogic("list").getList());
 					log.info("Rendering calendar for " + new DateTime(year, month, 1,0,0));
 					txtCalendar.setText(calr.render());
 				}else if(e.getURL().getPath().startsWith("/showTasksForDay/")){

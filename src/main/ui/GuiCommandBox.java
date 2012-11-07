@@ -51,6 +51,8 @@ public class GuiCommandBox extends UI {
 	private HintPosEnum hintPos = HintPosEnum.UNDEFINED;
 	private Rectangle previousWindowRect;
 	private String hintPreviousCommand = "";
+	
+	public boolean preferenceShowHint = true;
 
 	/**
 	 * Launch the application.
@@ -181,16 +183,30 @@ public class GuiCommandBox extends UI {
 	public void executeCommand(String text) {
 
 		log.entering(this.getClass().getName(), "executeCommmand");
+		
+		if(text.equals("help")){
+			GuiHelp.getInstance().runUI();
+			txtCmd.setText("");
+		}else if(text.equals("help off")){
+			preferenceShowHint = false;
+			showStatus("Help is now off");
+			txtCmd.setText("");
+		}else if(text.equals("help on")){
+			preferenceShowHint = true;
+			showStatus("Help is now on");
+			txtCmd.setText("");
+		}else{
 
-		// Call command parser
-		log.info("Sending the following command to logic: " + text);
-		LogicToUi returnValue = sendCommandToLogic(text);
-
-		// Set command text box to empty
-		log.finer("Set text box to empty after sending command to logic");
-		txtCmd.setText("");
-
-		update(returnValue);
+			// Call command parser
+			log.info("Sending the following command to logic: " + text);
+			LogicToUi returnValue = sendCommandToLogic(text);
+	
+			// Set command text box to empty
+			log.finer("Set text box to empty after sending command to logic");
+			txtCmd.setText("");
+	
+			update(returnValue);
+		}
 
 		log.exiting(this.getClass().getName(), "executeCommmand");
 	}
@@ -242,12 +258,14 @@ public class GuiCommandBox extends UI {
 			log.fine("Command box key recevied: keyCode " + arg0.getKeyCode());
 			if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
 				log.info("Enter key pressed");
-
-				commandHistory.add(txtCmd.getText());
+				
+				String userCommand = txtCmd.getText().trim();
+				executeCommand(userCommand);				
+				
+				commandHistory.add(userCommand);
 				commandHistoryIterator = commandHistory
 						.listIterator(commandHistory.size());
-
-				executeCommand(txtCmd.getText());
+			
 				popupCmdHint.setVisible(false);
 			} else if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ESCAPE) {
 				log.info("Escape key pressed");
@@ -276,6 +294,11 @@ public class GuiCommandBox extends UI {
 
 		private void showHint() {
 			log.entering(this.getClass().getName(), "showHint");
+			
+			log.fine("Preference to show hint? " + preferenceShowHint);
+			if(!preferenceShowHint){
+				return;
+			}
 
 			JFrame frame = (JFrame) SwingUtilities.getRoot(txtCmd);
 			Rectangle currentWindowRect = new Rectangle(
@@ -291,7 +314,7 @@ public class GuiCommandBox extends UI {
 			String matchedCommand = "";
 			// We match the longest command
 			for (String command : commandList) {
-				if (txtCmd.getText().startsWith(command)) {
+				if (txtCmd.getText().trim().startsWith(command)) {
 					isCommand = true;
 					if (command.length() > matchedCommand.length()) {
 						matchedCommand = command;
