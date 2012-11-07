@@ -23,8 +23,9 @@ public class DeleteHandler extends CommandHandler {
 	public LogicToUi execute() {
 
 		try {
-			LinkedList<Integer> arrayOfToBeDeleted = new LinkedList<Integer>();
 			List<Task> currentTaskList = super.getCurrentTaskList();
+			LinkedList<Integer> arrayOfToBeDeleted = new LinkedList<Integer>();
+
 			parser.parse();
 			String undoMessage;
 
