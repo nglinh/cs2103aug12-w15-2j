@@ -303,16 +303,15 @@ public class GuiMain2 extends GuiCommandBox{
 				log.finest("Key pressed: " + arg0.getKeyCode());
 				if(arg0.getKeyCode() == java.awt.event.KeyEvent.VK_DELETE){
 					log.finer("Delete key pressed");
-					// Note: With every deletion, the index number changes!
-					// Therefore we must delete from the largest number backwards.
 					log.info("Deleting selected tasks");
 					int[] rowsToDelete = table.getSelectedRows();
-					Arrays.sort(rowsToDelete);
-					//System.out.println(Arrays.toString(rowsToDelete));
 					log.info("Rows to delete: "+ Arrays.toString(rowsToDelete));
-					for(int i = (rowsToDelete.length-1); i>=0; i--){
-						executeCommand("delete " + (rowsToDelete[i] + 1));
+					
+					String command = "delete ";
+					for(int i = 0; i<rowsToDelete.length; i++){
+						command += (int) table.getModel().getValueAt(rowsToDelete[i], MyTableModel.COL_INDEX) + " ";
 					}
+					executeCommand(command);
 				}
 			}
 		});
@@ -430,8 +429,7 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	public void update(LogicToUi returnValue){
 		List<Task> refreshedList = sendCommandToLogic("refresh").getList();
-		showTasksList(refreshedList, returnValue.getLastChangedSerial());
-		showTasksListInTable(refreshedList);		
+		showTasksList(refreshedList, returnValue.getLastChangedSerial());		
 		showStatus(returnValue.getString());
 		GuiUpdate.update(this);
 	}
@@ -441,6 +439,11 @@ public class GuiMain2 extends GuiCommandBox{
 	}
 	
 	public void showTasksList(List<Task> taskList, int highlightSerial){
+		showTasksListInAgenda(taskList, highlightSerial);
+		showTasksListInTable(taskList);
+	}
+	
+	public void showTasksListInAgenda(List<Task> taskList, int highlightSerial){
 		log.entering(this.getClass().getName(), "taskList");
 		
 		// This code moves the current caret position to the middle of the current
