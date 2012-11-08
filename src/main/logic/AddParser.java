@@ -77,7 +77,8 @@ public class AddParser extends CommandParser {
 												// of Natty.
 		}
 
-		if (dateString.contains(STRING_SPACE_NOW)|| dateString.contains(STRING_NOW_SPACE)) {
+		if (dateString.contains(STRING_SPACE_NOW)
+				|| dateString.contains(STRING_NOW_SPACE)) {
 			groups = parser.parseWCurBaseDate(dateString);
 		} else {
 			groups = parser.parseWDefBaseDate(dateString);
@@ -313,9 +314,14 @@ public class AddParser extends CommandParser {
 	private void determineEndOfDateString() {
 		if (this.getTaskType() != TaskType.FLOATING) {
 			String tempString = groups.get(INT_0).getText();
-			dateStringEndPosition = dateStringStartPosition
-					+ groups.get(INT_0).getPosition() + tempString.length() + 1;
-
+			if (dateStringStartPosition == groups.get(INT_0).getPosition()) {
+				dateStringEndPosition = dateStringStartPosition
+						+ tempString.length() + 1;
+			} else {
+				dateStringEndPosition = dateStringStartPosition
+						+ groups.get(INT_0).getPosition() + tempString.length()
+						+ 1;
+			}
 		}
 
 	}

@@ -1,3 +1,4 @@
+//@author A0081007U
 package test.shared;
 
 /**  
@@ -212,28 +213,22 @@ public class TaskTest {
 		Task toBeTakenOver;
 		
 		toBeTakenOver = new Task(name);
-		assertEquals(name.showInfo(), toBeTakenOver.showInfo());
-		assertEquals(name.getSerial(), toBeTakenOver.getSerial());
+		assertTrue(name.amIEqualToThis(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameTrue);
-		assertEquals(nameTrue.showInfo(), toBeTakenOver.showInfo());
-		assertEquals(nameTrue.getSerial(), toBeTakenOver.getSerial());
+		assertTrue(nameTrue.amIEqualToThis(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameDeadline);
-		assertEquals(nameDeadline.showInfo(), toBeTakenOver.showInfo());
-		assertEquals(nameDeadline.getSerial(), toBeTakenOver.getSerial());
+		assertTrue(nameDeadline.amIEqualToThis(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameDeadlineTrue);
-		assertEquals(nameDeadlineTrue.showInfo(), toBeTakenOver.showInfo());
-		assertEquals(nameDeadlineTrue.getSerial(), toBeTakenOver.getSerial());
+		assertTrue(nameDeadlineTrue.amIEqualToThis(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameTimed);
-		assertEquals(nameTimed.showInfo(), toBeTakenOver.showInfo());
-		assertEquals(nameTimed.getSerial(), toBeTakenOver.getSerial());
+		assertTrue(nameTimed.amIEqualToThis(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameTimedFalse);
-		assertEquals(nameTimedFalse.showInfo(), toBeTakenOver.showInfo());
-		assertEquals(nameTimedFalse.getSerial(), toBeTakenOver.getSerial());
+		assertTrue(nameTimedFalse.amIEqualToThis(toBeTakenOver));
 		
 
 
@@ -352,10 +347,9 @@ public class TaskTest {
 	@Test
 	public void testChangetoFloating() {
 
-		nameDeadline.changeName(NAME_ONLY);
 		nameDeadline.changetoFloating();
 		
-		assertEquals(nameDeadline.showInfo(), name.showInfo());
+		assertTrue(nameDeadline.isFloatingTask());
 
 		
 	}
@@ -577,6 +571,56 @@ public class TaskTest {
 	
 	}
 	
+	@Test
+	public void testBecomeThis(){
+		try{
+			name.becomeThis(null);
+			fail();
+		} catch (IllegalArgumentException e){
+		}
+		
+		
+		nameTrue.becomeThis(nameTimedFalse);
+		
+		assertTrue(nameTrue.amIEqualToThis(nameTimedFalse));
+	}
+	
+	@Test
+	public void testAmIEqualToThis(){
+		assertTrue(nameTimedFalse.amIEqualToThis(nameTimedFalse));
+		
+		Task newName = new Task(name);
+		
+		newName.changeName(name.getTaskName() + "extra");
+		assertFalse("Different name", newName.amIEqualToThis(name));
+		
+		newName = new Task(name);
+		
+		newName.changetoDeadline(new DateTime());
+		assertFalse("Different type", newName.amIEqualToThis(name));
+		
+		Task newStart = new Task(nameTimed);
+		newStart.changeStartAndEndDate(newStart.getStartDate().plus(1), newStart.getEndDate());
+		assertFalse("Different start", newStart.amIEqualToThis(nameTimed));
+		
+		Task newEnd = new Task(nameTimedFalse);
+		newEnd.changeStartAndEndDate(newEnd.getStartDate(), newEnd.getEndDate().plus(1));
+		assertFalse("Different End", newEnd.amIEqualToThis(nameTimedFalse));
+		
+		Task newDeadline = new Task(nameDeadline);
+		newDeadline.changeDeadline(newDeadline.getDeadline().plus(1));
+		assertFalse("Different deadline", newDeadline.amIEqualToThis(nameDeadline));
+		
+		Task newNameTrue = new Task(nameTimedFalse);
+		newNameTrue.done(true);
+		assertFalse("Different type", newNameTrue.amIEqualToThis(nameTimedFalse));
+		
+		Task newNameTask = new Task(name.getTaskName());
+		assertFalse("Different Serial", newNameTask.amIEqualToThis(name));
+		
+		
+	}
+	
 	
 
 	
@@ -651,6 +695,19 @@ public class TaskTest {
 	
 		assertTrue(nameTimed.clashesWithRange(timedStartLow, timedEndHigh));
 		
+		
+	}
+	
+	@Test
+	public void testShowInfo(){
+		assertEquals(name.showInfo(), name.showInfo());
+		assertEquals(nameTrue.showInfo(), nameTrue.showInfo());
+		
+		assertEquals(nameDeadline.showInfo(), nameDeadline.showInfo());
+		assertEquals(nameDeadlineTrue.showInfo(), nameDeadlineTrue.showInfo());
+		
+		assertEquals(nameTimed.showInfo(), nameTimed.showInfo());
+		assertEquals(nameTimedFalse.showInfo(), nameTimedFalse.showInfo());
 		
 	}
 	
