@@ -7,12 +7,21 @@ package main.ui;
  */ 
 
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.JComponent;
+import javax.swing.Painter;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import main.LogHandler;
 import main.shared.LogicToUi;
 import main.shared.NattyParserWrapper;
 import main.logic.Logic;
@@ -71,6 +80,53 @@ public abstract class UI {
 	
 	protected void exit(){
 		sendCommandToLogic(COMMAND_EXIT);
+	}
+	
+	protected void setUiLookAndFeel(){
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			//UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
+			//UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+			//UIManager.setLookAndFeel("com.digitprop.tonic.TonicLookAndFeel");
+			//UIManager.setLookAndFeel ( "com.alee.laf.WebLookAndFeel" );
+			
+			// http://stackoverflow.com/questions/7633354/how-to-hide-the-arrow-buttons-in-a-jscrollbar
+			UIManager.getLookAndFeelDefaults().put(
+                    "ScrollBar:ScrollBarThumb[Enabled].backgroundPainter",
+                    new FillPainter(new Color(127, 169, 191)));
+            UIManager.getLookAndFeelDefaults().put(
+                    "ScrollBar:ScrollBarThumb[MouseOver].backgroundPainter",
+                    new FillPainter(new Color(127, 169, 191)));
+            UIManager.getLookAndFeelDefaults().put(
+                    "ScrollBar:ScrollBarTrack[Enabled].backgroundPainter",
+                    new FillPainter(new Color(190, 212, 223)));
+			
+			UIManager.getLookAndFeelDefaults().put(
+			        "ScrollBar:\"ScrollBar.button\".size", 0);
+			    UIManager.getLookAndFeelDefaults().put(
+			        "ScrollBar.decrementButtonGap", 0);
+			    UIManager.getLookAndFeelDefaults().put(
+			        "ScrollBar.incrementButtonGap", 0);
+			    
+		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			//e.printStackTrace();
+			LogHandler.getLogInstance().log(Level.WARNING, "Error encountered when setting look and feel", e);
+		}
+	}
+	
+	public class FillPainter implements Painter<JComponent> {
+
+	    private final Color color;
+
+	    public FillPainter(Color c) { color = c; }
+
+	    @Override
+	    public void paint(Graphics2D g, JComponent object, int width, int height) {
+	        g.setColor(color);
+	        g.fillRect(0, 0, width-1, height-1);
+	    }
+
 	}
 
 

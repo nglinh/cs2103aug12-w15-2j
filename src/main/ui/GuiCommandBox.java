@@ -76,8 +76,8 @@ public class GuiCommandBox extends UI {
 	 */
 	public GuiCommandBox() {
 		try {
-			UIManager
-					.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			//UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			// TODO Auto-generated catch block
@@ -213,8 +213,8 @@ public class GuiCommandBox extends UI {
 
 	protected void showStatus(String status) {
 		txtStatus
-				.setText("<html><table align=\"center\" width=\"100%\"><tr><td valign=\"middle\" align=\"left\"><font size=\"4\">"
-						+ HTMLEncoder.encode(status) + "</td><td width=1 valign=\"middle\" align=\"right\"><a href=\"http://doit/undo\">undo</a></font></td></tr></table></html>");
+				.setText("<html><table align=\"center\" width=\"100%\"><tr><td valign=\"middle\" align=\"left\">"
+						+ HTMLEncoder.encode(status) + "</td><td width=1 valign=\"middle\" align=\"right\"><a href=\"http://doit/undo\">undo</a></td></tr></table></html>");
 	}
 
 	public void update(LogicToUi returnValue) {
