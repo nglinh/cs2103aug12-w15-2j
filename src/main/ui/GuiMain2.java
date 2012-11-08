@@ -279,20 +279,7 @@ public class GuiMain2 extends GuiCommandBox{
 		splitPane.setLeftComponent(scrollPaneDated);
 		
 		txtDatedTasks = new JEditorPane();
-		txtDatedTasks.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					log.finer("Hyperlink activated (dated tasks) " + e.getURL().getPath());
-					if(e.getURL().getPath().startsWith("/editTask/")){
-						String indexToEdit = e.getURL().getPath().split("/")[2];
-						System.out.println(indexToEdit);
-						int index = Integer.parseInt(indexToEdit);
-						table.setRowSelectionInterval(index-1, index-1);
-						switchCard(CARD_LIST);
-					}
-				}
-			}
-		});
+		txtDatedTasks.addHyperlinkListener(new TasksHyperlinkHandler());
 		txtDatedTasks.setContentType("text/html");
 		txtDatedTasks.setText("<html>\r\n<table>\r\n<tr>\r\n<td width=\"50\"><font face=\"Segoe UI\" size=1>TUE<br>SEP<br> <font size=\"4\">20</font><br> 2012</font></td>\r\n<td>\r\nBy 2:00pm<br>\r\nTask ABCD\r\n</td>\r\n</tr>\r\n</table>");
 		txtDatedTasks.setEditable(false);
@@ -311,6 +298,7 @@ public class GuiMain2 extends GuiCommandBox{
 		txtUndatedTasks = new JEditorPane();
 		txtUndatedTasks.setContentType("text/html");
 		txtUndatedTasks.setEditable(false);
+		txtUndatedTasks.addHyperlinkListener(new TasksHyperlinkHandler());
 		scrollPaneUndated.setViewportView(txtUndatedTasks);
 		
 		// Calendar
@@ -633,6 +621,21 @@ public class GuiMain2 extends GuiCommandBox{
 		log.exiting(this.getClass().getName(), "runUI");
 	}
 	
+	private class TasksHyperlinkHandler implements HyperlinkListener {
+		public void hyperlinkUpdate(HyperlinkEvent e) {
+			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				log.finer("Hyperlink activated (dated tasks) " + e.getURL().getPath());
+				if(e.getURL().getPath().startsWith("/editTask/")){
+					String indexToEdit = e.getURL().getPath().split("/")[2];
+					System.out.println(indexToEdit);
+					int index = Integer.parseInt(indexToEdit);
+					table.setRowSelectionInterval(index-1, index-1);
+					switchCard(CARD_LIST);
+				}
+			}
+		}
+	}
+
 	private class CheckboxActionHandler implements ActionListener {
 		
 		Map<ToggleButtonModel, Integer> checkboxToIndexMap;
