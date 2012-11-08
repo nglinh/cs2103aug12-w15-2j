@@ -65,6 +65,7 @@ import javax.swing.ImageIcon;
 import java.awt.CardLayout;
 import java.awt.Component;
 import javax.swing.Box;
+import java.awt.Toolkit;
 
 public class GuiMain2 extends GuiCommandBox{
 	
@@ -169,6 +170,7 @@ public class GuiMain2 extends GuiCommandBox{
 		log.entering(this.getClass().getName(), "initialize");
 				
 		frmDoit = new JFrame();
+		frmDoit.setIconImage(Toolkit.getDefaultToolkit().getImage(GuiMain2.class.getResource("/resource/icon.png")));
 		frmDoit.setTitle("DoIt!");
 		frmDoit.setBounds(100, 100, 600, 620);
 		
