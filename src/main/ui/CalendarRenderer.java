@@ -43,7 +43,7 @@ public class CalendarRenderer{
 		
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("<table width=100%><tr>");
+		sb.append("<table width=100% class=calendar><tr>");
 		sb.append("<td width=1><a href=\"http://doit/gotoMonth/"+DateTimeFormat.forPattern("yyyy-M").print(dt.minusMonths(1))+"\">&lt;</a></td>");
 		sb.append("<td align=center>"+DateTimeFormat.forPattern("MMMM yyyy").print(dt)+"</td>");
 		sb.append("<td width=1><a href=\"http://doit/gotoMonth/"+DateTimeFormat.forPattern("yyyy-M").print(dt.plusMonths(1))+"\">&gt;</a></td></tr></table>");
