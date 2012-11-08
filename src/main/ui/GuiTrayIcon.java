@@ -52,7 +52,7 @@ public class GuiTrayIcon extends UI {
 		if (SystemTray.isSupported()) {
 
 		    SystemTray tray = SystemTray.getSystemTray();
-		    Image image = createImageIcon("icon.png","").getImage();
+		    Image image = createImageIcon("/resource/icon.png","").getImage();
 		    
 		    //Toolkit.getDefaultToolkit().getImage("computer.gif");
 

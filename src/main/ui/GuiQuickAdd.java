@@ -21,6 +21,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.Toolkit;
 
 public class GuiQuickAdd extends GuiCommandBox{
 
@@ -72,6 +73,7 @@ public class GuiQuickAdd extends GuiCommandBox{
 	 */
 	public void initialize() {
 		frmDoit = new JFrame();
+		frmDoit.setIconImage(Toolkit.getDefaultToolkit().getImage(GuiQuickAdd.class.getResource("/resource/icon.png")));
 		frmDoit.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
