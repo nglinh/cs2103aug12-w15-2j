@@ -58,13 +58,7 @@ public class GuiQuickAdd extends GuiCommandBox{
 	 * Create the application.
 	 */
 	private GuiQuickAdd() {
-		try {
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException | UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		setUiLookAndFeel();
 		initialize();
 	}
 

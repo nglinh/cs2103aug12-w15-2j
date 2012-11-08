@@ -45,8 +45,8 @@ import javax.swing.event.TableModelListener;
 
 import org.joda.time.DateTime;
 
+import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import com.joestelmach.natty.DateGroup;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -54,6 +54,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -111,10 +112,8 @@ public class GuiMain2 extends GuiCommandBox{
 	private JToolBar toolBar;
 	private JButton btnHome;
 	private JButton btnUndo;
-	private JSeparator separator;
 	private JToggleButton tglbtnAgendaView;
 	private JToggleButton tglbtnListView;
-	private JSeparator separator_1;
 	private JButton btnPreferences;
 	private JPanel panelCards;
 
@@ -125,6 +124,7 @@ public class GuiMain2 extends GuiCommandBox{
 	private JPanel panel_1;
 	private JTextField txtTaskEdit;
 	private Component horizontalGlue;
+	private Component horizontalGlue_1;
 	
 	/**
 	 * Launch the application.
@@ -148,14 +148,7 @@ public class GuiMain2 extends GuiCommandBox{
 	 */
 	private GuiMain2() {
 		log.entering(this.getClass().getName(), "<init>");
-		try {
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-			//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException | UnsupportedLookAndFeelException e) {
-			//e.printStackTrace();
-			log.log(Level.WARNING, "Error encountered when setting look and feel", e);
-		}
+		setUiLookAndFeel();
 		
 		initialize();
 		log.exiting(this.getClass().getName(), "<init>");
@@ -219,10 +212,6 @@ public class GuiMain2 extends GuiCommandBox{
 		toolBar.add(btnUndo);
 		toolBar.add(btnHome);
 		
-		separator = new JSeparator();
-		separator.setOrientation(SwingConstants.VERTICAL);
-		toolBar.add(separator);
-		
 		tglbtnAgendaView = new JToggleButton("Agenda View");
 		tglbtnAgendaView.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/calendar_view_day.png")));
 		tglbtnAgendaView.addActionListener(new ActionListener() {
@@ -230,6 +219,9 @@ public class GuiMain2 extends GuiCommandBox{
 				switchCard(CARD_AGENDA);
 			}
 		});
+		
+		horizontalGlue_1 = Box.createHorizontalGlue();
+		toolBar.add(horizontalGlue_1);
 		toolBar.add(tglbtnAgendaView);
 		
 		tglbtnListView = new JToggleButton("List View");
@@ -241,14 +233,6 @@ public class GuiMain2 extends GuiCommandBox{
 		});
 		toolBar.add(tglbtnListView);
 		
-		separator_1 = new JSeparator();
-		separator_1.setOrientation(SwingConstants.VERTICAL);
-		toolBar.add(separator_1);
-		
-		btnPreferences = new JButton("Preferences");
-		btnPreferences.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/wrench_orange.png")));
-		toolBar.add(btnPreferences);
-		
 		btnHelp = new JButton("Help");
 		btnHelp.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/help.png")));
 		btnHelp.addActionListener(new ActionListener() {
@@ -259,6 +243,10 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		horizontalGlue = Box.createHorizontalGlue();
 		toolBar.add(horizontalGlue);
+		
+		btnPreferences = new JButton("Preferences");
+		btnPreferences.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/wrench_orange.png")));
+		toolBar.add(btnPreferences);
 		toolBar.add(btnHelp);
 		
 		panelCards = new JPanel();
@@ -419,7 +407,8 @@ public class GuiMain2 extends GuiCommandBox{
 		}
 		
 		txtTaskEdit.setVisible(false);
-		
+		switchCard(CARD_AGENDA);
+
 		showStatus(fileStatus);
 		
 		log.exiting(this.getClass().getName(), "initialize");
@@ -429,7 +418,7 @@ public class GuiMain2 extends GuiCommandBox{
 		HTMLEditorKit kit = new HTMLEditorKit();
         StyleSheet styleSheet = kit.getStyleSheet();
         styleSheet.addRule(".calendar td{text-align:right;}");
-        styleSheet.addRule(".calendar a {color:#2A5696;text-decoration:none;}");
+        styleSheet.addRule(".calendar a {color:#5E92AE;text-decoration:none;}");
         //styleSheet.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
         //styleSheet3.addRule(".calendarDate{padding-right;5px;}");
         //Document doc = kit.createDefaultDocument();
@@ -442,13 +431,17 @@ public class GuiMain2 extends GuiCommandBox{
         //txtDatedTasks.setEditorKit(kit);
 
         StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body {color:#000; font-family:Segoe UI;}");
-        styleSheet.addRule("table {color:#000; font-family:Segoe UI;}");
-        styleSheet.addRule(".calendarbox {border:1px solid #2A5696; color:#000000; width:40px;}");
-        styleSheet.addRule(".calendarbox .calendardayofweek{background-color:#2A5696; color:#FFFFFF; width:40px;}");
+        styleSheet.addRule("body {color:#000; font-family:Segoe UI; font-size:12pt;}");
+        styleSheet.addRule("table {color:#000; font-family:Segoe UI; font-size:12pt;}");
+        styleSheet.addRule("td{font-size:12pt;}");
+        styleSheet.addRule(".calendarbox {border:1px solid #7FA9BF; color:#000000; width:40px;}");
+        styleSheet.addRule(".calendarbox .calendarboxDayOfWeek{background-color:#7FA9BF; color:#FFFFFF; width:40px;font-size:10pt;}");
+        styleSheet.addRule(".calendarboxDay{font-size:18pt;}");
+        styleSheet.addRule(".calendarboxMonth{font-size:10pt;}");
         styleSheet.addRule(".taskbox{margin-bottom:5px;padding:2px;}");
         styleSheet.addRule(".taskbox a, .taskboxhighlight a{color:#000000;text-decoration:none;}");
-        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FFFF7F;padding:2px;}");
+        styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FDFDBF;padding:2px;}");
+        styleSheet.addRule(".taskDescription {font-size:15pt;}");
         styleSheet.addRule(".separatorfirst{font-size:1px;border-width:0px;}");
         styleSheet.addRule(".separator{font-size:1px;border:1px solid #DDDDDD; border-width:1px 0px 0px 0px;}");
      

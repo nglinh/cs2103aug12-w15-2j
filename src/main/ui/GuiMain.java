@@ -79,15 +79,9 @@ public class GuiMain extends GuiCommandBox{
 	 */
 	private GuiMain() {
 		log.entering(this.getClass().getName(), "constructor");
-		try {
-			log.info("Setting look and feel");
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException | UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			log.log(Level.WARNING, "Could not set look and feel", e);
-		}
+		
+		setUiLookAndFeel();
+		
 		initialize();
 		log.exiting(this.getClass().getName(), "constructor");
 	}

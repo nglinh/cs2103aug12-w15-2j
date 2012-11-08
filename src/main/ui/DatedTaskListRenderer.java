@@ -103,9 +103,9 @@ public class DatedTaskListRenderer{
 		sb.append("<tr><td align=center><font size=3>"+dt.getYear()+"</font></td></tr>");
 		sb.append("</table>");*/
 		sb.append("<table cellpadding=0 cellspacing=0 class=\"calendarbox\">");
-		sb.append("<tr><td align=center class=\"calendardayofweek\"><font size=3>"+DateTimeFormat.forPattern("EEE").print(dt).toUpperCase()+"</font></td></tr>");
-		sb.append("<tr><td align=center><font size=6>"+dt.getDayOfMonth()+"</font></td></tr>");
-		sb.append("<tr><td align=center><font size=3>"+DateTimeFormat.forPattern("MMM").print(dt).toUpperCase()+"&nbsp;"+dt.getYear()+"</font></td></tr>");
+		sb.append("<tr><td align=center class=\"calendarboxDayOfWeek\">"+DateTimeFormat.forPattern("EEE").print(dt).toUpperCase()+"</td></tr>");
+		sb.append("<tr><td align=center><span class=\"calendarboxDay\">"+dt.getDayOfMonth()+"</span></td></tr>");
+		sb.append("<tr><td align=center><span class=\"calendarboxMonth\">"+DateTimeFormat.forPattern("MMM").print(dt).toUpperCase()+"&nbsp;"+dt.getYear()+"</span></td></tr>");
 		sb.append("</table>");
 		
 		return sb.toString();
@@ -128,7 +128,7 @@ public class DatedTaskListRenderer{
 		sb.append("<table cellpadding=0 cellspacing=0 class=\""+cssClass+"\" width=100%>");
 		sb.append("<tr><td><a href=\"http://doit/editTask/"+taskIndex+"\">"+renderTaskDate(t, currentDay)+"</a></td><td width=1 align=center>" + taskIndex + "</td></tr>");
 		sb.append("<tr>");
-		sb.append("<td><font size=5><a href=\"http://doit/editTask/"+taskIndex+"\">"+HTMLEncoder.encode(taskName)+"</a></font></td>");
+		sb.append("<td><span class=\"taskDescription\"><a href=\"http://doit/editTask/"+taskIndex+"\">"+HTMLEncoder.encode(taskName)+"</a></span></td>");
 		if(t.isDone()){
 			sb.append("<td valign=middle align=center><input type=checkbox checked></td>");
 		}else{

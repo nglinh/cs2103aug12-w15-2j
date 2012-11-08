@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JEditorPane;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
+import java.awt.Toolkit;
 
 public class GuiHelp extends UI{
 
@@ -48,6 +49,7 @@ public class GuiHelp extends UI{
 	 */
 	private void initialize() {
 		frmDoithelp = new JFrame();
+		frmDoithelp.setIconImage(Toolkit.getDefaultToolkit().getImage(GuiHelp.class.getResource("/resource/icon.png")));
 		frmDoithelp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmDoithelp.setTitle("DoIt! Help");
 		frmDoithelp.setBounds(100, 100, 305, 500);

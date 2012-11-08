@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
@@ -45,6 +47,7 @@ public class GuiTrayIcon extends UI {
 		final TrayIcon trayIcon;
 		
 		if(checkFilePermissions().contains("lock")){
+			setUiLookAndFeel();
 			JOptionPane.showMessageDialog(null, "DoIt! is already running! Check your system tray for DoIt's icon.");
 			exit();
 		}
