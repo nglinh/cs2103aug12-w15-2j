@@ -2,6 +2,8 @@ package main.ui;
 
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.Rectangle;
+
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
@@ -67,6 +69,10 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import javax.swing.Box;
 import java.awt.Toolkit;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowEvent;
 
 public class GuiMain2 extends GuiCommandBox{
 	
@@ -163,6 +169,13 @@ public class GuiMain2 extends GuiCommandBox{
 		log.entering(this.getClass().getName(), "initialize");
 				
 		frmDoit = new JFrame();
+		frmDoit.addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent arg0) {
+				System.out.println(txtCmd.requestFocusInWindow());
+			}
+			public void windowLostFocus(WindowEvent arg0) {
+			}
+		});
 		frmDoit.setIconImage(Toolkit.getDefaultToolkit().getImage(GuiMain2.class.getResource("/resource/icon.png")));
 		frmDoit.setTitle("DoIt!");
 		frmDoit.setBounds(100, 100, 600, 620);
@@ -634,6 +647,7 @@ public class GuiMain2 extends GuiCommandBox{
 					System.out.println(indexToEdit);
 					int index = Integer.parseInt(indexToEdit);
 					table.setRowSelectionInterval(index-1, index-1);
+					table.scrollRectToVisible(new Rectangle(table.getCellRect(index-1, 0, true)));
 					switchCard(CARD_LIST);
 				}
 			}
