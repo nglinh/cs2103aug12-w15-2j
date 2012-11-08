@@ -1,7 +1,6 @@
 package main.ui;
 
 import java.awt.AWTException;
-import java.awt.Event;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -24,7 +23,6 @@ import main.LogHandler;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -54,7 +52,7 @@ public class GuiTrayIcon extends UI {
 		if (SystemTray.isSupported()) {
 
 		    SystemTray tray = SystemTray.getSystemTray();
-		    Image image = createImageIcon("icon.png","").getImage();
+		    Image image = createImageIcon("/resource/icon.png","").getImage();
 		    
 		    //Toolkit.getDefaultToolkit().getImage("computer.gif");
 
