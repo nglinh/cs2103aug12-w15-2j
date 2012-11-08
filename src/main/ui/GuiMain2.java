@@ -125,7 +125,7 @@ public class GuiMain2 extends GuiCommandBox{
 	private JPanel panel_1;
 	private JTextField txtTaskEdit;
 	private Component horizontalGlue;
-
+	
 	/**
 	 * Launch the application.
 	 */
@@ -392,6 +392,15 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		log.info("Calling GuiCommandBox to configure widgets");
 		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
+		
+		/*btnNewButton = new JButton("Undo");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				executeCommand("undo");
+			}
+		});
+		btnNewButton.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/arrow_undo.png")));
+		panelCmd.add(btnNewButton, BorderLayout.EAST);*/
 		
         log.info("Checking file permissions");
 		String fileStatus = checkFilePermissions();		
