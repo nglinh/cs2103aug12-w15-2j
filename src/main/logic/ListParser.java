@@ -71,6 +71,10 @@ public class ListParser extends CommandParser {
 			}
 
 		}
+		
+		if(!(overdue || complete || incomplete || timed || deadline || floating || today || tomorrow)){
+			statusMsg += " \"All Tasks\" ";
+		}
 	}
 	
 	public String getStatusMsg(){

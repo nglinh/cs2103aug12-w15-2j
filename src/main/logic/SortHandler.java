@@ -68,7 +68,7 @@ public class SortHandler extends CommandHandler{
 
 		} else {
 			sorter = latestSorter;
-			statusMsg = "incorrect parameter, sorted by Start Date/Deadline";
+			statusMsg = "sorted by Start Date/Deadline";
 		}
 
 		latestSorter = sorter;
