@@ -126,9 +126,9 @@ public class DatedTaskListRenderer{
 		}
 		
 		sb.append("<table cellpadding=0 cellspacing=0 class=\""+cssClass+"\" width=100%>");
-		sb.append("<tr><td>"+renderTaskDate(t, currentDay)+"</td><td width=1 align=center>" + taskIndex + "</td></tr>");
+		sb.append("<tr><td><a href=\"http://doit/editTask/"+taskIndex+"\">"+renderTaskDate(t, currentDay)+"</a></td><td width=1 align=center>" + taskIndex + "</td></tr>");
 		sb.append("<tr>");
-		sb.append("<td><font size=5>"+HTMLEncoder.encode(taskName)+"</font></td>");
+		sb.append("<td><font size=5><a href=\"http://doit/editTask/"+taskIndex+"\">"+HTMLEncoder.encode(taskName)+"</a></font></td>");
 		if(t.isDone()){
 			sb.append("<td valign=middle align=center><input type=checkbox checked></td>");
 		}else{
