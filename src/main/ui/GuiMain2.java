@@ -117,12 +117,12 @@ public class GuiMain2 extends GuiCommandBox{
 	private JButton btnPreferences;
 	private JPanel panelCards;
 
-	private JScrollPane scrollPaneTable;
-
 	private JTable table;
 
-	private JScrollPane scrollPane;
+	private JScrollPane scrollPaneTable;
 	private JButton btnHelp;
+	private JPanel panel_1;
+	private JTextField txtTaskEdit;
 
 	/**
 	 * Launch the application.
@@ -260,18 +260,35 @@ public class GuiMain2 extends GuiCommandBox{
 		frmDoit.getContentPane().add(panelCards, BorderLayout.CENTER);
 		panelCards.setLayout(new CardLayout(0, 0));
 		
+		panel_1 = new JPanel();
+		panelCards.add(panel_1, "agendaCard");
+		panel_1.setLayout(new BorderLayout(0, 0));
+		
 		// *************************
 		// * Panel for Agenda View *
 		// *************************
 		
 		JSplitPane splitPane = new JSplitPane();
-		panelCards.add(splitPane, "agendaCard");
+		panel_1.add(splitPane);
 		splitPane.setDividerLocation(350);
 		
 		scrollPaneDated = new JScrollPane();
 		splitPane.setLeftComponent(scrollPaneDated);
 		
 		txtDatedTasks = new JEditorPane();
+		txtDatedTasks.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					log.finer("Hyperlink activated (dated tasks) " + e.getURL().getPath());
+					if(e.getURL().getPath().startsWith("/editTask/")){
+						String indexToEdit = e.getURL().getPath().split("/")[2];
+						int index = Integer.parseInt(indexToEdit);
+						txtTaskEdit.setText((String) table.getModel().getValueAt(index-1, MyTableModel.COL_TASKNAME));
+						txtTaskEdit.setVisible(true);
+					}
+				}
+			}
+		});
 		txtDatedTasks.setContentType("text/html");
 		txtDatedTasks.setText("<html>\r\n<table>\r\n<tr>\r\n<td width=\"50\"><font face=\"Segoe UI\" size=1>TUE<br>SEP<br> <font size=\"4\">20</font><br> 2012</font></td>\r\n<td>\r\nBy 2:00pm<br>\r\nTask ABCD\r\n</td>\r\n</tr>\r\n</table>");
 		txtDatedTasks.setEditable(false);
@@ -301,11 +318,16 @@ public class GuiMain2 extends GuiCommandBox{
 		
         txtCalendar.setEditorKit(generateCalendarDocumentStyle());
         
+        txtTaskEdit = new JTextField();
+        txtTaskEdit.setText("txtTaskEdit");
+        panel_1.add(txtTaskEdit, BorderLayout.NORTH);
+        txtTaskEdit.setColumns(10);
+        
         // ***********************
         // * Panel for List View *
         // ***********************
         
-        scrollPane = new JScrollPane();
+        scrollPaneTable = new JScrollPane();
 
 		table = new JTable();
 		table.addKeyListener(new KeyAdapter() {
@@ -350,8 +372,8 @@ public class GuiMain2 extends GuiCommandBox{
 		table.getColumnModel().getColumn(3).setPreferredWidth(110);
 		table.getColumnModel().getColumn(4).setPreferredWidth(160);
 
-		scrollPane.setViewportView(table);
-		panelCards.add(scrollPane, "listCard");       
+		scrollPaneTable.setViewportView(table);
+		panelCards.add(scrollPaneTable, "listCard");       
         
         // *************************
         // * Panel for command box *
@@ -392,6 +414,8 @@ public class GuiMain2 extends GuiCommandBox{
 		}else{
 			showTasksList(firstLaunchTasks);
 		}
+		
+		txtTaskEdit.setVisible(false);
 		
 		showStatus(fileStatus);
 		
