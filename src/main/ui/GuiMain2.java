@@ -17,7 +17,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
 import javax.swing.text.html.HTMLDocument;
@@ -48,9 +47,6 @@ import org.joda.time.DateTime;
 
 import com.joestelmach.natty.DateGroup;
 
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -67,6 +63,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JToggleButton;
 import javax.swing.ImageIcon;
 import java.awt.CardLayout;
+import java.awt.Component;
+import javax.swing.Box;
 
 public class GuiMain2 extends GuiCommandBox{
 	
@@ -75,6 +73,8 @@ public class GuiMain2 extends GuiCommandBox{
 	private static final String TABLE_COLUMN_WIDTH_INDEX_MAX_TEXT = "9999";
 	private static final int TABLE_COLUMN_WIDTH_EXTRA = 10;
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
+	private static final String CARD_AGENDA = "agendaCard";
+	private static final String CARD_LIST = "listCard";
 
 	Logger log = LogHandler.getLogInstance();
 
@@ -123,6 +123,7 @@ public class GuiMain2 extends GuiCommandBox{
 	private JButton btnHelp;
 	private JPanel panel_1;
 	private JTextField txtTaskEdit;
+	private Component horizontalGlue;
 
 	/**
 	 * Launch the application.
@@ -198,45 +199,42 @@ public class GuiMain2 extends GuiCommandBox{
 		frmDoit.getContentPane().add(toolBar, BorderLayout.NORTH);
 		
 		btnHome = new JButton("Home");
-		btnHome.setIcon(new ImageIcon(GuiMain2.class.getResource("/com/sun/java/swing/plaf/windows/icons/UpFolder.gif")));
+		btnHome.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/house.png")));
 		btnHome.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				executeCommand("list");
 				executeCommand("sort");
 			}
 		});
-		toolBar.add(btnHome);
 		
 		btnUndo = new JButton("Undo");
+		btnUndo.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/arrow_undo.png")));
 		btnUndo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				executeCommand("undo");
 			}
 		});
 		toolBar.add(btnUndo);
+		toolBar.add(btnHome);
 		
 		separator = new JSeparator();
 		separator.setOrientation(SwingConstants.VERTICAL);
 		toolBar.add(separator);
 		
 		tglbtnAgendaView = new JToggleButton("Agenda View");
+		tglbtnAgendaView.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/calendar_view_day.png")));
 		tglbtnAgendaView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CardLayout cl = (CardLayout)(panelCards.getLayout());
-				cl.show(panelCards, "agendaCard");
-				tglbtnAgendaView.setSelected(true);
-				tglbtnListView.setSelected(false);
+				switchCard(CARD_AGENDA);
 			}
 		});
 		toolBar.add(tglbtnAgendaView);
 		
 		tglbtnListView = new JToggleButton("List View");
+		tglbtnListView.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/calendar_view_week.png")));
 		tglbtnListView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CardLayout cl = (CardLayout)(panelCards.getLayout());
-				cl.show(panelCards, "listCard");
-				tglbtnAgendaView.setSelected(false);
-				tglbtnListView.setSelected(true);
+				switchCard(CARD_LIST);
 			}
 		});
 		toolBar.add(tglbtnListView);
@@ -246,14 +244,19 @@ public class GuiMain2 extends GuiCommandBox{
 		toolBar.add(separator_1);
 		
 		btnPreferences = new JButton("Preferences");
+		btnPreferences.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/wrench_orange.png")));
 		toolBar.add(btnPreferences);
 		
 		btnHelp = new JButton("Help");
+		btnHelp.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/help.png")));
 		btnHelp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				GuiHelp.getInstance().runUI();
 			}
 		});
+		
+		horizontalGlue = Box.createHorizontalGlue();
+		toolBar.add(horizontalGlue);
 		toolBar.add(btnHelp);
 		
 		panelCards = new JPanel();
@@ -261,7 +264,7 @@ public class GuiMain2 extends GuiCommandBox{
 		panelCards.setLayout(new CardLayout(0, 0));
 		
 		panel_1 = new JPanel();
-		panelCards.add(panel_1, "agendaCard");
+		panelCards.add(panel_1, CARD_AGENDA);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
 		// *************************
@@ -282,9 +285,10 @@ public class GuiMain2 extends GuiCommandBox{
 					log.finer("Hyperlink activated (dated tasks) " + e.getURL().getPath());
 					if(e.getURL().getPath().startsWith("/editTask/")){
 						String indexToEdit = e.getURL().getPath().split("/")[2];
+						System.out.println(indexToEdit);
 						int index = Integer.parseInt(indexToEdit);
-						txtTaskEdit.setText((String) table.getModel().getValueAt(index-1, MyTableModel.COL_TASKNAME));
-						txtTaskEdit.setVisible(true);
+						table.setRowSelectionInterval(index-1, index-1);
+						switchCard(CARD_LIST);
 					}
 				}
 			}
@@ -373,7 +377,7 @@ public class GuiMain2 extends GuiCommandBox{
 		table.getColumnModel().getColumn(4).setPreferredWidth(160);
 
 		scrollPaneTable.setViewportView(table);
-		panelCards.add(scrollPaneTable, "listCard");       
+		panelCards.add(scrollPaneTable, CARD_LIST);       
         
         // *************************
         // * Panel for command box *
@@ -426,7 +430,7 @@ public class GuiMain2 extends GuiCommandBox{
 		HTMLEditorKit kit = new HTMLEditorKit();
         StyleSheet styleSheet = kit.getStyleSheet();
         styleSheet.addRule(".calendar td{text-align:right;}");
-        styleSheet.addRule("a {color:#2A5696;text-decoration:none;}");
+        styleSheet.addRule(".calendar a {color:#2A5696;text-decoration:none;}");
         //styleSheet.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
         //styleSheet3.addRule(".calendarDate{padding-right;5px;}");
         //Document doc = kit.createDefaultDocument();
@@ -444,6 +448,7 @@ public class GuiMain2 extends GuiCommandBox{
         styleSheet.addRule(".calendarbox {border:1px solid #2A5696; color:#000000; width:40px;}");
         styleSheet.addRule(".calendarbox .calendardayofweek{background-color:#2A5696; color:#FFFFFF; width:40px;}");
         styleSheet.addRule(".taskbox{margin-bottom:5px;padding:2px;}");
+        styleSheet.addRule(".taskbox a, .taskboxhighlight a{color:#000000;text-decoration:none;}");
         styleSheet.addRule(".taskboxhighlight{margin-bottom:5px;background-color:#FFFF7F;padding:2px;}");
         styleSheet.addRule(".separatorfirst{font-size:1px;border-width:0px;}");
         styleSheet.addRule(".separator{font-size:1px;border:1px solid #DDDDDD; border-width:1px 0px 0px 0px;}");
@@ -1029,6 +1034,22 @@ public class GuiMain2 extends GuiCommandBox{
 		table.getModel().addTableModelListener(new TableChangedHandler());
 		
 		log.exiting(this.getClass().getName(), "showTasksList");
+	}
+	
+	public void switchCard(String cardName){
+		CardLayout cl = (CardLayout)(panelCards.getLayout());
+		switch(cardName){
+			case CARD_AGENDA:				
+				cl.show(panelCards, CARD_AGENDA);
+				tglbtnAgendaView.setSelected(true);
+				tglbtnListView.setSelected(false);
+				break;
+			case CARD_LIST:
+				cl.show(panelCards, CARD_LIST);
+				tglbtnAgendaView.setSelected(false);
+				tglbtnListView.setSelected(true);
+				break; 
+		}
 	}
 
 }
