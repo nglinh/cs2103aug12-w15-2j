@@ -233,13 +233,15 @@ public class Database {
 
 		verifyFileWritingAbility();
 
+    Task newTaskClone = new Task(newTask);
+
 		List<Task> newList = new ArrayList<Task>();
 
 		for (Task currentEntry : taskStore) {
 			newList.add(new Task(currentEntry));
 		}
 
-		newList.add(newTask);
+		newList.add(newTaskClone);
 
 		log.info("Incoming task saved to temporary copy");
 
