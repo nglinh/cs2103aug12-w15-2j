@@ -59,6 +59,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JButton;
@@ -172,7 +173,7 @@ public class GuiMain2 extends GuiCommandBox{
 		frmDoit = new JFrame();
 		frmDoit.addWindowFocusListener(new WindowFocusListener() {
 			public void windowGainedFocus(WindowEvent arg0) {
-				System.out.println(txtCmd.requestFocusInWindow());
+				txtCmd.requestFocusInWindow();
 			}
 			public void windowLostFocus(WindowEvent arg0) {
 			}
@@ -1016,6 +1017,9 @@ public class GuiMain2 extends GuiCommandBox{
 					assert false;
 				}
 			
+			}catch(IllegalArgumentException e){
+				JOptionPane.showMessageDialog(null, "Invalid date entered. The end date should be after the start date.");
+				log.log(Level.WARNING, "Problem with date", e);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
