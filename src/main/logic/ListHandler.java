@@ -1,13 +1,16 @@
 //@author A0081007U
 package main.logic;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
 
 import main.shared.LogicToUi;
 import main.shared.SearchTerms;
 import main.shared.Task;
+import main.storage.WillNotWriteToCorruptFileException;
 
 public class ListHandler extends CommandHandler {
 
@@ -79,6 +82,15 @@ public class ListHandler extends CommandHandler {
 		return new LogicToUi(results, parser.getStatusMsg(), filter);
 
 
+	}
+
+	@Override
+	@Deprecated
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		// empty method.
+		
 	}
 
 

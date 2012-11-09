@@ -25,6 +25,7 @@ public class PostponeParser extends CommandParser {
 	private DateTime newStartTime;
 	private DateTime newEndTime;
 	private List<Task> lastShownToUi;
+	private int toBePostponedSerial;
 
 	public PostponeParser(String arguments) {
 		super(arguments);
@@ -38,15 +39,17 @@ public class PostponeParser extends CommandParser {
 			CannotParseDateException, CannotPostponeFloatingException {
 		int index;
 		index = Integer.parseInt(getFirstWord(argument));
-		argument = removeFirstWord(argument);
 		index--; // Since arraylist index starts from 0
+		argument = removeFirstWord(argument);
+		if (argument.length() == 0) {
+			throw new CannotParseDateException();
+		}
 
 		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
 			throw new NoSuchElementException();
 		}
-		if (argument.length() == 0) {
-			throw new CannotParseDateException();
-		}
+
+		toBePostponedSerial = lastShownToUi.get(index).getSerial();
 		toBePostponed = lastShownToUi.get(index);
 		if (toBePostponed.getType() == TaskType.FLOATING) {
 			throw new CannotPostponeFloatingException();
@@ -66,8 +69,8 @@ public class PostponeParser extends CommandParser {
 			}
 			newStartTime = new DateTime(startGroups.get(0).getDates().get(0));
 
-			endGroups = parser.parseWCustomBaseDate(
-					toBePostponed.getEndDate(), argument);
+			endGroups = parser.parseWCustomBaseDate(toBePostponed.getEndDate(),
+					argument);
 			if (endGroups.size() == 0) {
 				throw new CannotParseDateException();
 			}
@@ -75,19 +78,19 @@ public class PostponeParser extends CommandParser {
 		}
 	}
 
-	public Task getToBePostponed() {
-		return toBePostponed;
+	public int getToBePostponedSerial() {
+		return toBePostponedSerial;
 	}
 
-	public DateTime getNewDeadline() {
+	public DateTime getNewDl() {
 		return newDeadline;
 	}
 
-	public DateTime getNewStartTime() {
+	public DateTime getNewST() {
 		return newStartTime;
 	}
 
-	public DateTime getNewEndTime() {
+	public DateTime getNewET() {
 		return newEndTime;
 	}
 }
