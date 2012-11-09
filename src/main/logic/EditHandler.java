@@ -11,6 +11,7 @@ import main.shared.LogicToUi;
 import main.shared.Task;
 import main.shared.Task.TaskType;
 import main.storage.WillNotWriteToCorruptFileException;
+//TODO use isEqualTo
 
 public class EditHandler extends CommandHandler {
 	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change to timed task, you need to specify"
