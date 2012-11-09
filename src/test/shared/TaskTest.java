@@ -213,22 +213,22 @@ public class TaskTest {
 		Task toBeTakenOver;
 		
 		toBeTakenOver = new Task(name);
-		assertTrue(name.amIEqualToThis(toBeTakenOver));
+		assertTrue(name.isEqualTo(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameTrue);
-		assertTrue(nameTrue.amIEqualToThis(toBeTakenOver));
+		assertTrue(nameTrue.isEqualTo(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameDeadline);
-		assertTrue(nameDeadline.amIEqualToThis(toBeTakenOver));
+		assertTrue(nameDeadline.isEqualTo(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameDeadlineTrue);
-		assertTrue(nameDeadlineTrue.amIEqualToThis(toBeTakenOver));
+		assertTrue(nameDeadlineTrue.isEqualTo(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameTimed);
-		assertTrue(nameTimed.amIEqualToThis(toBeTakenOver));
+		assertTrue(nameTimed.isEqualTo(toBeTakenOver));
 		
 		toBeTakenOver = new Task(nameTimedFalse);
-		assertTrue(nameTimedFalse.amIEqualToThis(toBeTakenOver));
+		assertTrue(nameTimedFalse.isEqualTo(toBeTakenOver));
 		
 
 
@@ -582,41 +582,41 @@ public class TaskTest {
 		
 		nameTrue.becomeThis(nameTimedFalse);
 		
-		assertTrue(nameTrue.amIEqualToThis(nameTimedFalse));
+		assertTrue(nameTrue.isEqualTo(nameTimedFalse));
 	}
 	
 	@Test
 	public void testAmIEqualToThis(){
-		assertTrue(nameTimedFalse.amIEqualToThis(nameTimedFalse));
+		assertTrue(nameTimedFalse.isEqualTo(nameTimedFalse));
 		
 		Task newName = new Task(name);
 		
 		newName.changeName(name.getTaskName() + "extra");
-		assertFalse("Different name", newName.amIEqualToThis(name));
+		assertFalse("Different name", newName.isEqualTo(name));
 		
 		newName = new Task(name);
 		
 		newName.changetoDeadline(new DateTime());
-		assertFalse("Different type", newName.amIEqualToThis(name));
+		assertFalse("Different type", newName.isEqualTo(name));
 		
 		Task newStart = new Task(nameTimed);
 		newStart.changeStartAndEndDate(newStart.getStartDate().plus(1), newStart.getEndDate());
-		assertFalse("Different start", newStart.amIEqualToThis(nameTimed));
+		assertFalse("Different start", newStart.isEqualTo(nameTimed));
 		
 		Task newEnd = new Task(nameTimedFalse);
 		newEnd.changeStartAndEndDate(newEnd.getStartDate(), newEnd.getEndDate().plus(1));
-		assertFalse("Different End", newEnd.amIEqualToThis(nameTimedFalse));
+		assertFalse("Different End", newEnd.isEqualTo(nameTimedFalse));
 		
 		Task newDeadline = new Task(nameDeadline);
 		newDeadline.changeDeadline(newDeadline.getDeadline().plus(1));
-		assertFalse("Different deadline", newDeadline.amIEqualToThis(nameDeadline));
+		assertFalse("Different deadline", newDeadline.isEqualTo(nameDeadline));
 		
 		Task newNameTrue = new Task(nameTimedFalse);
 		newNameTrue.done(true);
-		assertFalse("Different type", newNameTrue.amIEqualToThis(nameTimedFalse));
+		assertFalse("Different type", newNameTrue.isEqualTo(nameTimedFalse));
 		
 		Task newNameTask = new Task(name.getTaskName());
-		assertFalse("Different Serial", newNameTask.amIEqualToThis(name));
+		assertFalse("Different Serial", newNameTask.isEqualTo(name));
 		
 		
 	}

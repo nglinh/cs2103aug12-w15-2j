@@ -12,7 +12,7 @@ import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
-
+//TODO use isEqualTo
 public class EditParser extends CommandParser {
 	private static final String DASH = "-";
 	public boolean willChangeType = false;

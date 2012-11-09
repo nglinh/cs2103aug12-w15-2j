@@ -368,7 +368,7 @@ public class Task implements Comparable<Task> {
 		this.deadline = newDeadline;
 	}
 	
-	public boolean amIEqualToThis(Task toCompare){
+	public boolean isEqualTo(Task toCompare){
 		if(toCompare == null){
 			throw new IllegalArgumentException();
 		}
