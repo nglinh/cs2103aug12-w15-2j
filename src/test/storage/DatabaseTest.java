@@ -78,8 +78,10 @@ public class DatabaseTest {
 		filledListing.add(nameTimedFalse);
 		filledListing.add(nameDeadline);
 		filledListing.add(name);
-		filledListing.add(nameTrue);
 		filledListing.add(nameFalse);
+		filledListing.add(nameTrue);
+
+		
 
 		Collections.sort(filledListing);
 
@@ -114,9 +116,12 @@ public class DatabaseTest {
 
 			//Check the size read back is equal
 			assertEquals(filledListing.size(), initialClearListing.size());
+			
+			Collections.sort(initialClearListing);
 
 			for(int i = 0; i < filledListing.size(); i++){
 				assertEquals(filledListing.get(i).showInfo(), initialClearListing.get(i).showInfo());
+				
 			}
 
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
@@ -174,6 +179,8 @@ public class DatabaseTest {
 			initialClearListing = db.getAll();
 
 			assertEquals(filledListing.size(), initialClearListing.size());
+			
+			Collections.sort(initialClearListing);
 
 			for (int i = 0; i < initialClearListing.size(); i++) {
 				assertEquals(filledListing.get(i).showInfo(), initialClearListing.get(i).showInfo());
@@ -281,6 +288,8 @@ public class DatabaseTest {
 			db.update(nameTrue.getSerial(), nameDeadline);
 			initialClearListing = db.getAll();
 			
+			Collections.sort(initialClearListing);
+			
 			assertEquals(nameDeadline.showInfo(), initialClearListing.get(1).showInfo());
 			
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
@@ -377,7 +386,7 @@ public class DatabaseTest {
 			initialClearListing = db.getAll();
 			assertEquals(0, initialClearListing.size());
 
-			//Delete wany tasks task
+			//Delete many tasks task
 			db.setAll(filledListing);
 			db.deleteAll();
 			initialClearListing = db.getAll();

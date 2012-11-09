@@ -10,8 +10,10 @@ package main.storage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
@@ -28,7 +30,7 @@ public class Database {
 		FILE_ALL_OK, FILE_READ_ONLY, FILE_PERMISSIONS_UNKNOWN, FILE_IS_CORRUPT, FILE_IS_LOCKED
 	};
 
-	private List<Task> taskStore = new ArrayList<Task>();
+	private HashMap<Integer, Task> quickAccessTask = new HashMap<Integer, Task>();
 
 	private FileManagement diskFile;
 	private DB_File_Status fileAttributes;
@@ -53,12 +55,24 @@ public class Database {
 	private Database() {
 		log.info("Database instance created, now starting FileMgmt");
 
+		List<Task> taskList = new ArrayList<Task>();
+		
 		diskFile = FileManagement.getInstance();
 		diskFile.prepareDatabaseFile();
-		diskFile.readFileAndDetectCorruption(taskStore);
-		fileAttributes = parseFileAttributes(diskFile);
+		diskFile.readFileAndDetectCorruption(taskList);
+		duplicateListToHashMap(taskList);
+		fileAttributes = parseFileAttributes();
 
 		log.info("FileMgmt started");
+	}
+
+	private void duplicateListToHashMap(List<Task> listOfTasks) {
+
+		quickAccessTask.clear();
+		for(Task current : listOfTasks) {
+			quickAccessTask.put(current.getSerial(), current);
+		}	
+
 	}
 
 	/**
@@ -74,11 +88,14 @@ public class Database {
 	public List<Task> search(SearchTerms terms) {
 		List<Task> searchResults = new ArrayList<Task>();
 
-		for (Task currentEntry : taskStore) {
+		for (Map.Entry<Integer, Task> entry : quickAccessTask.entrySet()) {
+			Task currentEntry = entry.getValue();
+			
 			if (taskMeetsSearchTerms(currentEntry, terms)) {
 				searchResults.add(new Task(currentEntry));
 			}
 		}
+		
 
 		return searchResults;
 	}
@@ -181,7 +198,8 @@ public class Database {
 
 		List<Task> result = new ArrayList<Task>();
 
-		for (Task currentEntry : taskStore) {
+		for (Map.Entry<Integer, Task> entry : quickAccessTask.entrySet()) {
+			Task currentEntry = entry.getValue();
 			result.add(new Task(currentEntry));
 		}
 
@@ -191,7 +209,7 @@ public class Database {
 	}
 
 	public void setAll(List<Task> incoming) throws IOException,
-			WillNotWriteToCorruptFileException {
+	WillNotWriteToCorruptFileException {
 		assert (incoming != null);
 
 		log.info("Recieved incoming data of size " + incoming.size());
@@ -206,13 +224,11 @@ public class Database {
 
 		log.info("Incoming data saved to temporary copy");
 
-		Collections.sort(newList);
-
 		log.info("Send data to FileMgmt");
-		diskFile.writeDataBaseToFile(newList);
+		diskFile.writeDataBaseToFile(newList);	
 
-		log.info("FileMgmt saved successfully, permanently use new list");
-		taskStore = newList;
+		log.info("FileMgmt saved successfully, permanently use new data");
+		duplicateListToHashMap(newList);
 
 	}
 
@@ -228,16 +244,17 @@ public class Database {
 	 */
 
 	public void add(Task newTask) throws IOException,
-			WillNotWriteToCorruptFileException {
+	WillNotWriteToCorruptFileException {
 		assert (newTask != null);
 
 		verifyFileWritingAbility();
 
-    Task newTaskClone = new Task(newTask);
+		Task newTaskClone = new Task(newTask);
 
 		List<Task> newList = new ArrayList<Task>();
 
-		for (Task currentEntry : taskStore) {
+		for (Map.Entry<Integer, Task> entry : quickAccessTask.entrySet()) {
+			Task currentEntry = entry.getValue();
 			newList.add(new Task(currentEntry));
 		}
 
@@ -250,8 +267,8 @@ public class Database {
 		log.info("Send data to FileMgmt");
 		diskFile.writeDataBaseToFile(newList);
 
-		log.info("FileMgmt saved successfully, permanently use new list");
-		taskStore = newList;
+		log.info("FileMgmt saved successfully, permanently use new data");
+		quickAccessTask.put(newTaskClone.getSerial(), newTaskClone);
 
 	}
 
@@ -268,15 +285,14 @@ public class Database {
 
 	public Task locateATask(int serial) throws NoSuchElementException {
 		log.info("Asked to search for this serial " + serial);
-		for (Task toFind : taskStore) {
-			if (toFind.getSerial() == serial) {
-				log.info("Task with this serial " + serial + " found");
-				return new Task(toFind);
-			}
-		}
+		Task locatedTask = quickAccessTask.get(serial);
 
-		log.warning("Task with this serial " + serial + " not found");
-		throw new NoSuchElementException();
+		if(locatedTask != null) {
+			return new Task(locatedTask);
+		} else {
+			log.warning("Task with this serial " + serial + " not found");
+			throw new NoSuchElementException();
+		}
 	}
 
 	/**
@@ -307,7 +323,8 @@ public class Database {
 
 		List<Task> newList = new ArrayList<Task>();
 
-		for (Task currentEntry : taskStore) {
+		for (Map.Entry<Integer, Task> entry : quickAccessTask.entrySet()) {
+			Task currentEntry = entry.getValue();
 			newList.add(new Task(currentEntry));
 		}
 
@@ -329,8 +346,10 @@ public class Database {
 		if (isOriginalTaskFound) {
 			log.info("Send data to FileMgmt");
 			diskFile.writeDataBaseToFile(newList);
-			log.info("FileMgmt saved successfully, permanently use new list");
-			taskStore = newList;
+			log.info("FileMgmt saved successfully, permanently use new data");
+			quickAccessTask.remove(originalSerial);
+			quickAccessTask.put(updated.getSerial(), updated);
+			
 		} else {
 			log.warning("Cannot find old task, exception thrown");
 			throw new NoSuchElementException();
@@ -339,7 +358,7 @@ public class Database {
 	}
 
 	private void verifyFileWritingAbility() throws IOException,
-			WillNotWriteToCorruptFileException {
+	WillNotWriteToCorruptFileException {
 		if (fileAttributes.equals(DB_File_Status.FILE_PERMISSIONS_UNKNOWN)
 				|| fileAttributes.equals(DB_File_Status.FILE_READ_ONLY)
 				|| fileAttributes.equals(DB_File_Status.FILE_IS_LOCKED)) {
@@ -372,14 +391,15 @@ public class Database {
 	 */
 
 	public void delete(int serial) throws NoSuchElementException, IOException,
-			WillNotWriteToCorruptFileException {
+	WillNotWriteToCorruptFileException {
 		log.info("Received this serial " + serial);
 
 		verifyFileWritingAbility();
 
 		List<Task> newList = new ArrayList<Task>();
 
-		for (Task currentEntry : taskStore) {
+		for (Map.Entry<Integer, Task> entry : quickAccessTask.entrySet()) {
+			Task currentEntry = entry.getValue();
 			newList.add(new Task(currentEntry));
 		}
 
@@ -405,7 +425,7 @@ public class Database {
 			diskFile.writeDataBaseToFile(newList);
 
 			log.info("FileMgmt saved successfully, permanently use new list");
-			taskStore = newList;
+			quickAccessTask.remove(serial);
 		} else {
 			log.warning("No task with this serial found");
 			throw new NoSuchElementException();
@@ -428,7 +448,7 @@ public class Database {
 	 */
 
 	public void delete(List<Integer> serial) throws NoSuchElementException,
-			IOException, WillNotWriteToCorruptFileException {
+	IOException, WillNotWriteToCorruptFileException {
 		log.info("received array of serials of size " + serial.size());
 
 		assert (serial != null);
@@ -437,7 +457,8 @@ public class Database {
 
 		List<Task> newList = new ArrayList<Task>();
 
-		for (Task currentEntry : taskStore) {
+		for (Map.Entry<Integer, Task> entry : quickAccessTask.entrySet()) {
+			Task currentEntry = entry.getValue();
 			newList.add(new Task(currentEntry));
 		}
 
@@ -446,7 +467,7 @@ public class Database {
 
 			for(Iterator<Task> iter = newList.iterator(); iter.hasNext();){
 				Task current = iter.next();
-				
+
 				if(current.getSerial() == currentSerial){
 					iter.remove();
 
@@ -464,7 +485,9 @@ public class Database {
 
 		log.info("Send data to FileMgmt");
 		diskFile.writeDataBaseToFile(newList);
-		taskStore = newList;
+		for (Integer currentSerial : serial) {
+			quickAccessTask.remove(currentSerial);
+		}
 		log.info("FileMgmt saved successfully, permanently use new list");
 
 	}
@@ -479,14 +502,14 @@ public class Database {
 	 */
 
 	public void deleteAll() throws IOException,
-			WillNotWriteToCorruptFileException {
+	WillNotWriteToCorruptFileException {
 		verifyFileWritingAbility();
 
 		log.info("Send data to FileMgmt");
 		diskFile.writeDataBaseToFile(new ArrayList<Task>());
 
 		log.info("FileMgmt saved successfully, permanently use new list");
-		taskStore.clear();
+		quickAccessTask.clear();
 	}
 
 	/**
@@ -511,7 +534,7 @@ public class Database {
 		diskFile.closeFile();
 	}
 
-	private DB_File_Status parseFileAttributes(FileManagement diskFile) {
+	private DB_File_Status parseFileAttributes() {
 
 		if (diskFile.getFileAttributes().equals(FileStatus.FILE_ALL_OK)) {
 			return DB_File_Status.FILE_ALL_OK;
