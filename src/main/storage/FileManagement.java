@@ -197,7 +197,7 @@ public class FileManagement {
 		DateTime currentTimeTomorrow = currentTimeStartOfDay.plusDays(1);
 		
 		Task welcome = new Task("Welcome to DoIt! Type \"help\" in the box below to see a list of possible commands.", currentTimeStartOfDay);
-		Task experiment = new Task("Use the \"delete all\" command to remove all these and start using DoIt!", currentTimeStartOfDay.plusSeconds(1));
+		Task experiment = new Task("Use the \"delete all\" command to remove all these and start using DoIt!", currentTimeStartOfDay.plusMinutes(1));
 		Task tml3pm = new Task("Send letter by 3pm tomorrow.", currentTimeTomorrow.withTime(15, 00, 00, 00));
 		Task tml5to8pm = new Task("Dinner with James from 6pm to 8pm tomorrow", currentTimeTomorrow.withTime(17, 00, 00, 00), currentTimeTomorrow.withTime(20, 00, 00, 00));
 		Task bytml = new Task("You have to finish this report by tomorrow!", currentTimeTomorrow.withTime(23, 59, 00, 00));
