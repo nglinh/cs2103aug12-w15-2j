@@ -35,6 +35,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,6 +98,7 @@ public class GuiMain2 extends GuiCommandBox{
 	//private JTextField txtCmd;
 	
 	private DateTime lastShownCalendarDate;
+	private Set<DateTime> datesOfTasks;
 	
 	private static GuiMain2 theOne = null;
 	public static GuiMain2 getInstance(){
@@ -201,15 +203,6 @@ public class GuiMain2 extends GuiCommandBox{
 		toolBar.setFloatable(false);
 		frmDoit.getContentPane().add(toolBar, BorderLayout.NORTH);
 		
-		btnHome = new JButton("Home");
-		btnHome.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/house.png")));
-		btnHome.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				executeCommand("list");
-				executeCommand("sort");
-			}
-		});
-		
 		btnUndo = new JButton("Undo");
 		btnUndo.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/arrow_undo.png")));
 		btnUndo.addActionListener(new ActionListener() {
@@ -217,8 +210,18 @@ public class GuiMain2 extends GuiCommandBox{
 				executeCommand("undo");
 			}
 		});
-		toolBar.add(btnUndo);
+		
+		btnHome = new JButton("Home");
+		btnHome.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/house.png")));
+		btnHome.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				executeCommand("list");
+				executeCommand("sort");
+				jumpToTasksToday();
+			}
+		});
 		toolBar.add(btnHome);
+		toolBar.add(btnUndo);
 		
 		tglbtnAgendaView = new JToggleButton("Agenda View");
 		tglbtnAgendaView.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/calendar_view_day.png")));
@@ -515,6 +518,7 @@ public class GuiMain2 extends GuiCommandBox{
 				dtr.setHighlightSerial(highlightSerial);
 			}
 			String datedTaskListHtml = dtr.render();
+			datesOfTasks = dtr.datesWithTasks.keySet();
 			log.finest(datedTaskListHtml);
 			txtDatedTasks.setText(datedTaskListHtml);
 					
@@ -557,8 +561,6 @@ public class GuiMain2 extends GuiCommandBox{
 			log.finer("Setting caret position for undated tasks to " + txtUndatedTasksCaretPos);
 			txtUndatedTasks.setCaretPosition(txtUndatedTasksCaretPos);
 		} catch (IllegalArgumentException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
 			log.log(Level.WARNING, "Error with caret position after updating list", e1);
 		}
 		
@@ -706,9 +708,7 @@ public class GuiMain2 extends GuiCommandBox{
 					int month = Integer.parseInt(monthToShow.split("-")[1]);
 					int day = Integer.parseInt(monthToShow.split("-")[2]);
 					
-					String dateReferenceStr = "date-"+year+"-"+month+"-"+day;
-					log.info("Scroll to reference " + dateReferenceStr);
-					txtDatedTasks.scrollToReference(dateReferenceStr);
+					jumpToTasksOnDate(new DateTime(year, month, day, 0, 0));
 				}
 			}
 		}
@@ -1086,6 +1086,27 @@ public class GuiMain2 extends GuiCommandBox{
 	public void runUI(String cardName) {
 		runUI();
 		switchCard(cardName);
+	}
+	
+	private void jumpToTasksToday(){
+		// assert datesOfTasks is sorted
+		DateTime today = new DateTime().withTimeAtStartOfDay();
+		for(DateTime date : datesOfTasks){
+			if(date.equals(today) || date.isAfter(today)){
+				jumpToTasksOnDate(date);
+				return;
+			}
+		}
+	}
+
+	private void jumpToTasksOnDate(DateTime date) {
+		int year = date.getYear();
+		int month = date.getMonthOfYear();
+		int day = date.getDayOfMonth();
+		
+		String dateReferenceStr = "date-"+year+"-"+month+"-"+day;
+		log.info("Scroll to reference " + dateReferenceStr);
+		txtDatedTasks.scrollToReference(dateReferenceStr);
 	}
 
 }

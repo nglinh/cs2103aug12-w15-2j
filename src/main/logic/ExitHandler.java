@@ -6,7 +6,6 @@ public class ExitHandler extends CommandHandler {
 
 	public ExitHandler(String arguments) {
 		super(arguments);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
