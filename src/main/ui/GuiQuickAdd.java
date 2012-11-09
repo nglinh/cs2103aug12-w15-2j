@@ -161,5 +161,10 @@ public class GuiQuickAdd extends GuiCommandBox{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void getUpcomingTask(){
+		LogicToUi listOfTasks = sendCommandToLogic("searchPartial");
+		//Collections.sort(listOfTasks, 
+	}
 
 }
