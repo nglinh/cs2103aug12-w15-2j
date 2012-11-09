@@ -29,6 +29,7 @@ import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GuiCommandBox extends UI {
@@ -75,15 +76,7 @@ public class GuiCommandBox extends UI {
 	 * Create the application.
 	 */
 	public GuiCommandBox() {
-		try {
-			//UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException | UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// initialize();
+		
 	}
 
 	/**
@@ -292,7 +285,7 @@ public class GuiCommandBox extends UI {
 			}
 		}
 
-		private void showHint() {
+		protected void showHint() {
 			log.entering(this.getClass().getName(), "showHint");
 			
 			log.fine("Preference to show hint? " + preferenceShowHint);
@@ -377,5 +370,10 @@ public class GuiCommandBox extends UI {
 			txtCmd.requestFocus();
 
 		}
+	}
+
+	protected void showHint() {
+		// TODO Auto-generated method stub
+		
 	}
 }

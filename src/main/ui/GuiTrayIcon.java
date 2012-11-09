@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -167,8 +168,7 @@ public class GuiTrayIcon extends UI {
 			    JIntellitype.setLibraryLocation(dllFile.getAbsolutePath());
 			    dllFile.deleteOnExit();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				//e1.printStackTrace();
+				log.log(Level.WARNING, "Unable to extract JIntelliType DLL", e1);
 			}
 		    
 		    try{

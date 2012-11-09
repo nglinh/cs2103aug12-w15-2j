@@ -115,6 +115,9 @@ public class GuiQuickAdd extends GuiCommandBox{
 		
 		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
 		
+		// Don't show hint
+		super.preferenceShowHint = false;
+		
 		// Position window
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         Rectangle maxWin = ge.getMaximumWindowBounds();
