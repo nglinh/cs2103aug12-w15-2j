@@ -12,12 +12,14 @@ import main.shared.LogicToUi;
 import main.shared.Task;
 import main.storage.WillNotWriteToCorruptFileException;
 
-
 public class PostponeHandler extends CommandHandler {
+	private static final String NOTHING_CHANGED = "The task is still the same!";
 	private static final String ERROR_INVALID_INDEX = "Invalid index number. Please check!";
 	private static final String ERROR_POSTPONE_FLOATING_TASK = "Cannot postpone a floating task. Please check your index.";
 	private PostponeParser parser;
 	private Task toBePostponed;
+	private int toBePostponedSerial;
+	private Task copy;
 
 	public PostponeHandler(String arguments) {
 		super(arguments);
@@ -26,48 +28,72 @@ public class PostponeHandler extends CommandHandler {
 
 	public LogicToUi execute() {
 		try {
-			List<Task> currentTaskList = super.getCurrentTaskList();
 			parser.parse();
-
-			
 			// inside parser.
-			toBePostponed = parser.getToBePostponed();
-		
-
+			toBePostponedSerial = parser.getToBePostponedSerial();
+			toBePostponed = dataBase.locateATask(toBePostponedSerial);
+			copy = new Task(toBePostponed);
 			String oldTaskDesc = taskToString(toBePostponed);
 			String feedbackString = oldTaskDesc + " has been postponed to ";
-			assert(!toBePostponed.isFloatingTask());
-			
-			
-			if (toBePostponed.isDeadlineTask()) {
-				toBePostponed.changeDeadline(parser.getNewDeadline());
-				feedbackString += dateToString(parser.getNewDeadline());
-				dataBase.update(toBePostponed.getSerial(), toBePostponed);
-			} else if (toBePostponed.isTimedTask()) {
-				toBePostponed.changeStartAndEndDate(parser.getNewStartTime(), parser.getNewEndTime());
-				feedbackString += dateToString(parser.getNewStartTime())+ " to "+ dateToString(parser.getNewEndTime());
-				dataBase.update(toBePostponed.getSerial(), toBePostponed);
+
+			if (!toBePostponed.isFloatingTask()) {
+				if (toBePostponed.isDeadlineTask()) {
+					feedbackString = postponeDeadline(feedbackString);
+
+				} else {
+					feedbackString = postponeTimed(feedbackString);
+				}
+				if (copy.isEqualTo(toBePostponed)) {
+					feedback = new LogicToUi(NOTHING_CHANGED,
+							toBePostponedSerial);
+				} else {
+					updateDatabaseNSendToUndoStack();
+				}
+				feedback = new LogicToUi(feedbackString, toBePostponedSerial);
+			} else {
+				feedback = new LogicToUi(ERROR_POSTPONE_FLOATING_TASK,
+						toBePostponedSerial);
 			}
 			
 
-			String taskDetails = taskToString(toBePostponed);
-			String undoMessage = "postponement of task \"" + taskDetails + "\"";
-			super.pushUndoStatMesNTaskList(undoMessage, currentTaskList);
-			feedback = new LogicToUi(feedbackString,toBePostponed.getSerial());
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 		} catch (CannotParseDateException e) {
 			feedback = new LogicToUi(ERROR_CANNOT_PARSE_DATE);
 		} catch (CannotPostponeFloatingException e) {
-			feedback = new LogicToUi(ERROR_POSTPONE_FLOATING_TASK);
+			feedback = new LogicToUi(ERROR_POSTPONE_FLOATING_TASK, parser.getToBePostponedSerial());
 		} catch (NoSuchElementException e) {
 			feedback = new LogicToUi(ERROR_INVALID_INDEX);
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
-		} 
+		}
 		return feedback;
 
+	}
+
+	private String postponeTimed(String feedbackString) {
+		copy.changeStartAndEndDate(parser.getNewST(), parser.getNewET());
+		feedbackString += dateToString(parser.getNewST()) + " to "
+				+ dateToString(parser.getNewET());
+		return feedbackString;
+	}
+
+	private String postponeDeadline(String feedbackString) {
+		copy.changeDeadline(parser.getNewDl());
+		feedbackString += dateToString(parser.getNewDl());
+		return feedbackString;
+	}
+
+	@Override
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		List<Task> currentTaskList = super.getCurrentTaskList();
+		dataBase.update(toBePostponed.getSerial(), copy);
+		String taskDetails = taskToString(copy);
+		String undoMessage = "postponement of task \"" + taskDetails + "\"";
+		super.pushUndoStatMesNTaskList(undoMessage, currentTaskList);
 	}
 }

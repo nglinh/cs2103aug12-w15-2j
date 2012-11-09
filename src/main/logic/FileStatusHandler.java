@@ -1,7 +1,11 @@
 package main.logic;
 
+import java.io.IOException;
+import java.util.NoSuchElementException;
+
 import main.shared.LogicToUi;
 import main.storage.Database.DB_File_Status;
+import main.storage.WillNotWriteToCorruptFileException;
 
 public class FileStatusHandler extends CommandHandler {
 
@@ -28,5 +32,13 @@ public class FileStatusHandler extends CommandHandler {
 			return new LogicToUi("Unknown error with database file");
 
 		}
+	}
+
+	@Override
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		// empty method.
+		
 	}
 }

@@ -3,15 +3,17 @@ package main.logic;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import main.shared.LogicToUi;
 import main.shared.Task;
 import main.storage.WillNotWriteToCorruptFileException;
 
-public class UndoneHandler extends CommandHandler{
+public class UndoneHandler extends CommandHandler {
 
 	private String arguments;
 	private UndoneParser parser;
+	private Task copy;
+	private Task toBeUpdated;
+
 	public UndoneHandler(String arguments) {
 		super(arguments);
 		this.arguments = arguments;
@@ -27,38 +29,40 @@ public class UndoneHandler extends CommandHandler{
 
 		try {
 			parser.parse();
+			int serial = parser.getSerialOfTask();
 
-			List<Task> copyCurrentTaskList = super.getCurrentTaskList();
-			Task toBeUpdated = dataBase.locateATask(parser.getSerialOfTask());
-
-			if (!toBeUpdated.isDone()) {
-				return new LogicToUi(taskToString(toBeUpdated)
+			toBeUpdated = dataBase.locateATask(serial);
+			copy = new Task(toBeUpdated);
+			copy.done(false);
+			if (copy.isEqualTo(toBeUpdated)) {
+				feedback = new LogicToUi(taskToString(toBeUpdated)
 						+ " has been already been marked as undone.");
+			} else {
+				updateDatabaseNSendToUndoStack();
+				feedback = new LogicToUi(taskToString(toBeUpdated)
+						+ " has been marked as undone.", serial);
 			}
 
-			toBeUpdated.done(false);
-			int serial = toBeUpdated.getSerial();
-
-			dataBase.update(serial, toBeUpdated);
-
-			String taskDetails = taskToString(toBeUpdated);
-			String undoMessage = "marking of task \"" + taskDetails
-					+ "\" as undone";
-			super.pushUndoStatMesNTaskList(undoMessage,
-					copyCurrentTaskList);
-			return new LogicToUi(taskDetails + " has been marked as undone.",
-					serial);
-
 		} catch (NumberFormatException e) {
-			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
-		} catch (NoSuchElementException e) {
-			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
+			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		} catch (IOException e) {
-			return new LogicToUi(ERROR_IO);
+			feedback = new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
-			return new LogicToUi(ERROR_FILE_CORRUPTED);
+			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
 		}
+		return feedback;
+	}
 
+	@Override
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		List<Task> copyCurrentTaskList = super.getCurrentTaskList();
+		dataBase.update(toBeUpdated.getSerial(), copy);
+		String taskDetails = taskToString(copy);
+		String undoMessage = "marking of task \"" + taskDetails
+				+ "\" as undone";
+		super.pushUndoStatMesNTaskList(undoMessage, copyCurrentTaskList);
 	}
 
 }
