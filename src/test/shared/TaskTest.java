@@ -76,6 +76,7 @@ public class TaskTest {
 		
 		listing.add(nameTrue);
 		listing.add(nameDeadlineTrue);
+		listing.add(nameDeadlineTrue);
 		
 		listing.add(nameTimed);
 		listing.add(name);
@@ -474,9 +475,9 @@ public class TaskTest {
 		} catch (IllegalArgumentException e) {
 		}
 		
+		assertEquals(name.compareTo(name), COMPARETO_EQUAL);
 		
-		
-		assertEquals(COMPARETO_EQUAL, name.compareTo(nameTrue));
+		assertEquals(name.getTaskName().compareToIgnoreCase(nameTrue.getTaskName()), name.compareTo(nameTrue));
 		
 		assertEquals(COMPARETO_BIGGER, nameTrue.compareTo(nameDeadline));
 		

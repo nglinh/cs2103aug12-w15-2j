@@ -432,7 +432,7 @@ public class Task implements Comparable<Task> {
 		}
 
 		if(this.isFloatingTask() && input.isFloatingTask()) {
-			return COMPARETO_EQUAL;
+			return this.getTaskName().compareToIgnoreCase(input.getTaskName());
 		}
 
 		//Floating Tasks are bigger than every other tasks to appear at the bottom
@@ -573,7 +573,7 @@ public class Task implements Comparable<Task> {
 			TaskType o2Type = o2.getType();
 
 			if(o1Type.equals(o2Type)) {
-				return COMPARETO_EQUAL;
+				return o1.compareTo(o2);
 			}
 
 			if(o1Type.equals(TaskType.FLOATING)) {
@@ -601,7 +601,7 @@ public class Task implements Comparable<Task> {
 			boolean o2Done = o2.isDone();
 
 			if(o1Done == o2Done) {
-				return COMPARETO_EQUAL;
+				return o1.compareTo(o2);
 			}
 
 			if((o1Done == true) && (o2Done == false)) {
@@ -617,7 +617,7 @@ public class Task implements Comparable<Task> {
 		public int compare(Task o1, Task o2) {
 
 			if(o1.isFloatingTask() && o2.isFloatingTask()) {
-				return COMPARETO_EQUAL;
+				return o1.compareTo(o2);
 			}
 
 			if(o1.isFloatingTask()) {
@@ -642,8 +642,14 @@ public class Task implements Comparable<Task> {
 			} else {
 				o2Start = o2.getDeadline();
 			}
+			
+			int dateCompare = o1Start.compareTo(o2Start);
 
-			return o1Start.compareTo(o2Start);
+			if(dateCompare == COMPARETO_EQUAL){
+				return o1.getTaskName().compareToIgnoreCase(o2.getTaskName());
+			} else {
+				return dateCompare;
+			}
 		}
 	}
 
@@ -652,7 +658,7 @@ public class Task implements Comparable<Task> {
 		public int compare(Task o1, Task o2) {
 
 			if(o1.isFloatingTask() && o2.isFloatingTask()) {
-				return COMPARETO_EQUAL;
+				return o1.compareTo(o2);
 			}
 
 			if(o1.isFloatingTask()) {
@@ -678,7 +684,13 @@ public class Task implements Comparable<Task> {
 				o2End = o2.getDeadline();
 			}
 
-			return o1End.compareTo(o2End);
+			int dateCompare = o1End.compareTo(o2End);
+
+			if(dateCompare == COMPARETO_EQUAL){
+				return o1.getTaskName().compareToIgnoreCase(o2.getTaskName());
+			} else {
+				return dateCompare;
+			}
 		}
 	}
 
