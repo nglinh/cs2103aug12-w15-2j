@@ -56,7 +56,7 @@ class AddHandler extends CommandHandler {
 			String feedbackString = taskDetails + " added";
 			feedback = new LogicToUi(feedbackString, newTask.getSerial());
 			String undoMessage = "addition of task \"" + taskDetails + "\"";
-			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
+			super.pushUndoStatMesNTaskList(undoMessage, currentTaskList);
 		} catch (WillNotWriteToCorruptFileException e) {
 			return null;
 		} catch (IOException e) {
