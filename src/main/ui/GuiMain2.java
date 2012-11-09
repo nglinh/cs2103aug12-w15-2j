@@ -14,8 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton.ToggleButtonModel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -57,22 +55,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JButton;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
 import javax.swing.JToggleButton;
 import javax.swing.ImageIcon;
 import java.awt.CardLayout;
 import java.awt.Component;
 import javax.swing.Box;
 import java.awt.Toolkit;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowEvent;
 
@@ -83,8 +76,8 @@ public class GuiMain2 extends GuiCommandBox{
 	private static final String TABLE_COLUMN_WIDTH_INDEX_MAX_TEXT = "9999";
 	private static final int TABLE_COLUMN_WIDTH_EXTRA = 10;
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
-	private static final String CARD_AGENDA = "agendaCard";
-	private static final String CARD_LIST = "listCard";
+	public static final String CARD_AGENDA = "agendaCard";
+	public static final String CARD_LIST = "listCard";
 
 	Logger log = LogHandler.getLogInstance();
 
@@ -1088,6 +1081,11 @@ public class GuiMain2 extends GuiCommandBox{
 				tglbtnListView.setSelected(true);
 				break; 
 		}
+	}
+
+	public void runUI(String cardName) {
+		runUI();
+		switchCard(cardName);
 	}
 
 }
