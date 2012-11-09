@@ -21,7 +21,7 @@ public class LogHandler {
 
 				// Log everything! (while we're still debugging)...
 				// this should be able to be changed via a command-line argument
-				theOneLogger.setLevel(Level.FINEST);
+				theOneLogger.setLevel(Level.INFO);
 				
 				//To disable logging to Standard Error
 				theOneLogger.setUseParentHandlers(false);

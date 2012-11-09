@@ -1,5 +1,6 @@
 package main.ui;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -13,8 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton.ToggleButtonModel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -54,22 +53,19 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JButton;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
 import javax.swing.JToggleButton;
 import javax.swing.ImageIcon;
 import java.awt.CardLayout;
 import java.awt.Component;
 import javax.swing.Box;
 import java.awt.Toolkit;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowEvent;
 
@@ -80,8 +76,8 @@ public class GuiMain2 extends GuiCommandBox{
 	private static final String TABLE_COLUMN_WIDTH_INDEX_MAX_TEXT = "9999";
 	private static final int TABLE_COLUMN_WIDTH_EXTRA = 10;
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
-	private static final String CARD_AGENDA = "agendaCard";
-	private static final String CARD_LIST = "listCard";
+	public static final String CARD_AGENDA = "agendaCard";
+	public static final String CARD_LIST = "listCard";
 
 	Logger log = LogHandler.getLogInstance();
 
@@ -170,14 +166,14 @@ public class GuiMain2 extends GuiCommandBox{
 		frmDoit = new JFrame();
 		frmDoit.addWindowFocusListener(new WindowFocusListener() {
 			public void windowGainedFocus(WindowEvent arg0) {
-				System.out.println(txtCmd.requestFocusInWindow());
+				txtCmd.requestFocusInWindow();
 			}
 			public void windowLostFocus(WindowEvent arg0) {
 			}
 		});
 		frmDoit.setIconImage(Toolkit.getDefaultToolkit().getImage(GuiMain2.class.getResource("/resource/icon.png")));
 		frmDoit.setTitle("DoIt!");
-		frmDoit.setBounds(100, 100, 600, 620);
+		frmDoit.setBounds(100, 100, 800, 620);
 		
 		frmDoit.addComponentListener(new ComponentListener(){
 			@Override
@@ -275,7 +271,7 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		JSplitPane splitPane = new JSplitPane();
 		panel_1.add(splitPane);
-		splitPane.setDividerLocation(350);
+		splitPane.setDividerLocation(450);
 		
 		scrollPaneDated = new JScrollPane();
 		splitPane.setLeftComponent(scrollPaneDated);
@@ -308,6 +304,8 @@ public class GuiMain2 extends GuiCommandBox{
 		txtCalendar.addHyperlinkListener(new CalendarHyperLinkHandler());
 		txtCalendar.setEditable(false);
 		txtCalendar.setContentType("text/html");
+		txtCalendar.setBackground(new Color(0, 0, 0, 0));
+		txtCalendar.setOpaque(false);
 		panel.add(txtCalendar, BorderLayout.SOUTH);
 		
         txtCalendar.setEditorKit(generateCalendarDocumentStyle());
@@ -429,8 +427,12 @@ public class GuiMain2 extends GuiCommandBox{
 	private HTMLEditorKit generateCalendarDocumentStyle() {
 		HTMLEditorKit kit = new HTMLEditorKit();
         StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule(".calendar td{text-align:right;}");
-        styleSheet.addRule(".calendar a {color:#5E92AE;text-decoration:none;}");
+        styleSheet.addRule(".calendar {color:#000000;text-decoration:none;}");
+        styleSheet.addRule(".calendar td, .calendarDate td{text-align:right;}");
+        styleSheet.addRule(".calendarTitle a {color:#000000;text-decoration:none;}");
+        styleSheet.addRule(".calendarDate a {color:#000000;text-decoration:none;font-weight:bold;}");
+        styleSheet.addRule(".calendarDateWrongMonth{color:#4D7E99;text-decoration:none;}");
+        styleSheet.addRule(".calendarDateWrongMonth a{color:#4D7E99;text-decoration:none;font-weight:bold;}");
         //styleSheet.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
         //styleSheet3.addRule(".calendarDate{padding-right;5px;}");
         //Document doc = kit.createDefaultDocument();
@@ -639,7 +641,13 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	private class TasksHyperlinkHandler implements HyperlinkListener {
 		public void hyperlinkUpdate(HyperlinkEvent e) {
+			
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				if(e.getInputEvent() instanceof MouseEvent){
+					if(((MouseEvent)e.getInputEvent()).getClickCount() < 2){
+						return;
+					}
+				}
 				log.finer("Hyperlink activated (dated tasks) " + e.getURL().getPath());
 				if(e.getURL().getPath().startsWith("/editTask/")){
 					String indexToEdit = e.getURL().getPath().split("/")[2];
@@ -1002,6 +1010,9 @@ public class GuiMain2 extends GuiCommandBox{
 					assert false;
 				}
 			
+			}catch(IllegalArgumentException e){
+				JOptionPane.showMessageDialog(null, "Invalid date entered. The end date should be after the start date.");
+				log.log(Level.WARNING, "Problem with date", e);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -1070,6 +1081,11 @@ public class GuiMain2 extends GuiCommandBox{
 				tglbtnListView.setSelected(true);
 				break; 
 		}
+	}
+
+	public void runUI(String cardName) {
+		runUI();
+		switchCard(cardName);
 	}
 
 }

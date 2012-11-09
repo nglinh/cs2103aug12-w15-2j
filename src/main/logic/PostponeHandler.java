@@ -52,7 +52,7 @@ public class PostponeHandler extends CommandHandler {
 
 			String taskDetails = taskToString(toBePostponed);
 			String undoMessage = "postponement of task \"" + taskDetails + "\"";
-			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
+			super.pushUndoStatMesNTaskList(undoMessage, currentTaskList);
 			feedback = new LogicToUi(feedbackString,toBePostponed.getSerial());
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);

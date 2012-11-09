@@ -15,9 +15,6 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
 
@@ -98,13 +95,13 @@ public class GuiTrayIcon extends UI {
 		    
 		    ActionListener mainWindowListener = new ActionListener() {
 		        public void actionPerformed(ActionEvent e) {
-		        	GuiMain.getInstance().runUI();
+		        	GuiMain2.getInstance().runUI(GuiMain2.CARD_LIST);
 		        }
 		    };
 		    
 		    ActionListener mainWindow2Listener = new ActionListener() {
 		        public void actionPerformed(ActionEvent e) {
-		        	GuiMain2.getInstance().runUI();
+		        	GuiMain2.getInstance().runUI(GuiMain2.CARD_AGENDA);
 		        }
 		    };
 		    
