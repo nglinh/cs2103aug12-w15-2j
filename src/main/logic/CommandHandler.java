@@ -1,7 +1,9 @@
 package main.logic;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -10,6 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 import main.shared.LogicToUi;
 import main.shared.Task;
 import main.storage.Database;
+import main.storage.WillNotWriteToCorruptFileException;
 
 public abstract class CommandHandler {
 
@@ -92,5 +95,6 @@ public abstract class CommandHandler {
 				.forPattern(LINE_DATE_FORMAT);
 		return LINE_DATE_FORMATTER.print(inputDate);
 	}
+	protected abstract void updateDatabaseNSendToUndoStack() throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException;
 
 }

@@ -3,6 +3,7 @@ package main.logic;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.Task;
 
 public class DoneParser extends CommandParser {
@@ -21,14 +22,17 @@ public class DoneParser extends CommandParser {
 
 
 	@Override
-	public void parse() throws NumberFormatException{
+	public void parse() throws NumberFormatException, EmptyDescriptionException{
+		if (arguments.length() == 0) {
+			throw new EmptyDescriptionException();
+		}
 		index = Integer.parseInt(arguments)-1;		// counting from 0
 		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
 			throw new NoSuchElementException();
 		}
 		serial = lastShownToUi.get(index).getSerial();
 	}
-	public int getSerialOfTask(){
+	public int getToBeDoneSerial(){
 		return serial;
 	}
 

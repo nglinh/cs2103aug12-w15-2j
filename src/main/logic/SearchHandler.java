@@ -1,11 +1,14 @@
 //@author A0081007U
 package main.logic;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import main.shared.LogicToUi;
 import main.shared.SearchTerms;
 import main.shared.Task;
+import main.storage.WillNotWriteToCorruptFileException;
 
 public class SearchHandler extends CommandHandler{
 	
@@ -40,6 +43,15 @@ public class SearchHandler extends CommandHandler{
 		latestListingHandlerForUI = this;
 
 		return new LogicToUi(results, statusMsg, terms);
+	}
+
+	@Override
+	@Deprecated
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		// empty method.
+		
 	}
 
 }

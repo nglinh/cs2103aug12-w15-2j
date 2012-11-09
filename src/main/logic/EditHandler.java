@@ -12,14 +12,13 @@ import main.shared.Task;
 import main.shared.Task.TaskType;
 import main.storage.WillNotWriteToCorruptFileException;
 
-//TODO use isEqualTo
-
 public class EditHandler extends CommandHandler {
-	private static final String MESSAGE_NOTHING_UPDATED = "Nothing updated!";
+	private static final String MESSAGE_NOTHING_UPDATED = "The task is still the same!";
 	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change to timed task, you need to specify"
 			+ "both start time and end time.";
 	private EditParser parser;
 	private Task toBeEdited;
+	private Task copy;
 	private int toBeEditedSerial;
 
 	public EditHandler(String arguments) {
@@ -33,22 +32,19 @@ public class EditHandler extends CommandHandler {
 			parser.parse();
 			toBeEditedSerial = parser.getToBeEditedSerial();
 			toBeEdited = dataBase.locateATask(toBeEditedSerial);
-			Task copy = new Task(toBeEdited);
-			changeDeadline(copy);
-			changename(copy);
-			changeStartTime(copy);
-			changeEndTime(copy);
-			changeToFloat(copy);
+			copy = new Task(toBeEdited); // Create a copy to modify.
+			changeDeadline();
+			changename();
+			changeStartTime();
+			changeEndTime();
+			changeToFloat();
 			if (copy.isEqualTo(toBeEdited)) {
-				feedback = new LogicToUi(MESSAGE_NOTHING_UPDATED);
+				feedback = new LogicToUi(MESSAGE_NOTHING_UPDATED,
+						toBeEditedSerial);
 			} else {
-				List<Task> currentTaskList = super.getCurrentTaskList();
-				dataBase.update(toBeEdited.getSerial(), copy);
-				String taskDetails = taskToString(copy);
-				String feedbackString = taskDetails + " updated.";
-				feedback = new LogicToUi(feedbackString, copy.getSerial());
-				String undoMessage = "update to \"" + taskDetails + "\"";
-				super.pushUndoStatMesNTaskList(undoMessage, currentTaskList);
+				updateDatabaseNSendToUndoStack();
+				String feedbackString = taskToString(copy) + " updated.";
+				feedback = new LogicToUi(feedbackString, toBeEditedSerial);
 			}
 			return feedback;
 		} catch (NoSuchElementException e) {
@@ -67,57 +63,66 @@ public class EditHandler extends CommandHandler {
 		return feedback;
 	}
 
-	private void changeToFloat(Task task) {
+	private void changeToFloat() {
 		if (parser.willChangeToFloating) {
-			task.changetoFloating();
+			copy.changetoFloating();
 		}
 	}
 
-	private void changeEndTime(Task task)
-			throws DoNotChangeBothSTimeAndETimeException {
+	private void changeEndTime() throws DoNotChangeBothSTimeAndETimeException {
 		if (parser.willChangeEndTime) {
-			if (task.getType() != TaskType.TIMED) {
+			if (copy.getType() != TaskType.TIMED) {
 				if (!parser.willChangeStartTime) {
 					throw new DoNotChangeBothSTimeAndETimeException();
 				}
-				task.changetoTimed(parser.getNewStartTime(),
+				copy.changetoTimed(parser.getNewStartTime(),
 						parser.getNewEndTime());
 			} else {
-				task.changeStartAndEndDate(toBeEdited.getStartDate(),
+				copy.changeStartAndEndDate(copy.getStartDate(),
 						parser.getNewEndTime());
 			}
 		}
 	}
 
-	private void changeStartTime(Task task)
-			throws DoNotChangeBothSTimeAndETimeException {
+	private void changeStartTime() throws DoNotChangeBothSTimeAndETimeException {
 		if (parser.willChangeStartTime) {
-			if (task.getType() != TaskType.TIMED) {
+			if (copy.getType() != TaskType.TIMED) {
 				if (!parser.willChangeEndTime) {
 					throw new DoNotChangeBothSTimeAndETimeException();
 				}
-				task.changetoTimed(parser.getNewStartTime(),
+				copy.changetoTimed(parser.getNewStartTime(),
 						parser.getNewEndTime());
 			} else {
-				task.changeStartAndEndDate(parser.getNewStartTime(),
-						task.getEndDate());
+				copy.changeStartAndEndDate(parser.getNewStartTime(),
+						copy.getEndDate());
 			}
 		}
 	}
 
-	private void changename(Task task) {
+	private void changename() {
 		if (parser.willChangeName) {
-			task.changeName(parser.getNewName());
+			copy.changeName(parser.getNewName());
 		}
 	}
 
-	private void changeDeadline(Task task) {
+	private void changeDeadline() {
 		if (parser.willChangeDeadline) {
-			if (task.getType() != TaskType.DEADLINE) {
-				task.changetoDeadline(parser.getNewDeadline());
+			if (copy.getType() != TaskType.DEADLINE) {
+				copy.changetoDeadline(parser.getNewDeadline());
 			} else {
-				task.changeDeadline(parser.getNewDeadline());
+				copy.changeDeadline(parser.getNewDeadline());
 			}
 		}
+	}
+
+	@Override
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		List<Task> currentTaskList = super.getCurrentTaskList();
+		dataBase.update(toBeEdited.getSerial(), copy);
+		String taskDetails = taskToString(copy);
+		String undoMessage = "update to \"" + taskDetails + "\"";
+		super.pushUndoStatMesNTaskList(undoMessage, currentTaskList);
 	}
 }

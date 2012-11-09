@@ -2,6 +2,7 @@ package main.logic;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import main.shared.LogicToUi;
 import main.shared.Task;
@@ -37,5 +38,14 @@ public class UndoHandler extends CommandHandler{
 
 
 		return feedback;
+	}
+
+	@Override
+	@Deprecated
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		// empty method
+		
 	}
 }
