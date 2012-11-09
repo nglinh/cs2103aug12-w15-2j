@@ -204,11 +204,11 @@ public class FileManagement {
 		Task threeDay = new Task("Company camp 2 days later from 10am in Day 1 to 11pm in Day 3", currentTimeStartOfDay.plusDays(2).withTime(10, 00, 00, 00), currentTimeStartOfDay.plusDays(4).withTime(23, 00, 00, 00) );
 		
 		
-		Task floating = new Task("Tasks with no date are placed here");
-		Task tickRightBox = new Task("Finished this? Tick this box >>>");
-		Task completed = new Task("This task is finished.", true);
-		Task editme = new Task("Double-click on me to edit me", true);
-		Task jumpDate = new Task("You can use the calendar below to jump to a selected date");
+		Task floating = new Task("1. Tasks with no date are placed here");
+		Task tickRightBox = new Task("2. Finished this? Tick this box >>>");
+		Task completed = new Task("3. This task is finished.", true);
+		Task editme = new Task("4. Double-click on me to edit me", true);
+		Task jumpDate = new Task("5. You can use the calendar below to jump to a selected date");
 		
 		
 		List<Task> initialTasks = new ArrayList<Task>();
