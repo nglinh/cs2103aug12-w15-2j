@@ -1,5 +1,6 @@
 package main.ui;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -55,6 +56,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -178,7 +180,7 @@ public class GuiMain2 extends GuiCommandBox{
 		});
 		frmDoit.setIconImage(Toolkit.getDefaultToolkit().getImage(GuiMain2.class.getResource("/resource/icon.png")));
 		frmDoit.setTitle("DoIt!");
-		frmDoit.setBounds(100, 100, 600, 620);
+		frmDoit.setBounds(100, 100, 800, 620);
 		
 		frmDoit.addComponentListener(new ComponentListener(){
 			@Override
@@ -276,7 +278,7 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		JSplitPane splitPane = new JSplitPane();
 		panel_1.add(splitPane);
-		splitPane.setDividerLocation(350);
+		splitPane.setDividerLocation(450);
 		
 		scrollPaneDated = new JScrollPane();
 		splitPane.setLeftComponent(scrollPaneDated);
@@ -309,6 +311,8 @@ public class GuiMain2 extends GuiCommandBox{
 		txtCalendar.addHyperlinkListener(new CalendarHyperLinkHandler());
 		txtCalendar.setEditable(false);
 		txtCalendar.setContentType("text/html");
+		txtCalendar.setBackground(new Color(0, 0, 0, 0));
+		txtCalendar.setOpaque(false);
 		panel.add(txtCalendar, BorderLayout.SOUTH);
 		
         txtCalendar.setEditorKit(generateCalendarDocumentStyle());
@@ -430,8 +434,12 @@ public class GuiMain2 extends GuiCommandBox{
 	private HTMLEditorKit generateCalendarDocumentStyle() {
 		HTMLEditorKit kit = new HTMLEditorKit();
         StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule(".calendar td{text-align:right;}");
-        styleSheet.addRule(".calendar a {color:#5E92AE;text-decoration:none;}");
+        styleSheet.addRule(".calendar {color:#000000;text-decoration:none;}");
+        styleSheet.addRule(".calendar td, .calendarDate td{text-align:right;}");
+        styleSheet.addRule(".calendarTitle a {color:#000000;text-decoration:none;}");
+        styleSheet.addRule(".calendarDate a {color:#000000;text-decoration:none;font-weight:bold;}");
+        styleSheet.addRule(".calendarDateWrongMonth{color:#4D7E99;text-decoration:none;}");
+        styleSheet.addRule(".calendarDateWrongMonth a{color:#4D7E99;text-decoration:none;font-weight:bold;}");
         //styleSheet.addRule(".calendarDateWithTask{background-color:#FFAA00;}");
         //styleSheet3.addRule(".calendarDate{padding-right;5px;}");
         //Document doc = kit.createDefaultDocument();
@@ -640,7 +648,13 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	private class TasksHyperlinkHandler implements HyperlinkListener {
 		public void hyperlinkUpdate(HyperlinkEvent e) {
+			
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				if(e.getInputEvent() instanceof MouseEvent){
+					if(((MouseEvent)e.getInputEvent()).getClickCount() < 2){
+						return;
+					}
+				}
 				log.finer("Hyperlink activated (dated tasks) " + e.getURL().getPath());
 				if(e.getURL().getPath().startsWith("/editTask/")){
 					String indexToEdit = e.getURL().getPath().split("/")[2];
