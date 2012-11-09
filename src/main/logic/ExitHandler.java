@@ -1,6 +1,10 @@
 package main.logic;
 
+import java.io.IOException;
+import java.util.NoSuchElementException;
+
 import main.shared.LogicToUi;
+import main.storage.WillNotWriteToCorruptFileException;
 
 public class ExitHandler extends CommandHandler {
 
@@ -13,6 +17,14 @@ public class ExitHandler extends CommandHandler {
 		dataBase.unlockFileToExit();
 		System.exit(0);
 		return new LogicToUi("Exiting DoIt");
+	}
+
+	@Override
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		//empty method.
+		
 	}
 
 }

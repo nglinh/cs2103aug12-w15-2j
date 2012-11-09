@@ -2,9 +2,11 @@
 
 package main.logic;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import main.shared.LogicToUi;
 import main.shared.SearchTerms;
@@ -12,6 +14,7 @@ import main.shared.Task;
 import main.shared.LogicToUi.SortStatus;
 import main.shared.Task.SortByEndDate;
 import main.shared.Task.SortByStartDate;
+import main.storage.WillNotWriteToCorruptFileException;
 
 public class SortHandler extends CommandHandler{
 
@@ -89,6 +92,16 @@ public class SortHandler extends CommandHandler{
 			return new LogicToUi(listFromLastListingCommand, appendedSortStatus,
 					searchFilters, latestSorting, parser.getReverse());
 		}
+	}
+
+
+	@Override
+	@Deprecated
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		// empty method
+		
 	}
 
 }

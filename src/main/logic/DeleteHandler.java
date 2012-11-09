@@ -30,51 +30,20 @@ public class DeleteHandler extends CommandHandler {
 			String undoMessage;
 
 			if (parser.isAll) {
-				dataBase.deleteAll();
-				feedback = new LogicToUi("All tasks have been deleted");
-				undoMessage = "deletion of all tasks";
+				undoMessage = deleteAll();
 
 			} else if (parser.isDone) {
-
-				List<Task> temp = dataBase.getAll();
-				for (Task t : temp) {
-					if (t.isDone()) {
-						arrayOfToBeDeleted.add(t.getSerial());
-					}
-				}
-				dataBase.delete(arrayOfToBeDeleted);
-				feedback = new LogicToUi(
-						"All completed tasks have been deleted");
-				undoMessage = "deletion of done tasks";
+				undoMessage = deleteDone(currentTaskList, arrayOfToBeDeleted);
 
 			} else if (parser.isOver) {
-				List<Task> temp = dataBase.getAll();
-				DateTime currentTime = DateTime.now();
-				for (Task t : temp) {
-					if (t.isDeadlineTask() && t.getDeadline().isBefore(currentTime)
-							|| t.isTimedTask() && t.getEndDate().isBefore(currentTime)) {
-						arrayOfToBeDeleted.add(t.getSerial());
-					}
-				}
-				dataBase.delete(arrayOfToBeDeleted);
-				feedback = new LogicToUi(
-						"All tasks that has ended before this moment have been deleted");
-				undoMessage = "deletion of tasks before this moment";
+				undoMessage = deleteOver(currentTaskList, arrayOfToBeDeleted);
 
 			} else {
 
 				if(parser.onlyOneIndexFound){
-					toBeDeleted = dataBase.locateATask(parser.getSerialOfTask());
-					
-					dataBase.delete(parser.getSerialOfTask());
-					String taskDetails = taskToString(toBeDeleted);
-					feedback = new LogicToUi(taskDetails + " has been deleted");
-					undoMessage = "deletion of task \"" + taskDetails + "\"";
+					undoMessage = deleteOne();
 				} else {
-					dataBase.delete(parser.listOfToBeDeletedSerials);
-					
-					undoMessage = "deletion of tasks at indexes " + parser.listOfToBeDeletedIndexes.toString();
-					feedback = new LogicToUi("Tasks at indexes " + parser.listOfToBeDeletedIndexes.toString() + " have been deleted");
+					undoMessage = deleteMultiple();
 				}
 
 			}
@@ -89,5 +58,77 @@ public class DeleteHandler extends CommandHandler {
 
 		return feedback;
 
+	}
+
+	private String deleteAll() throws IOException,
+			WillNotWriteToCorruptFileException {
+		String undoMessage;
+		dataBase.deleteAll();
+		feedback = new LogicToUi("All tasks have been deleted");
+		undoMessage = "deletion of all tasks";
+		return undoMessage;
+	}
+
+	private String deleteMultiple() throws IOException,
+			WillNotWriteToCorruptFileException {
+		String undoMessage;
+		dataBase.delete(parser.listOfToBeDeletedSerials);	
+		undoMessage = "deletion of tasks at indexes " + parser.listOfToBeDeletedIndexes.toString();
+		feedback = new LogicToUi("Tasks at indexes " + parser.listOfToBeDeletedIndexes.toString() + " have been deleted");
+		return undoMessage;
+	}
+
+	private String deleteOne() throws IOException,
+			WillNotWriteToCorruptFileException {
+		String undoMessage;
+		toBeDeleted = dataBase.locateATask(parser.getSerialOfTask());
+		dataBase.delete(parser.getSerialOfTask());
+		String taskDetails = taskToString(toBeDeleted);
+		feedback = new LogicToUi(taskDetails + " has been deleted");
+		undoMessage = "deletion of task \"" + taskDetails + "\"";
+		return undoMessage;
+	}
+
+	private String deleteOver(List<Task> currentTaskList,
+			LinkedList<Integer> arrayOfToBeDeleted) throws IOException,
+			WillNotWriteToCorruptFileException {
+		String undoMessage;
+		DateTime currentTime = DateTime.now();
+		for (Task t : currentTaskList) {
+			if (t.isDeadlineTask() && t.getDeadline().isBefore(currentTime)
+					|| t.isTimedTask() && t.getEndDate().isBefore(currentTime)) {
+				arrayOfToBeDeleted.add(t.getSerial());
+			}
+		}
+		dataBase.delete(arrayOfToBeDeleted);
+		feedback = new LogicToUi(
+				"All tasks that has ended before this moment have been deleted");
+		undoMessage = "deletion of tasks before this moment";
+		return undoMessage;
+	}
+
+	private String deleteDone(List<Task> currentTaskList,
+			LinkedList<Integer> arrayOfToBeDeleted) throws IOException,
+			WillNotWriteToCorruptFileException {
+		String undoMessage;
+		for (Task t : currentTaskList) {
+			if (t.isDone()) {
+				arrayOfToBeDeleted.add(t.getSerial());
+			}
+		}
+		dataBase.delete(arrayOfToBeDeleted);
+		feedback = new LogicToUi(
+				"All completed tasks have been deleted");
+		undoMessage = "deletion of done tasks";
+		return undoMessage;
+	}
+
+	@Override
+	@Deprecated
+	protected void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException {
+		//empty method
+		
 	}
 }

@@ -29,7 +29,7 @@ public class AddParser extends CommandParser {
 	private static final String STRING_EMPTY = "";
 	private static final String STRING_TO = "to";
 
-	public boolean isTaskNameNonempty = true;
+	public boolean isArgumentEmpty = false;
 
 	private List<DateGroup> groups;
 	private NattyParserWrapper parser; // natty parser to be used internally.
@@ -68,14 +68,10 @@ public class AddParser extends CommandParser {
 	 * @throws EmptyDescriptionException
 	 */
 	public void parse() throws EmptyDescriptionException {
-		String dateString;
-		if (hasAposPair()) {
-			dateString = removeTextInsideApostrophe();
-		} else {
-			dateString = removeTriggerWord(); // To avoid misinterpretation due
-												// to limitations
-												// of Natty.
-		}
+		if(argument.length()==0){
+			throw new EmptyDescriptionException();
+		}		
+		String dateString = detectFixedFormat();
 
 		if (dateString.contains(STRING_SPACE_NOW)
 				|| dateString.contains(STRING_NOW_SPACE)) {
@@ -97,6 +93,18 @@ public class AddParser extends CommandParser {
 		if (taskType == TaskType.TIMED) {
 			determineStartAndEnd();
 		}
+	}
+
+	private String detectFixedFormat() {
+		String dateString;
+		if (hasAposPair()) {
+			dateString = removeTextInsideApostrophe();
+		} else {
+			dateString = removeTriggerWord(); // To avoid misinterpretation due
+												// to limitations
+												// of Natty.
+		}
+		return dateString;
 	}
 
 	private void parseFullWordOnly(String dateString) {
@@ -194,6 +202,7 @@ public class AddParser extends CommandParser {
 				result += tempStringArray[i] + " ";
 			}
 		}
+		result = result.replace('.', ' ');
 		return result.trim();
 	}
 
@@ -223,8 +232,8 @@ public class AddParser extends CommandParser {
 		char[] tempCharArray = argument.toCharArray();
 		String matchingValue = groups.get(INT_0).getText();
 		char[] matchingArray = matchingValue.toCharArray();
-		if ((dateStringStartPosition + matchingArray.length < tempCharArray.length && tempCharArray[dateStringStartPosition
-				+ matchingArray.length] != ' ')
+		if (((dateStringStartPosition + matchingArray.length < tempCharArray.length && (tempCharArray[dateStringStartPosition
+				+ matchingArray.length] != ' '&&tempCharArray[dateStringStartPosition+ matchingArray.length] != '.')))
 				|| (dateStringStartPosition != 0 && tempCharArray[dateStringStartPosition - 1] != ' '))
 			return false;
 		return true;
