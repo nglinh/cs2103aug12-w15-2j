@@ -45,7 +45,7 @@ public abstract class CommandHandler {
 
 	public abstract LogicToUi execute();
 
-	protected void pushUndoStatusMessageAndTaskList(String undoMsg,
+	protected void pushUndoStatMesNTaskList(String undoMsg,
 			List<Task> currentCopy) {
 		undoMsgHistory.push(undoMsg);
 		undoClones.push(currentCopy);

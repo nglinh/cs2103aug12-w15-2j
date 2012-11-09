@@ -78,7 +78,7 @@ public class DeleteHandler extends CommandHandler {
 				}
 
 			}
-			super.pushUndoStatusMessageAndTaskList(undoMessage, currentTaskList);
+			super.pushUndoStatMesNTaskList(undoMessage, currentTaskList);
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {

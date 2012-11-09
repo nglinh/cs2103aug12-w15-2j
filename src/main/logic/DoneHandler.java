@@ -45,7 +45,7 @@ public class DoneHandler extends CommandHandler {
 			String taskDetails = taskToString(toBeUpdated);
 			String undoMessage = "marking of task \"" + taskDetails
 					+ "\" as done";
-			super.pushUndoStatusMessageAndTaskList(undoMessage,
+			super.pushUndoStatMesNTaskList(undoMessage,
 					copyCurrentTaskList);
 			return new LogicToUi(taskDetails + " has been marked as done.",
 					serial);
