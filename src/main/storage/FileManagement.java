@@ -196,20 +196,20 @@ public class FileManagement {
 		DateTime currentTimeStartOfDay = new DateTime();
 		DateTime currentTimeTomorrow = currentTimeStartOfDay.plusDays(1);
 		
-		Task welcome = new Task("Welcome to DoIt! It seems to be your first time. Type \"help\" in the box below to see a list of possible commands.", currentTimeStartOfDay);
-		Task experiment = new Task("When you have finished experimenting, type the \"delete all\" command to remove all these and start using DoIt!", currentTimeStartOfDay.plusSeconds(1));
-		Task tml3pm = new Task("Deadline task that ends tomorrow at 3pm", currentTimeTomorrow.withTime(15, 00, 00, 00));
-		Task tml5to8pm = new Task("Timed task from 5pm to 8pm tomorrow", currentTimeTomorrow.withTime(17, 00, 00, 00), currentTimeTomorrow.withTime(20, 00, 00, 00));
-		Task bytml = new Task("You have to complete this task by tomorrow!", currentTimeTomorrow.withTime(23, 59, 00, 00));
-		Task threeDay = new Task("This task spans over 3 days starting from 10am Day 1 to 11pm Day 3", currentTimeStartOfDay.plusDays(2).withTime(10, 00, 00, 00), currentTimeStartOfDay.plusDays(4).withTime(23, 00, 00, 00) );
+		Task welcome = new Task("Welcome to DoIt! Type \"help\" in the box below to see a list of possible commands.", currentTimeStartOfDay);
+		Task experiment = new Task("Use the \"delete all\" command to remove all these and start using DoIt!", currentTimeStartOfDay.plusSeconds(1));
+		Task tml3pm = new Task("Send letter by 3pm tomorrow.", currentTimeTomorrow.withTime(15, 00, 00, 00));
+		Task tml5to8pm = new Task("Dinner with James from 6pm to 8pm tomorrow", currentTimeTomorrow.withTime(17, 00, 00, 00), currentTimeTomorrow.withTime(20, 00, 00, 00));
+		Task bytml = new Task("You have to finish this report by tomorrow!", currentTimeTomorrow.withTime(23, 59, 00, 00));
+		Task threeDay = new Task("Company camp 2 days later from 10am in Day 1 to 11pm in Day 3", currentTimeStartOfDay.plusDays(2).withTime(10, 00, 00, 00), currentTimeStartOfDay.plusDays(4).withTime(23, 00, 00, 00) );
 		
 		
-		Task floating = new Task("Floating tasks are placed here");
-		Task tickRightBox = new Task("To mark task as done. Tick this box >>>");
-		Task completed = new Task("This is a completed floating task", true);
+		Task floating = new Task("Tasks with no date are placed here");
+		Task tickRightBox = new Task("Finished this? Tick this box >>>");
+		Task completed = new Task("This task is finished.", true);
+		Task editme = new Task("Double-click on me to edit me", true);
 		Task jumpDate = new Task("You can use the calendar below to jump to a selected date");
 		
-		//TODO: Add more initial tasks
 		
 		List<Task> initialTasks = new ArrayList<Task>();
 		initialTasks.add(welcome);
@@ -222,6 +222,7 @@ public class FileManagement {
 		initialTasks.add(floating);
 		initialTasks.add(tickRightBox);
 		initialTasks.add(completed);
+		initialTasks.add(editme);
 		initialTasks.add(jumpDate);
 		
 		Collections.sort(initialTasks);
