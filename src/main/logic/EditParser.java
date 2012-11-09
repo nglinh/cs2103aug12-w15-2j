@@ -15,7 +15,7 @@ import main.shared.Task.TaskType;
 //TODO use isEqualTo
 public class EditParser extends CommandParser {
 	private static final String DASH = "-";
-	public boolean willChangeType = false;
+	public boolean willChangeToFloating = false;
 	public boolean willChangeStartTime = false;
 	public boolean willChangeDeadline = false;
 	public boolean willChangeEndTime = false;
@@ -27,9 +27,9 @@ public class EditParser extends CommandParser {
 	private DateTime newDeadline;
 	private TaskType newType;
 	private NattyParserWrapper parser;
-	private Task toBeEdited;
 	private String argument;
 	private List<Task> lastShownToUi;
+	private int toBeEditedSerial;
 
 	public EditParser(String arguments) {
 		super(arguments);
@@ -41,15 +41,8 @@ public class EditParser extends CommandParser {
 	@Override
 	public void parse() throws EmptyDescriptionException,
 			CannotParseDateException, NumberFormatException {
-		int index;
-		index = Integer.parseInt(getFirstWord(argument));
+		extractTaskSerial();
 		argument = removeFirstWord(argument);
-		index--; // Since arraylist index starts from 0
-
-		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
-			throw new NoSuchElementException();
-		}
-		toBeEdited = lastShownToUi.get(index);
 		String[] tempStringArray = argument.split(DASH);
 		for (int i = 0; i < tempStringArray.length; ++i) {
 			if (tempStringArray[i] != null && tempStringArray[i].length() != 0) {
@@ -58,6 +51,16 @@ public class EditParser extends CommandParser {
 				updateField(commandArgument, updatedField);
 			}
 		}
+	}
+
+	private void extractTaskSerial() throws NumberFormatException {
+		int index = Integer.parseInt(getFirstWord(argument));
+		index--; // Since arraylist index starts from 0
+
+		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
+			throw new NoSuchElementException();
+		}
+		toBeEditedSerial = lastShownToUi.get(index).getSerial();
 	}
 
 	private void updateField(String commandArgument, String newField)
@@ -123,14 +126,13 @@ public class EditParser extends CommandParser {
 		case "tofloating":
 			// fall through
 		case "tofloat":
-			willChangeType = true;
+			willChangeToFloating = true;
 			newType = TaskType.FLOATING;
 			break;
 		}
 	}
-
-	public Task getToBeEdited() {
-		return toBeEdited;
+	public int getToBeEditedSerial(){
+		return toBeEditedSerial;
 	}
 
 	public String getNewName() {
