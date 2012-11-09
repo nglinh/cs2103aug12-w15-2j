@@ -48,7 +48,6 @@ import javax.swing.event.TableModelListener;
 
 import org.joda.time.DateTime;
 
-import com.explodingpixels.macwidgets.IAppWidgetFactory;
 import com.joestelmach.natty.DateGroup;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
