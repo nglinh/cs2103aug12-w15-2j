@@ -8,9 +8,6 @@ import java.awt.Rectangle;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import java.awt.BorderLayout;
 import javax.swing.JEditorPane;
 
