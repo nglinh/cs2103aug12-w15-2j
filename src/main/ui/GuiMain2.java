@@ -366,6 +366,7 @@ public class GuiMain2 extends GuiCommandBox{
 		table.getColumnModel().getColumn(2).setPreferredWidth(110);
 		table.getColumnModel().getColumn(3).setPreferredWidth(110);
 		table.getColumnModel().getColumn(4).setPreferredWidth(160);
+		showTasksListInTable(new ArrayList<Task>());
 
 		scrollPaneTable.setViewportView(table);
 		panelCards.add(scrollPaneTable, CARD_LIST);       
