@@ -185,7 +185,7 @@ public class Database {
 	}
 
 	/**
-	 * To return all the tasks in database
+	 * To return the list of all tasks in database. Unsorted
 	 * <p>
 	 * Returned result is a clone of the tasks in database, operations done on
 	 * the result will not affect the database
