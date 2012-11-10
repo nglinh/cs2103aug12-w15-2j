@@ -14,8 +14,7 @@ import main.storage.WillNotWriteToCorruptFileException;
 
 public class EditHandler extends CommandHandler {
 	private static final String MESSAGE_NOTHING_UPDATED = "The task is still the same!";
-	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change to timed task, you need to specify"
-			+ "both start time and end time.";
+	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change the task to a timed task, you need to specify both the start time and the end time.";
 	private EditParser parser;
 	private Task toBeEdited;
 	private Task copy;

@@ -685,7 +685,7 @@ public class GuiMain2 extends GuiCommandBox{
 				log.finer("Hyperlink activated (dated tasks) " + e.getURL().getPath());
 				if(e.getURL().getPath().startsWith("/editTask/")){
 					String indexToEdit = e.getURL().getPath().split("/")[2];
-					System.out.println(indexToEdit);
+					//System.out.println(indexToEdit);
 					int index = Integer.parseInt(indexToEdit);
 					table.setRowSelectionInterval(index-1, index-1);
 					table.scrollRectToVisible(new Rectangle(table.getCellRect(index-1, 0, true)));
@@ -800,7 +800,7 @@ public class GuiMain2 extends GuiCommandBox{
 						executeCommand("update " + index +" -deadline " + deadline.replace("-", " "));
 					}else{
 						// Timed task
-						executeCommand("update " + index +" -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
+						executeCommand("update " + index +" -start " + startTime.replace("-", " ") + " -end " + endTime.replace("-", " "));
 					}
 				}catch(Exception ex){
 					ex.printStackTrace();
@@ -830,7 +830,7 @@ public class GuiMain2 extends GuiCommandBox{
 						executeCommand("update " + index +" -deadline " + deadline.replace("-", " "));
 					} else {
 						// Timed task
-						executeCommand("update " + index + " -begintime " + startTime.replace("-", " ") + " -endtime " + endTime.replace("-", " "));
+						executeCommand("update " + index + " -start " + startTime.replace("-", " ") + " -end " + endTime.replace("-", " "));
 					}
 				}catch(Exception ex){
 					ex.printStackTrace();
@@ -853,12 +853,12 @@ public class GuiMain2 extends GuiCommandBox{
 		public static final int COL_TASKNAME = 4;
 
 		private String[] columnNames;
-		private List<Task> data;
+		private List<Object[]> data;
 
-		public MyTableModel(List<Task> taskList){
+		public MyTableModel(List<Object[]> tableItems){
 			log.entering(this.getClass().getName(), "<init>");
 			columnNames = new String[]{"Idx", "", "Start/Deadline", "End", "Task"};
-			data = taskList;
+			data = tableItems;
 			log.exiting(this.getClass().getName(), "<init>");
 		}
 
@@ -879,47 +879,19 @@ public class GuiMain2 extends GuiCommandBox{
 		}
 
 		public Object getValueAt(int row, int col) {
-			Task task = data.get(row);
-
-			String start, end;
-			if(task.getType().equals(TaskType.TIMED)) {
-				start = dateTimeToLongerString(task.getStartDate());
-			} else if(task.getType().equals(TaskType.DEADLINE)) {
-				start = dateTimeToLongerString(task.getDeadline());
-			} else {
-				start = TABLE_EMPTY_DATE_FIELD;
-			}
-
-			if(task.getType().equals(TaskType.TIMED)) {
-				end = dateTimeToLongerString(task.getEndDate());
-			} else {
-				end = TABLE_EMPTY_DATE_FIELD;
-			}
-
 			switch(col){
 			case COL_INDEX:
 				int index = row+1;
 				log.finest(String.format("value at row %1d col %2d is %3d", row, col, index));
 	    		return index;
-			case COL_DONE:
-				boolean isTaskDone = task.isDone();
-				log.finest(String.format("value at row %1d col %2d is %3b", row, col, isTaskDone));
-				return isTaskDone;
-			case COL_START:
-				log.finest(String.format("value at row %1d col %2d is %3s", row, col, start));
-				return start;
-			case COL_END:
-				log.finest(String.format("value at row %1d col %2d is %3s", row, col, end));
-				return end;
-			case COL_TASKNAME:
-				String taskName = task.getTaskName();
-				log.finest(String.format("value at row %1d col %2d is %3s", row, col, taskName));
-				return taskName;
 			default:
-				log.warning("Invalid column number");
-				assert false;
+				if(data.get(row)[col] != null){
+					//log.finest(String.format("value at row %1d col %2d is %3d", row, col, data.get(row)[col].toString()));
+				}else{
+					log.finest(String.format("value at row %1d col %2d is %3d", row, col, "null"));
+				}
+				return data.get(row)[col];
 			}
-			return null;
 		}
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -948,104 +920,15 @@ public class GuiMain2 extends GuiCommandBox{
 			log.entering(this.getClass().getName(), "setValueAt");
 			log.finest(String.format("Setting row %1d col %2d to %3s", row, col, value));
 			
-			Task task = data.get(row);
-			
-			List<DateGroup> groups = null;
-			DateTime date;
-			
-			try{
+			Object[] tableRow = data.get(row);
 
-				switch (col) {
-				case COL_INDEX:
-					log.warning("Try to set value of index!");
-					assert false;
-					break;
-				case COL_DONE:
-					log.info("Setting value of done to " + value);
-					task.done((boolean) value);
-					break;
-				case COL_START:
-					log.fine("Setting value of start date with raw value " + value);
-					groups = nattyParser.parseWDefBaseDate(((String) value).replace("-", " "));
-					date = null;
-	
-					if (groups != null && !groups.isEmpty()) {
-						date = new DateTime(groups.get(0).getDates().get(0));
-					}
-	
-					if (date != null) {
-						log.fine("Managed to parse a date");
-						// Managed to parse out a date
-						if (task.getType() == TaskType.TIMED) {
-							log.info(String.format("Task is timed task, changing times to %1s %2s", date, task.getEndDate()));
-							task.changeStartAndEndDate(date, task.getEndDate());
-						} else if (task.getType() == TaskType.DEADLINE) {
-							log.info(String.format("Task is deadline task, changing times %1s", date));
-							task.changeDeadline(date);
-						} else if (task.getType() == TaskType.FLOATING) {
-							log.info(String.format("Task is floating task, changing to deadline tas with time %1s", date));
-							task.changetoDeadline(date);
-						}
-	
-					} else {
-						log.fine("Did not manage to parse a date");
-						// Did not manage to parse out a date
-						if (task.getType() == TaskType.TIMED) {
-							log.info(String.format("Task is timed task, changing to deadline task with time %1s", task.getEndDate()));
-							task.changetoDeadline(task.getEndDate());
-						} else if (task.getType() == TaskType.DEADLINE) {
-							log.info("Task is deadline task, changing to floating task");
-							task.changetoFloating();
-						}
-					}
-					break;
-				case COL_END:
-					log.fine("Setting value of end date with raw value " + value);
-					groups = nattyParser.parseWDefBaseDate(((String) value).replace("-", " "));
-					date = null;
-	
-					if (groups != null && !groups.isEmpty()) {
-						date = new DateTime(groups.get(0).getDates().get(0));
-					}
-	
-					if (date != null) {
-						log.fine("Managed to parse a date");
-						
-						// Managed to parse out a date
-						if (task.getType() == TaskType.TIMED) {
-							log.info(String.format("Task is timed task, changing times to %1s %2s", task.getStartDate(), date));
-							task.changeStartAndEndDate(task.getStartDate(), date);
-						} else if (task.getType() == TaskType.DEADLINE) {
-							log.info(String.format("Task is deadline task, changing to timed task %1s %2s", task.getDeadline(), date));
-							task.changetoTimed(task.getDeadline(), date);
-						} else if (task.getType() == TaskType.FLOATING) {
-							log.info(String.format("Task is floating task, changing to deadline tas with time %1s", date));
-							task.changetoDeadline(date);
-						}
-					} else {					
-						log.fine("Did not manage to parse a date");
-						
-						// Did not manage to parse out a date
-						if (task.getType() == TaskType.TIMED) {
-							log.info(String.format("Task is timed task, changing to deadline task with time %1s", task.getStartDate()));
-							task.changetoDeadline(task.getStartDate());
-						}
-					}
-	
-					break;
-				case COL_TASKNAME:
-					log.info("Changing task name to " + value);
-					task.changeName((String) value);
-					break;
-				default:
-					assert false;
-				}
-			
-			}catch(IllegalArgumentException e){
-				JOptionPane.showMessageDialog(null, "Invalid date entered. The end date should be after the start date.");
-				log.log(Level.WARNING, "Problem with date", e);
-			}catch(Exception e){
-				e.printStackTrace();
+			switch (col) {
+			case COL_INDEX:
+				log.warning("Try to set value of index!");
+				assert false;
+				break;
+			default:
+				tableRow[col] = value;
 			}
 
 			fireTableCellUpdated(row, col);
@@ -1069,11 +952,37 @@ public class GuiMain2 extends GuiCommandBox{
 	}
 
 	public void showTasksListInTable(List<Task> taskListOrig){
-		List<Task> taskList = new ArrayList<Task>();
+		List<Object[]> tableItems = new ArrayList<Object[]>();
+		int index = 1;
 		for(Task t : taskListOrig){
-			Task newTask = new Task(t);
-			taskList.add(newTask);
+			Object[] tableRowItems = new Object[5];
+			tableRowItems[MyTableModel.COL_INDEX] = new Integer(index++);
+								
+			String start = "", end = "";
+			if(t.getType().equals(TaskType.TIMED)) {
+				start = dateTimeToLongerString(t.getStartDate());
+			} else if(t.getType().equals(TaskType.DEADLINE)) {
+				start = dateTimeToLongerString(t.getDeadline());
+			} else {
+				start = TABLE_EMPTY_DATE_FIELD;
+			}
+
+			if(t.getType().equals(TaskType.TIMED)) {
+				end = dateTimeToLongerString(t.getEndDate());
+			} else {
+				end = TABLE_EMPTY_DATE_FIELD;
+			}
+
+			tableRowItems[MyTableModel.COL_DONE] = new Boolean(t.isDone());
+			tableRowItems[MyTableModel.COL_START] = start;
+			tableRowItems[MyTableModel.COL_END] = end;
+			tableRowItems[MyTableModel.COL_TASKNAME] = t.getTaskName();
+
+			tableItems.add(tableRowItems);
+			
+			//System.out.println(Arrays.asList(tableRowItems));
 		}
+		
 		
 		log.entering(this.getClass().getName(), "showTasksList");
 		
@@ -1081,7 +990,7 @@ public class GuiMain2 extends GuiCommandBox{
 		int checkboxColumnWidth = TABLE_COLUMN_WIDTH_CHECKBOX;
 		int dateColumnWidth = getContentWidth(TABLE_COLUMN_WIDTH_DATE_MAX_TEXT) + TABLE_COLUMN_WIDTH_EXTRA;
 
-		table.setModel(new MyTableModel(taskList));
+		table.setModel(new MyTableModel(tableItems));
 		table.getColumnModel().getColumn(0).setMinWidth(indexNumberColumnWidth);
 		table.getColumnModel().getColumn(0).setMaxWidth(indexNumberColumnWidth);
 		table.getColumnModel().getColumn(1).setMinWidth(checkboxColumnWidth);

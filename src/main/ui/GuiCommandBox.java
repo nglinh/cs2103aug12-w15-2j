@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Rectangle;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
@@ -23,6 +24,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -191,13 +194,20 @@ public class GuiCommandBox extends UI {
 
 			// Call command parser
 			log.info("Sending the following command to logic: " + text);
-			LogicToUi returnValue = sendCommandToLogic(text);
-	
-			// Set command text box to empty
-			log.finer("Set text box to empty after sending command to logic");
-			txtCmd.setText("");
-	
-			update(returnValue);
+			try{
+				LogicToUi returnValue = sendCommandToLogic(text);
+				
+				// Set command text box to empty
+				log.finer("Set text box to empty after sending command to logic");
+				txtCmd.setText("");
+		
+				update(returnValue);
+			}catch(Exception e){
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				String stackTrace = sw.toString();
+				GuiError.ShowErrorMessage("Uh-oh, an error has occured. Check that your command is valid.\nIf you need to contact support, please take note of the following:","Command that caused the error:\n"+ text + "\nStack trace:\n" + stackTrace);
+			}
 		}
 
 		log.exiting(this.getClass().getName(), "executeCommmand");
