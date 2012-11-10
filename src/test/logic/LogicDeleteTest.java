@@ -63,7 +63,76 @@ public class LogicDeleteTest {
 				new Task("abcdefg", new DateTime().withTime(14, 0, 0, 0))
 				};
 		int result = CommandTester(addCommands, deleteCommand, notPresentTasks);		
-		assertEquals(result, notPresentTasks.length);
+		assertEquals(notPresentTasks.length, result);
+	}
+	
+	@Test
+	public void testDeleteOver() {
+		String[] addCommands = new String[]{
+				"add \"project meeting at com\" by yesterday",
+				"add abcdefg by tomorrow"
+				};
+		String deleteCommand = "delete over";
+		Task[] notPresentTasks = new Task[]{
+				new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0))
+				};
+		int result = CommandTester(addCommands, deleteCommand, notPresentTasks);		
+		assertEquals(addCommands.length - notPresentTasks.length, result);
+	}
+	
+	@Test
+	public void testDeleteOver2() {
+		String[] addCommands = new String[]{
+				"add \"project meeting at com\" from yesterday 2pm to 3pm",
+				"add abcdefg tomorrow 2pm to 3pm"
+				};
+		String deleteCommand = "delete over";
+		Task[] notPresentTasks = new Task[]{
+				new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0))
+				};
+		int result = CommandTester(addCommands, deleteCommand, notPresentTasks);		
+		assertEquals(addCommands.length - notPresentTasks.length, result);
+	}
+	
+	@Test
+	public void testDeleteDone() {
+		System.out.println("delete done");
+		String[] addCommands = new String[]{
+				"add \"project meeting at com\" at 3pm",
+				"add abcdefg yesterday",
+				"list",
+				"sort",
+				"done 2"
+				};
+		String deleteCommand = "delete done";
+		Task[] notPresentTasks = new Task[]{
+				new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0))
+				};
+		int result = CommandTester(addCommands, deleteCommand, notPresentTasks);		
+		assertEquals(1, result);
+		
+		notPresentTasks = new Task[]{};
+		result = CommandTester(addCommands, deleteCommand, notPresentTasks);	
+		assertEquals(1, result);
+		
+		System.out.println("delete done end");
+	}
+	
+	@Test
+	public void testDeleteDone2() {
+		System.out.println("delete done");
+		String[] addCommands = new String[]{
+				"add \"project meeting at com\" at 3pm",
+				"add abcdefg at 2pm",
+				};
+		String deleteCommand = "delete done";
+		Task[] notPresentTasks = new Task[]{
+				new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0))
+				};
+		int result = CommandTester(addCommands, deleteCommand, notPresentTasks);		
+		assertEquals(ERR_TASK_FOUND, result);
+		
+		System.out.println("delete done end");
 	}
 	
 	public int CommandTester(String addCommand, String deleteCommand, Task shouldNotContainTask) {
@@ -97,7 +166,7 @@ public class LogicDeleteTest {
 		returnValue = Logic.getInstance().uiCommunicator("list");
 		for(Task shouldNotContainTask : shouldNotContainTasks){
 			for(Task task : returnValue.getList()){
-				System.out.println(task.showInfo()) ;
+				System.out.println("comparing with " + task.showInfo()) ;
 				if(task.showInfo().equals(shouldNotContainTask.showInfo())){
 					return ERR_TASK_FOUND;
 				}
