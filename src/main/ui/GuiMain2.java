@@ -946,11 +946,10 @@ public class GuiMain2 extends GuiCommandBox{
 		 */
 		public void setValueAt(Object value, int row, int col) {
 			log.entering(this.getClass().getName(), "setValueAt");
-			log.info(String.format("Setting row %1d col %2d to %3s", row, col, value));
+			log.finest(String.format("Setting row %1d col %2d to %3s", row, col, value));
 			
 			Task task = data.get(row);
 			
-
 			List<DateGroup> groups = null;
 			DateTime date;
 			
@@ -1140,5 +1139,4 @@ public class GuiMain2 extends GuiCommandBox{
 		log.info("Scroll to reference " + dateReferenceStr);
 		txtDatedTasks.scrollToReference(dateReferenceStr);
 	}
-
 }
