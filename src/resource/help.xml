@@ -80,7 +80,7 @@
 	<command>
 		<name><![CDATA[<h1>Sort</h1>]]></name>
 		<summary>Sorts the current list of tasks</summary>
-		<usage><![CDATA[<b>sort</b> [parameter] "reverse"]]></usage>
+		<usage><![CDATA[<b>sort</b> [parameter] "descending"]]></usage>
 		<usage><![CDATA[<b>sort</b> type (Order of deadline, timed, floating)]]></usage>
 		<usage><![CDATA[<b>sort</b> done (Undone tasks come first)]]></usage>
 		<usage><![CDATA[<b>sort</b> start (By start time/deadline)]]></usage>
