@@ -102,6 +102,7 @@ public class FileManagement {
 	private FileLock databaseFileLock = null;
 	private FileChannel databaseChannel = null;
 	private RandomAccessFile randDatabaseAccess = null;
+	
 
 	private Logger log = LogHandler.getLogInstance();
 
@@ -119,17 +120,20 @@ public class FileManagement {
 		log.info("FileMgmt instance created");
 	}
 
-	public void readFileAndDetectCorruption(List<Task> storeInHere) {
-		assert (storeInHere != null);
+	public List<Task> readFileAndDetectCorruption() {
 
+		List<Task> tasksRead = new ArrayList<Task>();
+		
 		if ((fileAttributes.equals(FileStatus.FILE_ALL_OK))
 				|| (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
 			try {
-				readFiletoDataBase(storeInHere);
+				tasksRead =  readFiletoDataBase();
 			} catch (Exception e) {
 				fileAttributes = FileStatus.FILE_IS_CORRUPT;
 			}
 		}
+		
+		return tasksRead;
 	}
 
 	public void prepareDatabaseFile() {
@@ -169,7 +173,14 @@ public class FileManagement {
 		// If the above is successful, we end this method
 		if (isRWLockSucessful)   {
 			if(firstLaunch){
-				writeInitialLaunchTasks();
+
+				List<Task> initialTasks = prepareInitialLaunchTasks();
+				
+				assert(fileAttributes.equals(FileStatus.FILE_ALL_OK));
+				try {
+					writeDataBaseToFile(initialTasks);
+				} catch (IOException | WillNotWriteToCorruptFileException e) {
+				}
 			}
 			return;
 		} else if (fileAttributes.equals(FileStatus.FILE_IS_LOCKED)){
@@ -189,9 +200,8 @@ public class FileManagement {
 
 	}
 
-	private void writeInitialLaunchTasks() {
+	public List<Task> prepareInitialLaunchTasks() {
 		log.info("write initial tasks to file");
-		assert(fileAttributes.equals(FileStatus.FILE_ALL_OK));
 		
 		DateTime currentTimeStartOfDay = new DateTime();
 		DateTime currentTimeTomorrow = currentTimeStartOfDay.plusDays(1);
@@ -210,7 +220,6 @@ public class FileManagement {
 		Task editme = new Task("4. Double-click on me to edit me", true);
 		Task jumpDate = new Task("5. You can use the calendar below to jump to a selected date");
 		
-		
 		List<Task> initialTasks = new ArrayList<Task>();
 		initialTasks.add(welcome);
 		initialTasks.add(experiment);
@@ -227,10 +236,8 @@ public class FileManagement {
 		
 		Collections.sort(initialTasks);
 		
-		try {
-			writeDataBaseToFile(initialTasks);
-		} catch (IOException | WillNotWriteToCorruptFileException e) {
-		}
+		return initialTasks;
+	
 	}
 
 	public FileStatus getFileAttributes() {
@@ -260,12 +267,14 @@ public class FileManagement {
 		}
 	}
 
-	private void readFiletoDataBase(List<Task> storeInHere) throws IOException,
+	private List<Task> readFiletoDataBase() throws IOException,
 	DataFormatException {
 		log.info("Reading file method");
 
-		assert (storeInHere != null);
+
 		assert (databaseFile != null);
+		
+		List<Task> storeInHere = new ArrayList<Task>();
 
 		if (randDatabaseAccess == null) {
 			log.warning("randDatabase is null, database file probably not prepared");
@@ -307,6 +316,8 @@ public class FileManagement {
 		}
 
 		log.info("Parsing complete");
+		
+		return storeInHere;
 
 	}
 

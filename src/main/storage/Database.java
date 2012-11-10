@@ -59,7 +59,7 @@ public class Database {
 		
 		diskFile = FileManagement.getInstance();
 		diskFile.prepareDatabaseFile();
-		diskFile.readFileAndDetectCorruption(taskList);
+		taskList = diskFile.readFileAndDetectCorruption();
 		duplicateListToHashMap(taskList);
 		fileAttributes = parseFileAttributes();
 
