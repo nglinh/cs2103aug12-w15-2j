@@ -201,7 +201,7 @@ public class FileManagement {
 		Task tml3pm = new Task("Send letter by 3pm tomorrow.", currentTimeTomorrow.withTime(15, 00, 00, 00));
 		Task tml5to8pm = new Task("Dinner with James from 6pm to 8pm tomorrow", currentTimeTomorrow.withTime(17, 00, 00, 00), currentTimeTomorrow.withTime(20, 00, 00, 00));
 		Task bytml = new Task("You have to finish this report by tomorrow!", currentTimeTomorrow.withTime(23, 59, 00, 00));
-		Task threeDay = new Task("Company camp 2 days later from 10am in Day 1 to 11pm in Day 3", currentTimeStartOfDay.plusDays(2).withTime(10, 00, 00, 00), currentTimeStartOfDay.plusDays(4).withTime(23, 00, 00, 00) );
+		Task threeDay = new Task("Overseas trip 2 days later from 10am in Day 1 to 11pm in Day 3", currentTimeStartOfDay.plusDays(2).withTime(10, 00, 00, 00), currentTimeStartOfDay.plusDays(4).withTime(23, 00, 00, 00) );
 		
 		
 		Task floating = new Task("1. Tasks with no date are placed here");
