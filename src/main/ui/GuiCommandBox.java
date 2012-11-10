@@ -142,7 +142,8 @@ public class GuiCommandBox extends UI {
 		txtCmdHint.setEditorKit(hintBoxKit);
 
 		StyleSheet hintBoxStyleSheet = hintBoxKit.getStyleSheet();
-		hintBoxStyleSheet.addRule("body, p {font-family:Segoe UI, Tahoma, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Bitstream Vera Sans, DejaVu Sans;}");
+				
+		hintBoxStyleSheet.addRule("body, p {font-family:"+getPreferredFont()+";}");
 		hintBoxStyleSheet
 				.addRule(".hint h1 {margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
 		hintBoxStyleSheet
