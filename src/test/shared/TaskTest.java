@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -701,14 +703,12 @@ public class TaskTest {
 	
 	@Test
 	public void testShowInfo(){
-		assertEquals(name.showInfo(), name.showInfo());
-		assertEquals(nameTrue.showInfo(), nameTrue.showInfo());
-		
-		assertEquals(nameDeadline.showInfo(), nameDeadline.showInfo());
-		assertEquals(nameDeadlineTrue.showInfo(), nameDeadlineTrue.showInfo());
-		
-		assertEquals(nameTimed.showInfo(), nameTimed.showInfo());
-		assertEquals(nameTimedFalse.showInfo(), nameTimedFalse.showInfo());
+
+		DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern("dd-MMM-yyyy HHmm Z");
+		assertEquals("F | * | ---------------------- | ---------------------- | ---------------------- | name true", nameTrue.showInfo());
+		assertEquals("D | * | " +  FILE_DATE_FORMAT.print(nameDeadlineTrue.getDeadline())  + " | ---------------------- | ---------------------- | name -1month true", nameDeadlineTrue.showInfo());
+		assertEquals("T | - | ---------------------- | " +  FILE_DATE_FORMAT.print(nameTimed.getStartDate())  + " | " +  FILE_DATE_FORMAT.print(nameTimed.getEndDate())  + " | name from yesterday to tomorrow", nameTimed.showInfo());
+
 		
 	}
 	

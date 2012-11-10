@@ -102,6 +102,7 @@ public class FileManagement {
 	private FileLock databaseFileLock = null;
 	private FileChannel databaseChannel = null;
 	private RandomAccessFile randDatabaseAccess = null;
+	
 
 	private Logger log = LogHandler.getLogInstance();
 
@@ -119,17 +120,20 @@ public class FileManagement {
 		log.info("FileMgmt instance created");
 	}
 
-	public void readFileAndDetectCorruption(List<Task> storeInHere) {
-		assert (storeInHere != null);
+	public List<Task> readFileAndDetectCorruption() {
 
+		List<Task> tasksRead = new ArrayList<Task>();
+		
 		if ((fileAttributes.equals(FileStatus.FILE_ALL_OK))
 				|| (fileAttributes.equals(FileStatus.FILE_READ_ONLY))) {
 			try {
-				readFiletoDataBase(storeInHere);
+				tasksRead =  readFiletoDataBase();
 			} catch (Exception e) {
 				fileAttributes = FileStatus.FILE_IS_CORRUPT;
 			}
 		}
+		
+		return tasksRead;
 	}
 
 	public void prepareDatabaseFile() {
@@ -169,7 +173,14 @@ public class FileManagement {
 		// If the above is successful, we end this method
 		if (isRWLockSucessful)   {
 			if(firstLaunch){
-				writeInitialLaunchTasks();
+
+				List<Task> initialTasks = prepareInitialLaunchTasks();
+				
+				assert(fileAttributes.equals(FileStatus.FILE_ALL_OK));
+				try {
+					writeDataBaseToFile(initialTasks);
+				} catch (IOException | WillNotWriteToCorruptFileException e) {
+				}
 			}
 			return;
 		} else if (fileAttributes.equals(FileStatus.FILE_IS_LOCKED)){
@@ -189,9 +200,8 @@ public class FileManagement {
 
 	}
 
-	private void writeInitialLaunchTasks() {
+	public List<Task> prepareInitialLaunchTasks() {
 		log.info("write initial tasks to file");
-		assert(fileAttributes.equals(FileStatus.FILE_ALL_OK));
 		
 		DateTime currentTimeStartOfDay = new DateTime();
 		DateTime currentTimeTomorrow = currentTimeStartOfDay.plusDays(1);
@@ -201,7 +211,7 @@ public class FileManagement {
 		Task tml3pm = new Task("Send letter by 3pm tomorrow.", currentTimeTomorrow.withTime(15, 00, 00, 00));
 		Task tml5to8pm = new Task("Dinner with James from 6pm to 8pm tomorrow", currentTimeTomorrow.withTime(17, 00, 00, 00), currentTimeTomorrow.withTime(20, 00, 00, 00));
 		Task bytml = new Task("You have to finish this report by tomorrow!", currentTimeTomorrow.withTime(23, 59, 00, 00));
-		Task threeDay = new Task("Company camp 2 days later from 10am in Day 1 to 11pm in Day 3", currentTimeStartOfDay.plusDays(2).withTime(10, 00, 00, 00), currentTimeStartOfDay.plusDays(4).withTime(23, 00, 00, 00) );
+		Task threeDay = new Task("Overseas trip 2 days later from 10am in Day 1 to 11pm in Day 3", currentTimeStartOfDay.plusDays(2).withTime(10, 00, 00, 00), currentTimeStartOfDay.plusDays(4).withTime(23, 00, 00, 00) );
 		
 		
 		Task floating = new Task("1. Tasks with no date are placed here");
@@ -209,7 +219,6 @@ public class FileManagement {
 		Task completed = new Task("3. This task is finished.", true);
 		Task editme = new Task("4. Double-click on me to edit me", true);
 		Task jumpDate = new Task("5. You can use the calendar below to jump to a selected date");
-		
 		
 		List<Task> initialTasks = new ArrayList<Task>();
 		initialTasks.add(welcome);
@@ -227,10 +236,8 @@ public class FileManagement {
 		
 		Collections.sort(initialTasks);
 		
-		try {
-			writeDataBaseToFile(initialTasks);
-		} catch (IOException | WillNotWriteToCorruptFileException e) {
-		}
+		return initialTasks;
+	
 	}
 
 	public FileStatus getFileAttributes() {
@@ -260,12 +267,14 @@ public class FileManagement {
 		}
 	}
 
-	private void readFiletoDataBase(List<Task> storeInHere) throws IOException,
+	private List<Task> readFiletoDataBase() throws IOException,
 	DataFormatException {
 		log.info("Reading file method");
 
-		assert (storeInHere != null);
+
 		assert (databaseFile != null);
+		
+		List<Task> storeInHere = new ArrayList<Task>();
 
 		if (randDatabaseAccess == null) {
 			log.warning("randDatabase is null, database file probably not prepared");
@@ -307,6 +316,8 @@ public class FileManagement {
 		}
 
 		log.info("Parsing complete");
+		
+		return storeInHere;
 
 	}
 
