@@ -38,6 +38,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.JPanel;
 import javax.swing.event.HyperlinkListener;
@@ -129,6 +132,8 @@ public class GuiMain2 extends GuiCommandBox{
 	private Component horizontalGlue;
 	private Component horizontalGlue_1;
 	
+	private Preferences prefs;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -164,6 +169,16 @@ public class GuiMain2 extends GuiCommandBox{
 	@SuppressWarnings("serial")
 	protected void initialize() {
 		log.entering(this.getClass().getName(), "initialize");
+		
+		prefs = Preferences.userNodeForPackage(this.getClass());		
+		prefs.addPreferenceChangeListener(new PreferenceChangeListener(){
+
+			@Override
+			public void preferenceChange(PreferenceChangeEvent arg0) {
+				preferenceShowHint = prefs.getBoolean(GuiPreferences.SHOW_HINTS, true);				
+			}
+			
+		});
 				
 		frmDoit = new JFrame();
 		frmDoit.addWindowFocusListener(new WindowFocusListener() {
@@ -218,6 +233,9 @@ public class GuiMain2 extends GuiCommandBox{
 				executeCommand("list");
 				executeCommand("sort");
 				jumpToTasksToday();
+				if(prefs.getBoolean(GuiPreferences.HOME_GOES_TO_DEFAULT_VIEW, true)){
+					switchCard(prefs.get(GuiPreferences.DEFAULT_VIEW, GuiMain2.CARD_AGENDA));
+				}
 			}
 		});
 		toolBar.add(btnHome);
@@ -256,6 +274,11 @@ public class GuiMain2 extends GuiCommandBox{
 		toolBar.add(horizontalGlue);
 		
 		btnPreferences = new JButton("Preferences");
+		btnPreferences.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				GuiPreferences.getInstance().runUI();
+			}
+		});
 		btnPreferences.setIcon(new ImageIcon(GuiMain2.class.getResource("/resource/wrench_orange.png")));
 		toolBar.add(btnPreferences);
 		toolBar.add(btnHelp);
@@ -421,7 +444,7 @@ public class GuiMain2 extends GuiCommandBox{
 		}
 		
 		txtTaskEdit.setVisible(false);
-		switchCard(CARD_AGENDA);
+		switchCard(prefs.get(GuiPreferences.DEFAULT_VIEW, GuiMain2.CARD_AGENDA));
 
 		showStatus(fileStatus);
 		

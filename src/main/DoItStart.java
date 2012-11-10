@@ -31,7 +31,7 @@ public class DoItStart {
 		
 		if (args.length == 0) {
 			log.info("Start tray icon");
-			doITUi = new GuiTrayIcon();
+			doITUi = GuiTrayIcon.getInstance();
 			
 		} else if (args[0].equals("-cli") && isConsoleAttached()) {
 			log.info("Start CliWithJline");
