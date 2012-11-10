@@ -18,6 +18,7 @@ import java.awt.Dialog.ModalExclusionType;
 import java.awt.Window.Type;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.awt.Dialog.ModalityType;
 
@@ -133,6 +134,20 @@ public class GuiPreferences extends UI {
 		
 		chckbxHomeGoesTo = new JCheckBox("Home goes to Default View");
 		
+		JButton btnReset = new JButton("Reset");
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+				try {
+					prefs.clear();
+				} catch (BackingStoreException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				frmDoitPreferences.dispose();
+			}
+		});
+		
 		GroupLayout groupLayout = new GroupLayout(frmDoitPreferences.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -151,7 +166,10 @@ public class GuiPreferences extends UI {
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(rdbtnList))
 						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-							.addComponent(btnSave)
+							.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(btnReset)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnSave))
 							.addGroup(groupLayout.createSequentialGroup()
 								.addComponent(chckbxCtrl)
 								.addPreferredGap(ComponentPlacement.RELATED)
@@ -162,7 +180,7 @@ public class GuiPreferences extends UI {
 								.addComponent(chckbxWin)
 								.addGap(6)
 								.addComponent(txtShortcut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-					.addContainerGap(35, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -187,8 +205,10 @@ public class GuiPreferences extends UI {
 						.addComponent(chckbxWin)
 						.addComponent(txtShortcut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSave)
-					.addContainerGap(23, Short.MAX_VALUE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnSave)
+						.addComponent(btnReset))
+					.addContainerGap(15, Short.MAX_VALUE))
 		);
 		frmDoitPreferences.getContentPane().setLayout(groupLayout);
 		
@@ -233,5 +253,4 @@ public class GuiPreferences extends UI {
 		}
 		return theOne;
 	}
-
 }

@@ -13,6 +13,8 @@ import java.awt.event.MouseListener;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.NodeChangeEvent;
+import java.util.prefs.NodeChangeListener;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
@@ -56,10 +58,8 @@ public class GuiTrayIcon extends UI {
 
 			@Override
 			public void preferenceChange(PreferenceChangeEvent arg0) {
-				if(arg0.getKey() == GuiPreferences.SHORTCUT_KEY_EXTRA){
-					JIntellitype.getInstance().unregisterHotKey(keyIdentifier);
-					registerHotKey();
-				}
+				JIntellitype.getInstance().unregisterHotKey(keyIdentifier);
+				registerHotKey();
 			}
 			
 		});

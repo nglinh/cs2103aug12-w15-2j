@@ -139,12 +139,13 @@ public class GuiCommandBox extends UI {
 		txtCmdHint.setEditorKit(hintBoxKit);
 
 		StyleSheet hintBoxStyleSheet = hintBoxKit.getStyleSheet();
-		hintBoxStyleSheet.addRule("body, p {font-family:Segoe UI;}");
+		hintBoxStyleSheet.addRule("body, p {font-family:Segoe UI, Tahoma, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Bitstream Vera Sans, DejaVu Sans;}");
 		hintBoxStyleSheet
-				.addRule("h1 {font-family:Segoe UI; margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
+				.addRule(".hint h1 {margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
 		hintBoxStyleSheet
-				.addRule("h2 {font-family:Segoe UI; margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-		hintBoxStyleSheet.addRule("p {margin-top:5px;}");
+				.addRule(".hint h2 {margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
+		hintBoxStyleSheet.addRule(".hint p {margin-top:5px;}");
+		hintBoxStyleSheet.addRule(".status a{color:#4D7E99;text-decoration:none;}");
 
 		Document hintBoxDoc = hintBoxKit.createDefaultDocument();
 		log.finest("Setting txtCmdHint with hintStyleSheet");
@@ -204,7 +205,7 @@ public class GuiCommandBox extends UI {
 
 	protected void showStatus(String status) {
 		txtStatus
-				.setText("<html><table align=\"center\" width=\"100%\"><tr><td valign=\"middle\" align=\"left\">"
+				.setText("<html><table align=\"center\" width=\"100%\" class=\"status\"><tr><td valign=\"middle\" align=\"left\">"
 						+ HTMLEncoder.encode(status) + "</td><td width=1 valign=\"middle\" align=\"right\"><a href=\"http://doit/undo\">undo</a></td></tr></table></html>");
 	}
 
@@ -325,9 +326,9 @@ public class GuiCommandBox extends UI {
 				log.fine("Getting hint text for command " + matchedCommand);
 				log.finest(Hint.getInstance().helpForThisCommandHTML(
 						matchedCommand));
-				String hintText = "<html>"
+				String hintText = "<html><div class=\"hint\">"
 						+ Hint.getInstance().helpForThisCommandHTML(
-								matchedCommand) + "</html>";
+								matchedCommand) + "</div></html>";
 				log.finest("Setting hint text to " + hintText);
 				txtCmdHint.setText(hintText);
 
