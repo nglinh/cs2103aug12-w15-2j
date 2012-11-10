@@ -202,6 +202,8 @@ public class Database {
 			Task currentEntry = entry.getValue();
 			result.add(new Task(currentEntry));
 		}
+		
+		Collections.sort(result);
 
 		log.info("Database of size " + result.size() + " returned");
 
