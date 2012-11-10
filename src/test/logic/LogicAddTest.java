@@ -115,7 +115,12 @@ public class LogicAddTest{
 	
 	@Test
 	public void deadlineTaskRelative() {
-		Task expected = new Task("cs2101 blogpost", new DateTime().withDayOfWeek(5).withTime(23, 59, 0, 0));
+		DateTime day = new DateTime().withDayOfWeek(5).withTime(23, 59, 0, 0);
+		System.out.println(day);
+		if (day.isBefore(new DateTime().withTime(23, 59, 0, 0))){
+			day = day.plusWeeks(1);
+		}
+		Task expected = new Task("cs2101 blogpost", day);
 		Task result = CommandTester("add cs2101 blogpost by friday");		
 		assertEquals(expected.showInfo(), result.showInfo());
 	}
@@ -124,6 +129,18 @@ public class LogicAddTest{
 	public void deadlineTaskRelative2() {
 		Task expected = new Task("cs2101 blogpost", new DateTime().withTime(23, 59, 0, 0));
 		Task result = CommandTester("add cs2101 blogpost by today");		
+		assertEquals(expected.showInfo(), result.showInfo());
+	}
+	
+	@Test
+	public void deadlineTaskSpecialDay() {
+		DateTime day = new DateTime().withDayOfYear(1).withTime(23, 59, 0, 0);
+		System.out.println(day);
+		if (day.isBefore(new DateTime().withTime(23, 59, 0, 0))){
+			day = day.plusYears(1);
+		}
+		Task expected = new Task("think about resolutions", day);
+		Task result = CommandTester("add think about new year resolutions");		
 		assertEquals(expected.showInfo(), result.showInfo());
 	}
 	
