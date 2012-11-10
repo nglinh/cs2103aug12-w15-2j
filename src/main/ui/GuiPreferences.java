@@ -3,16 +3,12 @@ package main.ui;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
-import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JCheckBox;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
