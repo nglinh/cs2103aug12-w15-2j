@@ -14,10 +14,15 @@ import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+
+import main.LogHandler;
+
 import java.awt.Dialog.ModalExclusionType;
 import java.awt.Window.Type;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.awt.Dialog.ModalityType;
@@ -44,6 +49,8 @@ public class GuiPreferences extends UI {
 	private JCheckBox chckbxShift;
 	private JCheckBox chckbxAlt;
 	private JCheckBox chckbxCtrl;
+	
+	Logger log = LogHandler.getLogInstance();
 
 	/**
 	 * Launch the application.
@@ -141,8 +148,7 @@ public class GuiPreferences extends UI {
 				try {
 					prefs.clear();
 				} catch (BackingStoreException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					log.log(Level.WARNING, "Exception when clearing preferences", e1);
 				}
 				frmDoitPreferences.dispose();
 			}
@@ -239,7 +245,7 @@ public class GuiPreferences extends UI {
 					GuiPreferences window = new GuiPreferences();
 					window.frmDoitPreferences.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.log(Level.WARNING, "Exception when showing preferences window", e);
 				}
 			}
 		});		
