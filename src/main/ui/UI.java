@@ -10,6 +10,8 @@ package main.ui;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -23,6 +25,8 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import main.LogHandler;
 import main.shared.LogicToUi;
@@ -46,6 +50,8 @@ public abstract class UI {
 	
 	protected static List<String> commandList = hint.getCommands();
 	protected static NattyParserWrapper nattyParser = NattyParserWrapper.getInstance();
+	
+	public static final String[] fontsPreferred = {"Segoe UI", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Bitstream Vera Sans", "DejaVu Sans", "Tahoma", "Helvetica", "Arial"};
 	
 	//This is the first method that will run the UI after it is constructed. DoITstart will run this.
 	public abstract void runUI();
@@ -97,7 +103,7 @@ public abstract class UI {
 			// http://stackoverflow.com/questions/949353/java-altering-ui-fonts-nimbus-doesnt-work
 			NimbusLookAndFeel laf = new NimbusLookAndFeel();
 			UIManager.setLookAndFeel(laf);
-			laf.getDefaults().put("defaultFont", new Font("Segoe UI", Font.PLAIN, 12));
+			laf.getDefaults().put("defaultFont", new Font(getPreferredFont(), Font.PLAIN, 12));
 			
 			// http://stackoverflow.com/questions/7633354/how-to-hide-the-arrow-buttons-in-a-jscrollbar
 			UIManager.getLookAndFeelDefaults().put(
@@ -121,6 +127,20 @@ public abstract class UI {
 			//e.printStackTrace();
 			LogHandler.getLogInstance().log(Level.WARNING, "Error encountered when setting look and feel", e);
 		}
+	}
+
+	public String getPreferredFont() {
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		String[] fontsInSystem = ge.getAvailableFontFamilyNames();
+		Arrays.sort(fontsInSystem);
+		for(String fontName : fontsPreferred){
+			//System.out.println("checking font "+ fontName);
+			if (Arrays.binarySearch(fontsInSystem, fontName) >= 0){
+				//System.out.println("choosing "+ fontName);
+				return fontName;
+			}
+		}
+		return "Sans-serif";
 	}
 	
 	public class FillPainter implements Painter<JComponent> {
