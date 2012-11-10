@@ -66,6 +66,8 @@ import javax.swing.JToolBar;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+
 import java.awt.CardLayout;
 import java.awt.Component;
 import javax.swing.Box;
@@ -300,12 +302,14 @@ public class GuiMain2 extends GuiCommandBox{
 		splitPane.setDividerLocation(450);
 		
 		scrollPaneDated = new JScrollPane();
+		scrollPaneDated.getVerticalScrollBar().putClientProperty("JComponent.sizeVariant", "small");
+		scrollPaneDated.getHorizontalScrollBar().putClientProperty("JComponent.sizeVariant", "small");
 		splitPane.setLeftComponent(scrollPaneDated);
 		
 		txtDatedTasks = new JEditorPane();
 		txtDatedTasks.addHyperlinkListener(new TasksHyperlinkHandler());
 		txtDatedTasks.setContentType("text/html");
-		txtDatedTasks.setText("<html>\r\n<table>\r\n<tr>\r\n<td width=\"50\"><font face=\"Segoe UI\" size=1>TUE<br>SEP<br> <font size=\"4\">20</font><br> 2012</font></td>\r\n<td>\r\nBy 2:00pm<br>\r\nTask ABCD\r\n</td>\r\n</tr>\r\n</table>");
+		txtDatedTasks.setText("<html>\r\n<table>\r\n<tr>\r\n<td width=\"50\"><font size=1>TUE<br>SEP<br> <font size=\"4\">20</font><br> 2012</font></td>\r\n<td>\r\nBy 2:00pm<br>\r\nTask ABCD\r\n</td>\r\n</tr>\r\n</table>");
 		txtDatedTasks.setEditable(false);
         txtDatedTasks.setEditorKit(generateDatedTasksDocumentStyle());
 		scrollPaneDated.setViewportView(txtDatedTasks);
@@ -317,7 +321,9 @@ public class GuiMain2 extends GuiCommandBox{
 		
 		// Undated tasks pane
 		scrollPaneUndated = new JScrollPane();
-		panel.add(scrollPaneUndated);		
+		scrollPaneUndated.getVerticalScrollBar().putClientProperty("JComponent.sizeVariant", "small");
+		scrollPaneUndated.getHorizontalScrollBar().putClientProperty("JComponent.sizeVariant", "small");
+		panel.add(scrollPaneUndated);
 		
 		txtUndatedTasks = new JEditorPane();
 		txtUndatedTasks.setContentType("text/html");
@@ -448,6 +454,8 @@ public class GuiMain2 extends GuiCommandBox{
 
 		showStatus(fileStatus);
 		
+		SwingUtilities.updateComponentTreeUI(frmDoit);
+		
 		log.exiting(this.getClass().getName(), "initialize");
 	}
 
@@ -472,8 +480,8 @@ public class GuiMain2 extends GuiCommandBox{
         //txtDatedTasks.setEditorKit(kit);
 
         StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body {color:#000; font-family:Segoe UI; font-size:12pt;}");
-        styleSheet.addRule("table {color:#000; font-family:Segoe UI; font-size:12pt;}");
+        styleSheet.addRule("body {color:#000; font-size:12pt;}");
+        styleSheet.addRule("table {color:#000; font-size:12pt;}");
         styleSheet.addRule("td{font-size:12pt;}");
         styleSheet.addRule(".calendarbox {border:1px solid #7FA9BF; color:#000000; width:40px;}");
         styleSheet.addRule(".calendarbox .calendarboxDayOfWeek{background-color:#7FA9BF; color:#FFFFFF; width:40px;font-size:10pt;}");

@@ -82,7 +82,7 @@ public class GuiQuickAdd extends GuiCommandBox{
 		frmDoit.setBounds(100, 100, 220, 180);
 		
 		txtCmd = new JTextField();
-		txtCmd.setText("add");
+		txtCmd.setText("add ");
 		txtCmd.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -144,8 +144,7 @@ public class GuiQuickAdd extends GuiCommandBox{
 		LogicToUi returnValue = sendCommandToLogic(text);
 
 		// Set command text box to empty
-		txtCmd.setText("Type a new task here...");
-		txtCmd.selectAll();
+		txtCmd.setText("add ");
 
 		txtStatus.setText(returnValue.getString());
 		
