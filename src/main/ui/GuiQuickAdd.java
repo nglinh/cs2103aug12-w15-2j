@@ -12,15 +12,12 @@ import java.awt.BorderLayout;
 import javax.swing.JEditorPane;
 
 import main.shared.LogicToUi;
-import main.shared.Task;
-
 import java.awt.Window.Type;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.Toolkit;
-import java.util.List;
 
 public class GuiQuickAdd extends GuiCommandBox{
 

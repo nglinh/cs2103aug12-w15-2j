@@ -3,16 +3,7 @@ package main.ui;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
-
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
-import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JCheckBox;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -21,19 +12,12 @@ import javax.swing.JRadioButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import java.awt.Dialog.ModalExclusionType;
 import java.awt.Window.Type;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.awt.Dialog.ModalityType;
 
@@ -134,8 +118,9 @@ public class GuiPreferences extends UI {
 				prefs.putBoolean(SHORTCUT_KEY_SHIFT, chckbxShift.isSelected());
 				prefs.putBoolean(SHORTCUT_KEY_WIN, chckbxWin.isSelected());
 				
-				if(txtShortcut.getText().trim().length() == 1){
-					prefs.put(SHORTCUT_KEY_EXTRA, txtShortcut.getText().trim());
+				String shortcutExtra = txtShortcut.getText().trim().toUpperCase();
+				if(shortcutExtra.length() == 1){
+					prefs.put(SHORTCUT_KEY_EXTRA, shortcutExtra);
 				}else{
 					JOptionPane.showMessageDialog(frmDoitPreferences, "The character you have selected for the shortcut is invalid. Please re-enter.");
 					return;

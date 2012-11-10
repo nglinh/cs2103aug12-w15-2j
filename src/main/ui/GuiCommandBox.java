@@ -7,9 +7,6 @@ import java.awt.Rectangle;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import java.awt.BorderLayout;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
@@ -29,7 +26,6 @@ import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 

@@ -46,7 +46,9 @@ public class GuiTrayIcon extends UI {
 		}
 	}
 
-	public void runUI(){
+
+	
+	public void initialize(){
 		final TrayIcon trayIcon;
 		
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
@@ -54,8 +56,10 @@ public class GuiTrayIcon extends UI {
 
 			@Override
 			public void preferenceChange(PreferenceChangeEvent arg0) {
-				// TODO Auto-generated method stub
-				registerHotKey();
+				if(arg0.getKey() == GuiPreferences.SHORTCUT_KEY_EXTRA){
+					JIntellitype.getInstance().unregisterHotKey(keyIdentifier);
+					registerHotKey();
+				}
 			}
 			
 		});
@@ -103,7 +107,7 @@ public class GuiTrayIcon extends UI {
 		        	log.info("Exiting...");
 		        	
 		        	try{
-		        		JIntellitype.getInstance().unregisterHotKey(1);
+		        		JIntellitype.getInstance().unregisterHotKey(keyIdentifier);
 		        		JIntellitype.getInstance().cleanUp();
 				    }catch(Exception e1){
 				    }
@@ -189,6 +193,7 @@ public class GuiTrayIcon extends UI {
 			}
 			
 			registerHotKey();
+			addHotKeyHandler();
 		    
 		    GuiMain2.getInstance().runUI();
 
@@ -198,7 +203,6 @@ public class GuiTrayIcon extends UI {
 			GuiMain2.getInstance().runUI();
 
 		}
-		
 	}
 
 	public void registerHotKey() {
@@ -220,32 +224,24 @@ public class GuiTrayIcon extends UI {
 		}
 		int extraKey = (int) prefs.get(GuiPreferences.SHORTCUT_KEY_EXTRA, "A").charAt(0);
 		
-		if(keyIdentifier > 1){
-			try{
-				JIntellitype.getInstance().unregisterHotKey(keyIdentifier);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}
-		keyIdentifier++;
 		try{
 			JIntellitype.getInstance().registerHotKey(keyIdentifier, modifierKeys,
-					extraKey);
-			System.out.println("registered" + keyIdentifier);
-			JIntellitype.getInstance().addHotKeyListener(new HotkeyListener() {
-		       	// listen for hotkey
-				
-		    	public void onHotKey(int aIdentifier) {
-		    		System.out.println("Hotkeyactivated" + keyIdentifier);
-		    	    if (aIdentifier == keyIdentifier){
-		    	    	//System.out.println("Hotkeyactivated" + keyCounter);
-		    	       GuiQuickAdd.getInstance().showOrHideUI();
-		    	    }
-		    	}
-		    });
+					extraKey);			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	private void addHotKeyHandler(){
+		JIntellitype.getInstance().addHotKeyListener(new HotkeyListener() {
+	       	// listen for hotkey
+			
+	    	public void onHotKey(int aIdentifier) {
+	    	    if (aIdentifier == keyIdentifier){
+	    	       GuiQuickAdd.getInstance().showOrHideUI();
+	    	    }
+	    	}
+	    });
 	}
 	
 	public static void main(String[] args){
@@ -253,7 +249,7 @@ public class GuiTrayIcon extends UI {
 	}
 	
 	private GuiTrayIcon(){
-		
+		initialize();
 	}
 	
 	public static GuiTrayIcon getInstance(){
@@ -261,5 +257,13 @@ public class GuiTrayIcon extends UI {
 			theOne = new GuiTrayIcon();
 		}
 		return theOne;
+	}
+
+
+
+	@Override
+	public void runUI() {
+		// TODO Auto-generated method stub
+		
 	}
 }
