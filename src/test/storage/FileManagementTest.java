@@ -148,7 +148,7 @@ public class FileManagementTest {
 		try {
 
 			fileMgmt.writeDataBaseToFile(new ArrayList<Task>());
-			fileMgmt.readFileAndDetectCorruption(initialClearListing);
+			initialClearListing = fileMgmt.readFileAndDetectCorruption();
 
 			assertEquals(FileManagement.FileStatus.FILE_ALL_OK, fileMgmt.getFileAttributes());
 			assertEquals(0, initialClearListing.size());
@@ -156,7 +156,7 @@ public class FileManagementTest {
 			initialClearListing = new ArrayList<Task>();
 
 			fileMgmt.writeDataBaseToFile(filledListing);
-			fileMgmt.readFileAndDetectCorruption(initialClearListing);
+			initialClearListing = fileMgmt.readFileAndDetectCorruption();
 
 			//Check every bit of info written down is read back correctly
 			for(int i = 0; i < filledListing.size(); i++){
@@ -169,7 +169,7 @@ public class FileManagementTest {
 			//Write a shortened file, to ensure no remnants of previous database remain on disk
 			initialClearListing = new ArrayList<Task>();
 			fileMgmt.writeDataBaseToFile(shortListing);
-			fileMgmt.readFileAndDetectCorruption(initialClearListing);
+			initialClearListing = fileMgmt.readFileAndDetectCorruption();
 			assertEquals(FileManagement.FileStatus.FILE_ALL_OK, fileMgmt.getFileAttributes());
 
 			//Check every bit of info written down is read back correctly
@@ -191,7 +191,6 @@ public class FileManagementTest {
 	@Test
 	public void corruptTest() {
 
-		List<Task> initialClearListing = new ArrayList<Task>();
 
 		BufferedWriter writeFile;
 
@@ -210,7 +209,7 @@ public class FileManagementTest {
 				writeFile.close();
 
 				fileMgmt.prepareDatabaseFile();
-				fileMgmt.readFileAndDetectCorruption(initialClearListing);
+				initialClearListing = fileMgmt.readFileAndDetectCorruption();
 				fileMgmt.closeFile();
 
 				System.out.println("Corrupt Strings: " + lastString);
@@ -224,7 +223,7 @@ public class FileManagementTest {
 
 		boolean catchCorruptException = false;
 		try {
-			fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
+			fileMgmt.readFileAndDetectCorruption();
 			fileMgmt.writeDataBaseToFile(new ArrayList<Task>());
 			fail();
 		} catch (IOException e) {
@@ -272,20 +271,7 @@ public class FileManagementTest {
 
 	}
 
-	@Test
-	public void readFileAndDetectCorruptionExceptionTest() {
 
-		fileMgmt.prepareDatabaseFile();
-
-		try{
-			fileMgmt.readFileAndDetectCorruption(null);
-			fail();
-		} catch (AssertionError e){
-		}
-
-		fileMgmt.closeFile();
-
-	}
 
 	@Test
 	public void readOnlyTest()
@@ -302,7 +288,7 @@ public class FileManagementTest {
 
 		assertEquals(FileManagement.FileStatus.FILE_READ_ONLY, fileMgmt.getFileAttributes());
 
-		fileMgmt.readFileAndDetectCorruption(new ArrayList<Task>());
+		fileMgmt.readFileAndDetectCorruption();
 		fileMgmt.closeFile();
 		assertEquals(FileManagement.FileStatus.FILE_READ_ONLY, fileMgmt.getFileAttributes());
 
