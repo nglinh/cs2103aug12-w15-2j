@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 public class GuiCommandBox extends UI {
 
@@ -177,15 +178,16 @@ public class GuiCommandBox extends UI {
 
 		log.entering(this.getClass().getName(), "executeCommmand");
 		
+		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 		if(text.equals("help")){
 			GuiHelp.getInstance().runUI();
 			txtCmd.setText("");
 		}else if(text.equals("help off")){
-			preferenceShowHint = false;
+			prefs.putBoolean(GuiPreferences.SHOW_HINTS, false);
 			showStatus("Help is now off");
 			txtCmd.setText("");
 		}else if(text.equals("help on")){
-			preferenceShowHint = true;
+			prefs.putBoolean(GuiPreferences.SHOW_HINTS, true);
 			showStatus("Help is now on");
 			txtCmd.setText("");
 		}else{

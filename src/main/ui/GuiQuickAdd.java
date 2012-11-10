@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import javax.swing.JEditorPane;
 
 import main.shared.LogicToUi;
+import main.shared.Task;
 
 import java.awt.Window.Type;
 import java.awt.event.KeyAdapter;
@@ -19,6 +20,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.Toolkit;
+import java.util.List;
 
 public class GuiQuickAdd extends GuiCommandBox{
 
@@ -83,13 +85,10 @@ public class GuiQuickAdd extends GuiCommandBox{
 		frmDoit.setBounds(100, 100, 220, 180);
 		
 		txtCmd = new JTextField();
-		txtCmd.setText("Type a new task here...");
+		txtCmd.setText("add");
 		txtCmd.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				if (txtCmd.getText().equals("Type a new task here...")) {
-					txtCmd.selectAll();
-				}
 			}
 		});
 		frmDoit.getContentPane().add(txtCmd, BorderLayout.SOUTH);
@@ -114,6 +113,8 @@ public class GuiQuickAdd extends GuiCommandBox{
 		popupCmdHint.add(txtCmdHint);
 		
 		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
+		
+		txtStatus.setText("Type your command below...");
 		
 		// Don't show hint
 		super.preferenceShowHint = false;
@@ -160,11 +161,6 @@ public class GuiQuickAdd extends GuiCommandBox{
 	public void updateWindow(Object source) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public void getUpcomingTask(){
-		LogicToUi listOfTasks = sendCommandToLogic("searchPartial");
-		//Collections.sort(listOfTasks, 
 	}
 
 }
