@@ -50,8 +50,5 @@ public abstract class CommandParser {
 		return string.split(" ")[0];
 	}
 
-	protected String[] splitArgumentsBySpaces(String arguments) {
-		return arguments.split(" ");
-	}
 
 }

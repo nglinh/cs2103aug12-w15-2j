@@ -5,6 +5,7 @@ package main.logic;
 
 public class ListParser extends CommandParser {
 
+	
 	private String arguments;
 	private String statusMsg;
 	private boolean overdue = false;
@@ -26,7 +27,7 @@ public class ListParser extends CommandParser {
 		
 		statusMsg = "Listing based on these parameters: ";
 
-		String[] parameters = splitArgumentsBySpaces(arguments);
+		String[] parameters = arguments.split(STRING_SPACE);
 
 		for (String eachParam : parameters) {
 
