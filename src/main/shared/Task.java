@@ -485,7 +485,7 @@ public class Task implements Comparable<Task> {
 	 * Floating Task will always appear at the bottom.
 	 *  The time to use for timed tasks will be start dates.
 	 *
-	 * @param toBeCloned the new task to be cloned
+	 * @param input the new task to be cloned
 	 * @return -1 if receiving object is smaller, 0 if they are equal and 1 if the recieving object is bigger
 	 *
 	 * @throws IllegalArgumentException if given task is null

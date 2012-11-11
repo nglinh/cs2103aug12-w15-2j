@@ -40,7 +40,7 @@ public class PostponeParser extends CommandParser {
 	
 	/**
 	 * Constructor of postpone parser class.
-	 * @param arguments: string of command argument.
+	 * @param arguments : string of command argument.
 	 */
 	public PostponeParser(String arguments) {
 		super(arguments);
