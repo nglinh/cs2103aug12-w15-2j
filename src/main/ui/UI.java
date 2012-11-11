@@ -52,6 +52,7 @@ public abstract class UI {
 	protected static NattyParserWrapper nattyParser = NattyParserWrapper.getInstance();
 	
 	public static final String[] fontsPreferred = {"Segoe UI", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Bitstream Vera Sans", "DejaVu Sans", "Tahoma", "Helvetica", "Arial"};
+	private static String fontPreferred;
 	
 	//This is the first method that will run the UI after it is constructed. DoITstart will run this.
 	public abstract void runUI();
@@ -130,6 +131,10 @@ public abstract class UI {
 	}
 
 	public String getPreferredFont() {
+		if (fontPreferred != null){
+			return fontPreferred;
+		}
+		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		String[] fontsInSystem = ge.getAvailableFontFamilyNames();
 		Arrays.sort(fontsInSystem);
@@ -137,9 +142,13 @@ public abstract class UI {
 			//System.out.println("checking font "+ fontName);
 			if (Arrays.binarySearch(fontsInSystem, fontName) >= 0){
 				//System.out.println("choosing "+ fontName);
+				if (fontPreferred == null){
+					fontPreferred = fontName;
+				}
 				return fontName;
 			}
 		}
+		fontPreferred = "Sans-serif";
 		return "Sans-serif";
 	}
 	
