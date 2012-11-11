@@ -77,15 +77,15 @@ public class EditHandler extends CommandHandler {
 	}
 
 	private void changeToFloat() {
-		assert (parser.willChangeToFloat);
+		assert (parser.getWillChangeToFloat());
 		copy.changetoFloating();
 	}
 
 	private void changeEndTime() throws DoNotChangeBothSTimeAndETimeException,
 			STimeBeforeETimeException {
-		assert (parser.willChangeEndTime);
+		assert (parser.getWillChangeEndTime());
 		if (copy.getType() != TaskType.TIMED) {
-			if (!parser.willChangeStartTime) {
+			if (!parser.getWillChangeStartTime()) {
 				throw new DoNotChangeBothSTimeAndETimeException();
 			}
 			if (parser.getNewStartTime().isAfter(parser.getNewEndTime())) {
@@ -101,9 +101,9 @@ public class EditHandler extends CommandHandler {
 	private void changeStartTime()
 			throws DoNotChangeBothSTimeAndETimeException,
 			STimeBeforeETimeException {
-		assert (parser.willChangeStartTime);
+		assert (parser.getWillChangeStartTime());
 		if (copy.getType() != TaskType.TIMED) {
-			if (!parser.willChangeEndTime) {
+			if (!parser.getWillChangeEndTime()) {
 				throw new DoNotChangeBothSTimeAndETimeException();
 			}
 			if (parser.getNewStartTime().isAfter(parser.getNewEndTime())) {
