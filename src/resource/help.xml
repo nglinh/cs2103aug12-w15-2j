@@ -86,7 +86,7 @@
 		<usage><![CDATA[<b>sort</b> start (By start time/deadline)]]></usage>
 		<usage><![CDATA[<b>sort</b> end (By end time/deadline)]]></usage>
 		<usage><![CDATA[<b>sort</b> name (Alphabetical order)]]></usage>
-		<extra><![CDATA[Add "descending" parameter to sort by descending order instead.]]></extra>
+		<extra><![CDATA[Add "descending" or "reverse" parameter to sort by descending order instead.]]></extra>
 		<extra><![CDATA[Only up to 1 parameter except "descending" is allowed. Default is sort by start/deadline in ascending order.]]></extra>
 		<extra><![CDATA[Sort works best in List view. Sort will be maintained each time the view is updated]]></extra>	
 	</command>
