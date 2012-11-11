@@ -13,7 +13,18 @@ import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
 
-//TODO use isEqualTo
+/**
+ * This class is to parser the edit command.
+ * 
+ * Each Editparser associates with 1 edit handler.
+ * 
+ * Parsed information is to be extracted by the corresponding edit handler on
+ * request. An Editparser object will NOT return information on its extracted
+ * information unless requested by it's corresponding EditHandler.
+ * 
+ * @author A0088427U
+ * 
+ */
 public class EditParser extends CommandParser {
 	private static final String DASH = "-";
 	private boolean willChangeToFloat = false;
@@ -32,6 +43,12 @@ public class EditParser extends CommandParser {
 	private List<Task> lastShownToUi;
 	private int toBeEditedSerial;
 
+	/**
+	 * Constructor of Editparser
+	 * 
+	 * @param arguments
+	 *            : String to be parsed.
+	 */
 	public EditParser(String arguments) {
 		super(arguments);
 		argument = arguments;
@@ -39,6 +56,11 @@ public class EditParser extends CommandParser {
 		parser = NattyParserWrapper.getInstance();
 	}
 
+	/**
+	 * Parse the input string.
+	 * 
+	 * Override parse method in class CommnandParser.
+	 */
 	@Override
 	public void parse() throws EmptyDescriptionException,
 			CannotParseDateException, NumberFormatException {
@@ -46,7 +68,7 @@ public class EditParser extends CommandParser {
 		argument = removeFirstWord(argument);
 		String[] tempStringArray = argument.split(DASH);
 		for (int i = 0; i < tempStringArray.length; ++i) {
-			if (tempStringArray[i] != null && tempStringArray[i].length() != 0) {
+			if (tempStringArray[i] != null && !tempStringArray[i].isEmpty()) {
 				String commandArgument = getFirstWord(tempStringArray[i]);
 				String updatedField = removeFirstWord(tempStringArray[i]);
 				updateField(commandArgument, updatedField);
@@ -54,7 +76,16 @@ public class EditParser extends CommandParser {
 		}
 	}
 
-	private void extractTaskSerial() throws NumberFormatException {
+	/**
+	 * Extract task serial of the task to be edited.
+	 * 
+	 * @throws NumberFormatException
+	 *             : if the index of the task is invalid.
+	 * @throws NoSuchElementException
+	 *             : if the index of the task is out of bound.
+	 */
+	private void extractTaskSerial() throws NumberFormatException,
+			NoSuchElementException {
 		int index = Integer.parseInt(getFirstWord(argument));
 		index--; // Since arraylist index starts from 0
 
@@ -64,6 +95,20 @@ public class EditParser extends CommandParser {
 		toBeEditedSerial = lastShownToUi.get(index).getSerial();
 	}
 
+	/**
+	 * This method update the new fields of this parser object with the new
+	 * information extracted from the command.
+	 * 
+	 * @param commandArgument
+	 *            : syntax of the command i.e name, starttime...
+	 * @param newField
+	 *            : string between the earlier syntax word and the next syntax
+	 *            word.
+	 * @throws EmptyDescriptionException
+	 *             : if the new name is empty
+	 * @throws CannotParseDateException
+	 *             : if the new date cannot be parsed.
+	 */
 	private void updateField(String commandArgument, String newField)
 			throws EmptyDescriptionException, CannotParseDateException {
 
@@ -73,11 +118,7 @@ public class EditParser extends CommandParser {
 		case "name":
 			// fall through
 		case "n":
-			willChangeName = true;
-			newName = newField;
-			if (newName.length() == 0) {
-				throw new EmptyDescriptionException();
-			}
+			extractNewName(newField);
 			break;
 		case "begintime":
 			// fall through
@@ -88,13 +129,7 @@ public class EditParser extends CommandParser {
 		case "start":
 			// fall through
 		case "st":
-			willChangeStartTime = true;
-			if (groupsOfDates.size() != 0) {
-				newStartTime = new DateTime(groupsOfDates.get(0).getDates()
-						.get(0));
-			} else {
-				throw new CannotParseDateException();
-			}
+			extractNewST(groupsOfDates);
 			break;
 		case "endtime":
 			// fall through
@@ -105,24 +140,12 @@ public class EditParser extends CommandParser {
 		case "end":
 			// fall through
 		case "ft":
-			willChangeEndTime = true;
-			if (groupsOfDates.size() != 0) {
-				newEndTime = new DateTime(groupsOfDates.get(0).getDates()
-						.get(0));
-			} else {
-				throw new CannotParseDateException();
-			}
+			extractNewET(groupsOfDates);
 			break;
 		case "deadline":
 			// fall through
 		case "d":
-			willChangeDeadline = true;
-			if (groupsOfDates.size() != 0) {
-				newDeadline = new DateTime(groupsOfDates.get(0).getDates()
-						.get(0));
-			} else {
-				throw new CannotParseDateException();
-			}
+			extractNewDeadline(groupsOfDates);
 			break;
 		case "tofloating":
 			// fall through
@@ -130,6 +153,80 @@ public class EditParser extends CommandParser {
 			willChangeToFloat = true;
 			newType = TaskType.FLOATING;
 			break;
+		}
+	}
+
+	/**
+	 * This method extract new name (if the command requires)
+	 * 
+	 * @param newField
+	 *            : the string following syntax word
+	 * @throws EmptyDescriptionException
+	 *             : if newfield is empty
+	 * 
+	 */
+	private void extractNewName(String newField)
+			throws EmptyDescriptionException {
+		willChangeName = true;
+		newName = newField;
+		if (newName.length() == 0) {
+			throw new EmptyDescriptionException();
+		}
+	}
+
+	/**
+	 * To extract new deadline (if the command requires to change deadline)
+	 * 
+	 * @param groupsOfDates
+	 *            : parsed group of date
+	 * @throws CannotParseDateException
+	 *             : if the parsed group of date is empty.
+	 */
+	private void extractNewDeadline(List<DateGroup> groupsOfDates)
+			throws CannotParseDateException {
+		willChangeDeadline = true;
+		if (!groupsOfDates.isEmpty()) {
+			newDeadline = new DateTime(groupsOfDates.get(0).getDates().get(0));
+		} else {
+			throw new CannotParseDateException();
+		}
+	}
+
+	/**
+	 * To extract new End time (if the command requires to change end time)
+	 * 
+	 * @param groupsOfDates
+	 *            : parsed group of date
+	 * @throws CannotParseDateException
+	 *             : if the parsed group size is 0.
+	 */
+	private void extractNewET(List<DateGroup> groupsOfDates)
+			throws CannotParseDateException {
+		willChangeEndTime = true;
+		if (!groupsOfDates.isEmpty()) {
+			newEndTime = new DateTime(groupsOfDates.get(INT_0).getDates()
+					.get(INT_0));
+		} else {
+			throw new CannotParseDateException();
+		}
+	}
+
+	/**
+	 * To extract new Start time (if the command requires to change start time).
+	 * 
+	 * @param groupsOfDates
+	 *            : parsed date group
+	 * @throws CannotParseDateException
+	 *             : if the parsed group is emtpy
+	 */
+	private void extractNewST(List<DateGroup> groupsOfDates)
+			throws CannotParseDateException {
+		willChangeStartTime = true;
+		if (!groupsOfDates.isEmpty()) {
+			newStartTime = new DateTime(groupsOfDates.get(INT_0).getDates()
+					.get(INT_0));
+		} else {
+			throw new CannotParseDateException();
 		}
 	}
 
