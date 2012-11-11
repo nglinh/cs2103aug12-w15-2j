@@ -23,6 +23,7 @@ import main.storage.WillNotWriteToCorruptFileException;
  * 
  */
 public class EditHandler extends CommandHandler {
+	private static final String ERROR_INDEX_INVALID = "Edit command need an integer index number to procees. Please check your command.";
 	private static final String ERROR_START_BEFORE_END = "Your start time is before end time!";
 	private static final String MESSAGE_NOTHING_UPDATED = "The task is still the same!";
 	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change the task to a timed task, you need to specify both the start time and the end time.";
@@ -95,6 +96,8 @@ public class EditHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_MUST_CHANGE_BOTH_TIME);
 		} catch (STimeBeforeETimeException e) {
 			feedback = new LogicToUi(ERROR_START_BEFORE_END, toBeEditedSerial);
+		} catch (NumberFormatException e){
+			feedback = new LogicToUi(ERROR_INDEX_INVALID);
 		}
 		return feedback;
 	}
