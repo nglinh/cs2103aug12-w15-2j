@@ -21,6 +21,14 @@ import main.storage.WillNotWriteToCorruptFileException;
  * 
  */
 public class DeleteHandler extends CommandHandler {
+	private static final String STRING_SPACE = " ";
+	private static final String STRING_BACKSLASH = "\"";
+	private static final String STRING_DELETION_OF_TASK = "deletion of task";
+	private static final String STRING_HAS_BEEN_DELETED = " has been deleted";
+	private static final String MSG_DELETION_OF_DONE = "deletion of done tasks";
+	private static final String MSG_DONE_DELETED = "All completed tasks have been deleted";
+	private static final String MSG_DELETION_OF_TASK = "deletion of tasks before this moment";
+	private static final String MSG_ALL_DELETED = "All tasks that has ended before this moment have been deleted";
 	private Task toBeDeleted;
 	private DeleteParser parser;
 
@@ -130,8 +138,9 @@ public class DeleteHandler extends CommandHandler {
 		toBeDeleted = dataBase.locateATask(parser.getSerialOfTask());
 		dataBase.delete(parser.getSerialOfTask());
 		String taskDetails = taskToString(toBeDeleted);
-		feedback = new LogicToUi(taskDetails + " has been deleted");
-		undoMessage = "deletion of task \"" + taskDetails + "\"";
+		feedback = new LogicToUi(taskDetails + STRING_HAS_BEEN_DELETED);
+		undoMessage = STRING_DELETION_OF_TASK + STRING_SPACE + STRING_BACKSLASH
+				+ taskDetails + STRING_BACKSLASH;
 		return undoMessage;
 	}
 
@@ -160,9 +169,8 @@ public class DeleteHandler extends CommandHandler {
 			}
 		}
 		dataBase.delete(listOfToBeDeletedSerials);
-		feedback = new LogicToUi(
-				"All tasks that has ended before this moment have been deleted");
-		undoMessage = "deletion of tasks before this moment";
+		feedback = new LogicToUi(MSG_ALL_DELETED);
+		undoMessage = MSG_DELETION_OF_TASK;
 		return undoMessage;
 	}
 
@@ -189,8 +197,8 @@ public class DeleteHandler extends CommandHandler {
 			}
 		}
 		dataBase.delete(listOfToBeDeletedSerials);
-		feedback = new LogicToUi("All completed tasks have been deleted");
-		undoMessage = "deletion of done tasks";
+		feedback = new LogicToUi(MSG_DONE_DELETED);
+		undoMessage = MSG_DELETION_OF_DONE;
 		return undoMessage;
 	}
 
