@@ -443,7 +443,6 @@ public class GuiMain2 extends GuiCommandBox{
 				}
 				
 				scrollPane.getVerticalScrollBar().setValue(scrollBarPos + offset);
-				System.out.println(scrollPane.getHeight());
 			}
 		});
 		panelCmd.add(txtCmd, BorderLayout.NORTH);

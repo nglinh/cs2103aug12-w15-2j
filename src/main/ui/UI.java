@@ -142,11 +142,11 @@ public abstract class UI {
 				if (fontPreferred == null){
 					fontPreferred = fontName;
 				}
-				return fontName;
+				return fontPreferred;
 			}
 		}
 		fontPreferred = "Sans-serif";
-		return "Sans-serif";
+		return fontPreferred;
 	}
 	
 	public class FillPainter implements Painter<JComponent> {
