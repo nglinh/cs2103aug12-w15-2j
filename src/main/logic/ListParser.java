@@ -15,6 +15,8 @@ public class ListParser extends CommandParser {
 	private boolean floating = false;
 	private boolean today = false;
 	private boolean tomorrow = false;
+	
+	private boolean noParam = false;
 
 	public ListParser(String arguments) {
 		super(arguments);
@@ -74,6 +76,7 @@ public class ListParser extends CommandParser {
 		
 		if(!(overdue || complete || incomplete || timed || deadline || floating || today || tomorrow)){
 			statusMsg += " \"All Tasks\" ";
+			noParam = true;
 		}
 	}
 	
@@ -113,7 +116,9 @@ public class ListParser extends CommandParser {
 		return tomorrow;
 	}
 	
-	
+	public boolean isNoParam(){
+		return noParam;
+	}
 
 
 
