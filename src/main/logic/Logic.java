@@ -6,7 +6,17 @@ import main.LogHandler;
 import main.logic.exceptions.NoSuchCommandException;
 import main.shared.LogicToUi;
 
+/**
+ * This class defines the Logic component of DoIt! task manager. It takes the
+ * command string from UI, process the command and send changes to database to
+ * be stored.
+ * 
+ * @author mrlinh
+ * 
+ */
 public class Logic {
+	private static final String MSG_NO_COMMAND = "Sorry but I could not understand you. Can you rephrase the message?";
+
 	public enum CommandType {
 		ADD, DELETE, LIST, SEARCH, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE, EXIT
 	};
@@ -14,11 +24,19 @@ public class Logic {
 	private CommandHandler executor;
 
 	private static Logic theOne = null;
-	private Logger log = LogHandler.getLogInstance();
+	private Logger log;
 
 	private Logic() {
+		log = LogHandler.getLogInstance();
+		;
 	}
 
+	/**
+	 * Logic's architecture applies Singleton pattern. User cannot launch
+	 * multiple copies of Logic to prevent conflicts.
+	 * 
+	 * @return: Singleton of Logic.
+	 */
 	public static Logic getInstance() {
 		if (theOne == null) {
 			theOne = new Logic();
@@ -28,31 +46,30 @@ public class Logic {
 		return theOne;
 	}
 
+	/**
+	 * Logic's architecture applies the Facades pattern, in which components of
+	 * higher hierachy (in this case, UI) cannot directly call methods inside
+	 * logic.
+	 * 
+	 * @param command
+	 *            : string of command received from UI.
+	 * @return: LogicToUi object, a wrapper of fields and results to be
+	 *          displayed to users.
+	 */
 	public LogicToUi uiCommunicator(String command) {
 		LogicToUi feedback;
 		try {
 			log.info("Logic received command.");
-			CommandType commandType = parseCommand(command);
-			String arguments = command.replaceFirst(
-					command.trim().split(" ")[0], "").trim();
+			String commandSyntax = getFirstWord(command);
+			String arguments = removeFirstWord(command);
+			CommandType commandType = determineCommandType(commandSyntax);
 			feedback = executeCommand(commandType, arguments);
 			log.info("Command executed, return to UI.");
 		} catch (NoSuchCommandException e) {
-			feedback = new LogicToUi(
-					"Sorry but I could not understand you. Can you rephrase the message?");
+			feedback = new LogicToUi(MSG_NO_COMMAND);
 			log.warning("Cannot understand command");
 		}
 		return feedback;
-	}
-
-	private CommandType parseCommand(String command)
-			throws NoSuchCommandException {
-		log.info("Received string from UIcommunicator.");
-		String commandSyntax = command.trim().split(" ")[0];
-		
-		CommandType typeOfCommand = determineCommandType(commandSyntax);
-		log.info("Return type of command.");
-		return typeOfCommand;
 	}
 
 	private CommandType determineCommandType(String string)
@@ -83,7 +100,7 @@ public class Logic {
 		case "search":
 			log.info("search command detected.");
 			return CommandType.SEARCH;
-		
+
 		case "undo":
 			// Fallthrough
 		case "u":
@@ -212,7 +229,6 @@ public class Logic {
 
 	}
 
-
 	private LogicToUi undo(String arguments) {
 		log.info("undo method entered.");
 		executor = new UndoHandler(arguments);
@@ -244,4 +260,11 @@ public class Logic {
 		return executor.execute();
 	}
 
+	private String removeFirstWord(String string) {
+		return string.replaceFirst(getFirstWord(string), "").trim();
+	}
+
+	private String getFirstWord(String string) {
+		return string.split(" ")[0];
+	}
 }
