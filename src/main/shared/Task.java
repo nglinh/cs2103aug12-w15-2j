@@ -1,3 +1,4 @@
+//@author A0081007U
 package main.shared;
 /**  
  * Task.java 
@@ -42,9 +43,10 @@ public class Task implements Comparable<Task> {
 	private boolean isCompleted = false;
 
 	/**
-	 * To instantiate an undone floating task                        
+	 * Instantiate an undone floating task                        
 	 *
 	 * @param name the task description
+	 * @throws IllegalArgumentException if name is null or empty
 	 */
 
 	public Task(String name) {
@@ -61,7 +63,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	/**
-	 * To instantiate a floating task with known done value.                     
+	 * Instantiate a floating task with known done value.                     
 	 *
 	 * @param name the task description
 	 * @param done the done value.
@@ -75,7 +77,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	/**
-	 * To instantiate an undone deadline task.                     
+	 * Instantiate an undone deadline task.                     
 	 *
 	 * @param name the task description
 	 * @param deadline the deadline in Joda DateTime form
@@ -90,7 +92,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	/**
-	 * To instantiate a deadline task with known done value.                     
+	 * Instantiate a deadline task with known done value.                     
 	 *
 	 * @param name the task description
 	 * @param deadline the deadline in Joda DateTime form
@@ -106,7 +108,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	/**
-	 * To instantiate an undone timed task.
+	 * Instantiate an undone timed task.
 	 * <p>
 	 * Accepts case where start and end time are the same                     
 	 *
@@ -123,7 +125,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	/**
-	 * To instantiate a timed task with known done value.
+	 * Instantiate a timed task with known done value.
 	 * <p>
 	 * Accepts case where start and end time are the same                      
 	 *
@@ -141,9 +143,10 @@ public class Task implements Comparable<Task> {
 
 
 	/**
-	 * To clone the incoming task of all details including serial number      
+	 * Clone the incoming task of all details including serial number      
 	 *
 	 * @param toBeCloned the new task to be cloned
+	 * @throws IllegalArgumentException if given task is null
 	 */
 	public Task(Task toBeCloned) {
 		if(toBeCloned == null) {
@@ -154,12 +157,13 @@ public class Task implements Comparable<Task> {
 	}
 
 	/**
-	 * To clone and become the current task given to this object.                           
+	 * Clone and become the current task given to this object.                           
 	 *
 	 * All the fields including serial number 
 	 * of the parameter task will be copied to this object
 	 *
-	 * @param updated Task to be cloned           
+	 * @param updated Task to be cloned
+	 * @throws IllegalArgumentException if updated task is null           
 	 * 
 	 */
 
@@ -189,7 +193,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	/**
-	 * To check if the Task is completed                        
+	 * Check if the Task is completed                        
 	 *
 	 * @return true if task is completed
 	 */
@@ -285,6 +289,12 @@ public class Task implements Comparable<Task> {
 	public void done(boolean newDoneStatus)	{
 		this.isCompleted = newDoneStatus;
 	}
+	
+	
+	
+	/**
+	 * Converts the task to a floating task. No effect if the task is already a floating task.                
+	 */
 
 
 	public void changetoFloating() {
@@ -295,6 +305,15 @@ public class Task implements Comparable<Task> {
 		this.startDate = INVALID_DATE_FIELD;
 		this.endDate = INVALID_DATE_FIELD;
 	}
+	
+	/**
+	 * Converts the task to a deadline task. 
+	 * If the task is already a deadline task, the time given will overwrite the current deadline                           
+	 *
+	 * @param newDeadline deadline to set for this task
+	 * @throws IllegalArgumentException if given date is null or of the form Task.INVALID_DATE_FIELD    
+	 *  
+	 */
 
 	public void changeToDeadline(DateTime newDeadline)	{
 		if((newDeadline == null) 
@@ -311,6 +330,18 @@ public class Task implements Comparable<Task> {
 		this.endDate = INVALID_DATE_FIELD;
 
 	}
+	
+	/**
+	 * Converts the task to a timed task. 
+	 * If the task is already a timed task, the times given will overwrite the current times                           
+	 *
+	 * @param newStartDate start date to set for this task
+	 * @param newEndDate end date to set for this task
+	 * 
+	 * @throws IllegalArgumentException if given date is null or of the form Task.INVALID_DATE_FIELD. 
+	 * Also throw if start date is after end date
+	 *  
+	 */
 
 	public void changeToTimed(DateTime newStartDate, DateTime newEndDate)	{
 
@@ -331,7 +362,12 @@ public class Task implements Comparable<Task> {
 
 	}
 
-
+	/**
+ 	* Changes the name of the task
+ 	* 
+ 	* @param newName the new name of this task
+ 	* @throws IllegalArgumentException if name is null or empty
+ 	*/
 
 
 	public void changeName(String newName)	{
@@ -341,6 +377,17 @@ public class Task implements Comparable<Task> {
 
 		this.taskName = newName;
 	}
+	
+	/**
+	 * Changes the start and end date for a timed task only                         
+	 *
+	 * @param newStartDate start date to set for this task
+	 * @param newEndDate end date to set for this task
+	 * 
+	 * @throws IllegalArgumentException if given date is null or of the form Task.INVALID_DATE_FIELD. 
+	 * Also throw if start date is after end date, if task is not a timed task.
+	 *  
+	 */
 
 	public void changeStartAndEndDate(DateTime newStartDate, DateTime newEndDate)	{
 
@@ -356,6 +403,16 @@ public class Task implements Comparable<Task> {
 		this.startDate = newStartDate;
 		this.endDate = newEndDate;
 	}
+	
+	/**
+	 * Changes the start and end date for a timed task only                         
+	 *
+	 * @param newDeadline deadline to set for this task
+	 * 
+	 * @throws IllegalArgumentException if given date is null or of the form Task.INVALID_DATE_FIELD. 
+	 * Also throw if task is not a deadline task
+	 *  
+	 */
 
 
 	public void changeDeadline(DateTime newDeadline) {
@@ -367,6 +424,14 @@ public class Task implements Comparable<Task> {
 
 		this.deadline = newDeadline;
 	}
+	
+	/**
+	 * Check if this task is exactly the same as the given task
+	 * @param toCompare the task to compare with
+	 * @return true if all fields including serial number are the same, false otherwise.
+	 *
+	 * @throws IllegalArgumentException if given task is null
+	 */
 	
 	public boolean isEqualTo(Task toCompare){
 		if(toCompare == null){
@@ -422,6 +487,9 @@ public class Task implements Comparable<Task> {
 	 *
 	 * @param toBeCloned the new task to be cloned
 	 * @return -1 if receiving object is smaller, 0 if they are equal and 1 if the recieving object is bigger
+	 *
+	 * @throws IllegalArgumentException if given task is null
+	 *
 	 */
 
 	@Override
@@ -451,6 +519,14 @@ public class Task implements Comparable<Task> {
 		return currentTaskDate.compareTo(inputTaskDate);
 
 	}
+	
+	/**
+	 * Check if the name of this task has the given term. Case-insensitive
+	 * @param term keyword to compare with
+	 * @return true if name of task has this keyword
+	 * 
+	 * @throws IllegalArgumentException if given String is null or empty
+	 */
 
 	public boolean containsTerm(String term)	{
 		if((term == null) || (term.length() == 0)) {
@@ -466,6 +542,18 @@ public class Task implements Comparable<Task> {
 			return false;
 		}
 	}
+	
+	/**
+	 * See if time of the task is within the given range inclusive. 
+	 * For timed tasks, the start date is used.
+	 * 
+	 * @param startRange start of time range
+	 * @param endRange end of time range
+	 * @return true if the task is within this range
+	 * 
+	 * @throws IllegalArgumentException if given date is null or of the form Task.INVALID_DATE_FIELD. 
+	 * Also throw if start date is after end date
+	 */
 
 
 	public boolean isWithinDateRange(DateTime startRange, DateTime endRange) {
@@ -499,6 +587,18 @@ public class Task implements Comparable<Task> {
 
 		return false;
 	}
+	
+	/**
+	 * See if time of the task overlaps with the given range inclusive. 
+	 * For timed tasks, both the start and end dates are used to establish the existence of an overlap.
+	 * 
+	 * @param startRange start of time range
+	 * @param endRange end of time range
+	 * @return true if the task overlaps with this range
+	 * 
+	 * @throws IllegalArgumentException if given date is null or of the form Task.INVALID_DATE_FIELD. 
+	 * Also throw if start date is after end date
+	 */
 	
 	public boolean clashesWithRange(DateTime startRange, DateTime endRange) {
 		if((startRange == null) 

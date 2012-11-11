@@ -174,6 +174,7 @@ public class FileManagement {
 		if (isRWLockSucessful)   {
 			if(firstLaunch){
 
+				//If first launch, inject sample tasks into schedule
 				List<Task> initialTasks = prepareInitialLaunchTasks();
 				
 				assert(fileAttributes.equals(FileStatus.FILE_ALL_OK));
