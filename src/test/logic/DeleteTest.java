@@ -14,7 +14,7 @@ import main.storage.WillNotWriteToCorruptFileException;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-public class LogicDeleteTest {
+public class DeleteTest {
 	
 	private static final int ERR_TASK_FOUND = -100000;
 	String[] addCommandsToTest = {"add \"project meeting at com\" at 3pm"};

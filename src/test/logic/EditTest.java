@@ -14,7 +14,7 @@ import main.storage.WillNotWriteToCorruptFileException;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-public class LogicEditTest {
+public class EditTest {
 	
 	@Test
 	public void editName() {

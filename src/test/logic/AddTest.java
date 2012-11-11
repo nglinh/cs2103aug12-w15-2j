@@ -14,7 +14,7 @@ import main.storage.WillNotWriteToCorruptFileException;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-public class LogicAddTest{
+public class AddTest{
 	Logic logic = Logic.getInstance();
 	String command, expectedResponse;
 	@Test
