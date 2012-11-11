@@ -1,4 +1,3 @@
-//@author A0081007U
 package main.logic;
 
 import java.io.IOException;
