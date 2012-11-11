@@ -45,6 +45,8 @@ public class UndoneHandler extends CommandHandler {
 
 		} catch (NumberFormatException e) {
 			feedback = new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
+		} catch (NoSuchElementException e) {
+			return new LogicToUi(ERROR_INDEX_NUMBER_NOT_VALID);
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
