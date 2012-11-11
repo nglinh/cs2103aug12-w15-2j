@@ -35,7 +35,7 @@ public class Logic {
 	 * Logic's architecture applies Singleton pattern. User cannot launch
 	 * multiple copies of Logic to prevent conflicts.
 	 * 
-	 * @return: Singleton of Logic.
+	 * @return : Singleton of Logic.
 	 */
 	public static Logic getInstance() {
 		if (theOne == null) {
@@ -53,7 +53,7 @@ public class Logic {
 	 * 
 	 * @param command
 	 *            : string of command received from UI.
-	 * @return: LogicToUi object, a wrapper of fields and results to be
+	 * @return : LogicToUi object, a wrapper of fields and results to be
 	 *          displayed to users.
 	 */
 	public LogicToUi uiCommunicator(String command) {
