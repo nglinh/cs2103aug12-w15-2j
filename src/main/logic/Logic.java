@@ -72,6 +72,16 @@ public class Logic {
 		return feedback;
 	}
 
+	/**
+	 * This methods determine what command the user typed in based on the first
+	 * token.
+	 * 
+	 * @param string
+	 *            : String of command to be detected.
+	 * @return: command type
+	 * @throws NoSuchCommandException
+	 *             : in case the first token cannot be recognized.
+	 */
 	private CommandType determineCommandType(String string)
 			throws NoSuchCommandException {
 		log.info("determineCommandType received syntax word.");
@@ -143,7 +153,12 @@ public class Logic {
 			throw new NoSuchCommandException();
 		}
 	}
-
+	/**
+	 * Create the corresponding handler objects to execute commands.
+	 * @param commandType: type of command to be executed.
+	 * @param arguments: arguments following the command.
+	 * @return logicToUi object, to be returned to UI.
+	 */
 	private LogicToUi executeCommand(CommandType commandType, String arguments) {
 		assert (commandType != null);
 		log.info("executeCommand received information");
@@ -175,7 +190,8 @@ public class Logic {
 		case EXIT:
 			return exit(arguments);
 		default:
-			return null;
+			return null; //Will not happen. Undetermined command type error has been caught by
+						//determineCommandType method.
 		}
 	}
 
