@@ -31,7 +31,7 @@ public class SortParser extends CommandParser {
 		}
 
 		for(String param : parsed){
-			if (param.equals("descending")) {
+			if (param.equals("descending") || param.equals("reverse")) {
 				reverse = true;
 			}
 
