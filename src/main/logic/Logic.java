@@ -8,7 +8,7 @@ import main.shared.LogicToUi;
 
 public class Logic {
 	public enum CommandType {
-		ADD, DELETE, LIST, SEARCH, SEARCH_PARTIAL, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE, EXIT
+		ADD, DELETE, LIST, SEARCH, UNDO, FILE_STATUS, REFRESH, DONE, UNDONE, SORT, EDIT, POSTPONE, EXIT
 	};
 
 	private CommandHandler executor;
@@ -83,10 +83,7 @@ public class Logic {
 		case "search":
 			log.info("search command detected.");
 			return CommandType.SEARCH;
-		case "searchpartial":
-			log.info("search partial command detected.");
-			return CommandType.SEARCH_PARTIAL;
-			
+		
 		case "undo":
 			// Fallthrough
 		case "u":
@@ -146,8 +143,6 @@ public class Logic {
 			return undo(arguments);
 		case SEARCH:
 			return search(arguments);
-		case SEARCH_PARTIAL:
-			return searchPartial(arguments);
 		case REFRESH:
 			return refresh(arguments);
 		case DONE:
@@ -217,13 +212,6 @@ public class Logic {
 
 	}
 
-	// Can only search by keywords for now, allow GUI to show suggestions
-	// without affecting state
-	private LogicToUi searchPartial(String arguments) {
-		log.info("searchpartial method entered.");
-		executor = new SearchPartialHandler(arguments);
-		return executor.execute();
-	}
 
 	private LogicToUi undo(String arguments) {
 		log.info("undo method entered.");

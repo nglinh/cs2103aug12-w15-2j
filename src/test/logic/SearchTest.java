@@ -106,14 +106,14 @@ public class SearchTest {
 	@Test
 	public void testNoKeywords() {
 		String command = "search ";
-		List<Task> results = CommandTester(command);
+		List<Task> results = commandTester(command);
 		assertEquals(null, results);
 	}
 	
 	@Test
 	public void testOneKeyword() {
 		String command = "search false";
-		List<Task> results = CommandTester(command);
+		List<Task> results = commandTester(command);
 		assertEquals(3, results.size());
 		
 		for(Task entry : results){
@@ -126,7 +126,7 @@ public class SearchTest {
 	@Test
 	public void testManyKeyword() {
 		String command = "search false 1";
-		List<Task> results = CommandTester(command);
+		List<Task> results = commandTester(command);
 		assertEquals(2, results.size());
 		
 		for(Task entry : results){
@@ -143,7 +143,7 @@ public class SearchTest {
 	
 
 	
-	private List<Task> CommandTester(String command){
+	private List<Task> commandTester(String command){
 		Logic logic = Logic.getInstance();
 		LogicToUi result = logic.uiCommunicator(command);
 		return result.getList();
