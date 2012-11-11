@@ -77,7 +77,6 @@ public class Cli extends UI{
 			
 			System.out.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + LINE_BREAK);
 			System.out.println(consoleOut);
-			System.out.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + LINE_BREAK);
 			System.out.print(MESSAGE_NEXT_COMMAND);
 		}
 
