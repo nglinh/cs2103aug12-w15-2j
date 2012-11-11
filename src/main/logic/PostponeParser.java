@@ -36,7 +36,7 @@ public class PostponeParser extends CommandParser {
 
 	@Override
 	public void parse() throws EmptyDescriptionException,
-			CannotParseDateException, CannotPostponeFloatingException {
+			CannotParseDateException, CannotPostponeFloatingException, NumberFormatException {
 		int index;
 		index = Integer.parseInt(getFirstWord(argument));
 		index--; // Since arraylist index starts from 0
