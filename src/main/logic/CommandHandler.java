@@ -13,15 +13,16 @@ import main.shared.LogicToUi;
 import main.shared.Task;
 import main.storage.Database;
 import main.storage.WillNotWriteToCorruptFileException;
+
 /**
- * This class is to be extended by any supported command. It provide
- * back-bone APIs needed for any handlers to execute the command.
+ * This class is to be extended by any supported command. It provide back-bone
+ * APIs needed for any handlers to execute the command.
  * 
  * The intention of this class is to allow easy extension for new features
  * without touching the current supported ones.
  * 
  * @author A0088427U
- *
+ * 
  */
 public abstract class CommandHandler {
 
@@ -43,26 +44,39 @@ public abstract class CommandHandler {
 	private static LinkedList<List<Task>> undoClones = new LinkedList<List<Task>>();
 
 	protected static Database dataBase = Database.getInstance();
-	protected static LastShownToUI lastShownObject = LastShownToUI.getInstance();
-	protected static CommandHandler latestListingHandlerForUI = new ListHandler("");
+	protected static LastShownToUI lastShownObject = LastShownToUI
+			.getInstance();
+	protected static CommandHandler latestListingHandlerForUI = new ListHandler(
+			"");
 	protected static CommandHandler latestSortHandlerForUI = new SortHandler("");
 
-
-	protected LogicToUi feedback;	//All handlers will return a LogicToUi object.
+	protected LogicToUi feedback; // All handlers will return a LogicToUi
+									// object.
 
 	/**
 	 * Empty constructor, to be overriden by handlers' constructor
-	 * @param arguments: argument of the command.
+	 * 
+	 * @param arguments
+	 *            : argument of the command.
 	 */
 	public CommandHandler(String arguments) {
 	}
 
 	/**
 	 * To be implemented by all handlers.
+	 * 
 	 * @return LogicToUi object to be displayed on UI
 	 */
 	public abstract LogicToUi execute();
-	
+
+	/**
+	 * This method push the latest command to undo stack.
+	 * 
+	 * @param undoMsg
+	 *            : undo message associating with the latest command
+	 * @param currentCopy
+	 *            : clone of the current databse.
+	 */
 	protected void pushUndoStatMesNTaskList(String undoMsg,
 			List<Task> currentCopy) {
 		undoMsgHistory.push(undoMsg);
@@ -70,6 +84,11 @@ public abstract class CommandHandler {
 
 	}
 
+	/**
+	 * Get current database
+	 * 
+	 * @return current task list.
+	 */
 	protected List<Task> getCurrentTaskList() {
 		return dataBase.getAll();
 	}
@@ -90,7 +109,13 @@ public abstract class CommandHandler {
 		return undoMsgHistory.pop();
 	}
 
-
+	/**
+	 * Transform a task to the form of a string to be displayed.
+	 * 
+	 * @param toBeConverted
+	 *            task to be changed to string form
+	 * @return converted string
+	 */
 	protected String taskToString(Task toBeConverted) {
 		if (toBeConverted.isTimedTask()) {
 			return ("Timed task " + "\"" + toBeConverted.getTaskName() + "\""
@@ -104,12 +129,22 @@ public abstract class CommandHandler {
 		}
 	}
 
+	/**
+	 * Transform the date to string form
+	 * 
+	 * @param inputDate
+	 *            : the date to be tranformed
+	 * @return: converted string.
+	 */
 	protected String dateToString(DateTime inputDate) {
 		String LINE_DATE_FORMAT = "EEE dd MMM yyyy h:mma";
 		DateTimeFormatter LINE_DATE_FORMATTER = DateTimeFormat
 				.forPattern(LINE_DATE_FORMAT);
 		return LINE_DATE_FORMATTER.print(inputDate);
 	}
-	protected abstract void updateDatabaseNSendToUndoStack() throws NoSuchElementException, IOException, WillNotWriteToCorruptFileException;
+
+	protected abstract void updateDatabaseNSendToUndoStack()
+			throws NoSuchElementException, IOException,
+			WillNotWriteToCorruptFileException;
 
 }
