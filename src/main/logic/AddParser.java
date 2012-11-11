@@ -45,7 +45,7 @@ public class AddParser extends CommandParser {
 	/**
 	 * Constructor for AddParser
 	 * 
-	 * @param arg: the string argument of add command.
+	 * @param arguments : the string argument of add command.
 	 */
 	public AddParser(String arguments) {
 		super(arguments);
