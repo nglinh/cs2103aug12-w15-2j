@@ -7,6 +7,9 @@ import javax.swing.JEditorPane;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class GuiHelp extends UI{
 
@@ -62,8 +65,13 @@ public class GuiHelp extends UI{
 		editorPane.setContentType("text/html");
 		scrollPane.setViewportView(editorPane);
 		
-		String helpText = getHTMLHelp("help");
-		editorPane.setText(helpText);
+		URL helpTextUrl = this.getClass().getResource("/resource/help.html");
+		try {
+			editorPane.setPage(helpTextUrl);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
