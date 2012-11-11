@@ -17,7 +17,7 @@ import com.joestelmach.natty.DateGroup;
  * associates with 1 command only. The information extracted from the argument
  * is private and to be extracted using designed API (get methods).
  * 
- * @author mrlinh
+ * @author A0088427U
  * 
  */
 public class AddParser extends CommandParser {
@@ -45,8 +45,7 @@ public class AddParser extends CommandParser {
 	/**
 	 * Constructor for AddParser
 	 * 
-	 * @param arg
-	 *            : the string argument of add command.
+	 * @param arg: the string argument of add command.
 	 */
 	public AddParser(String arguments) {
 		super(arguments);
@@ -65,12 +64,12 @@ public class AddParser extends CommandParser {
 	 * Parse the argument. Extracted results are memorized in private variables
 	 * associate with this AddParser object.
 	 * 
-	 * @throws EmptyDescriptionException
+	 * @throws EmptyDescriptionException in the case task name is empty
 	 */
 	public void parse() throws EmptyDescriptionException {
-		if(argument.length()==0){
+		if (argument.length() == 0) {
 			throw new EmptyDescriptionException();
-		}		
+		}
 		String dateString = detectFixedFormat();
 
 		if (dateString.contains(STRING_SPACE_NOW)
@@ -95,6 +94,12 @@ public class AddParser extends CommandParser {
 		}
 	}
 
+	/**
+	 * This method detects whether user use 'fixed format', i.e task decription
+	 * is enclosed by a pair of apostrophe.
+	 * 
+	 * @return the string outside apostrophe pair.
+	 */
 	private String detectFixedFormat() {
 		String dateString;
 		if (hasAposPair()) {
@@ -107,12 +112,19 @@ public class AddParser extends CommandParser {
 		return dateString;
 	}
 
+	/**
+	 * Due to the implementation of Natty, strings are parsed character by
+	 * character. However, DoIt! pass tokens only. Hence, this method is to make
+	 * sure all string parsed by Natty are tokens.
+	 * 
+	 * @param dateString: the dateString to be parsed.
+	 */
 	private void parseFullWordOnly(String dateString) {
 		while (!checkSeparatedBySpace()) {
 			char[] tempCharArray = dateString.toCharArray();
 			String tempString = STRING_EMPTY;
 			int i = dateStringStartPosition;
-			i = getToNextNonemptyWord(tempCharArray, i);
+			i = getToNextNonSpaceWord(tempCharArray, i);
 			if (i == tempCharArray.length) {
 				dateStringStartPosition = argument.length();
 				groups = parser.parseWDefBaseDate(STRING_EMPTY);
@@ -132,6 +144,12 @@ public class AddParser extends CommandParser {
 		return;
 	}
 
+	/**
+	 * 
+	 * This method is to adjust start and end time of timed tasks with no exact
+	 * date.
+	 * 
+	 */
 	private void adjustStartAndEndTime() {
 		if (taskType == TaskType.TIMED) {
 			String dateString;
@@ -143,6 +161,8 @@ public class AddParser extends CommandParser {
 					&& !dateString.contains(STRING_NOW_SPACE))
 			// Second and third condition to check if the string contains exact
 			// time.
+			// 4th and 5th conditions are to adjust base date accordingly if
+			// the string contains word 'now'
 			{
 				String tempStringArray[] = dateString.split(STRING_TO);
 				if (tempStringArray.length == INT_2) {
@@ -151,8 +171,8 @@ public class AddParser extends CommandParser {
 									tempStringArray[INT_0]);
 					long tempTime = tempDateGroup.get(INT_0).getDates()
 							.get(INT_0).getTime();
-					Date time1 = groups.get(0).getDates().get(INT_0);
-					Date time2 = groups.get(0).getDates().get(INT_1);
+					Date time1 = groups.get(INT_0).getDates().get(INT_0);
+					Date time2 = groups.get(INT_0).getDates().get(INT_1);
 					time1.setTime(tempTime);
 					tempDateGroup = parser
 							.parseWDefBaseDate(tempStringArray[INT_1]);
@@ -164,7 +184,15 @@ public class AddParser extends CommandParser {
 		}
 	}
 
-	private int getToNextNonemptyWord(char[] tempCharArray, int i) {
+	/**
+	 * Move to next non-space word in the case Natty parser did not parse a full
+	 * token but substring of a token instead.
+	 * 
+	 * @param tempCharArray
+	 * @param i
+	 * @return the index of the next non-space token.
+	 */
+	private int getToNextNonSpaceWord(char[] tempCharArray, int i) {
 		while (i < tempCharArray.length && tempCharArray[i] != ' ') {
 			i++;
 		}
@@ -233,7 +261,8 @@ public class AddParser extends CommandParser {
 		String matchingValue = groups.get(INT_0).getText();
 		char[] matchingArray = matchingValue.toCharArray();
 		if (((dateStringStartPosition + matchingArray.length < tempCharArray.length && (tempCharArray[dateStringStartPosition
-				+ matchingArray.length] != ' '&&tempCharArray[dateStringStartPosition+ matchingArray.length] != '.')))
+				+ matchingArray.length] != ' ' && tempCharArray[dateStringStartPosition
+				+ matchingArray.length] != '.')))
 				|| (dateStringStartPosition != 0 && tempCharArray[dateStringStartPosition - 1] != ' '))
 			return false;
 		return true;
@@ -297,7 +326,10 @@ public class AddParser extends CommandParser {
 			taskType = TaskType.TIMED;
 		}
 	}
-
+	/**
+	 * Determines task name of new task.
+	 * @throws EmptyDescriptionException in the case task description is empty
+	 */
 	private void determineTaskName() throws EmptyDescriptionException {
 		if (!hasAposPair()) {
 			if (taskType == TaskType.FLOATING)
@@ -341,7 +373,7 @@ public class AddParser extends CommandParser {
 	 * @return string of task description including text both before and after
 	 *         the time component.
 	 * 
-	 * @throws EmptyDescriptionException
+	 * @throws EmptyDescriptionException in the case task description is empty
 	 */
 
 	private String buildTaskNameString() throws EmptyDescriptionException {
@@ -372,7 +404,11 @@ public class AddParser extends CommandParser {
 			return result;
 		}
 	}
-
+	/**
+	 * Extract string inside apostrophe pair in the case user use 
+	 * fixed format.
+	 * @return the extracted string.
+	 */
 	private String getStringInsideApostrophe() {
 		String result = STRING_EMPTY;
 		int firstApostrophePos = argument.indexOf('\"');
@@ -385,14 +421,9 @@ public class AddParser extends CommandParser {
 	}
 
 	/*
-	 * ==========================================================================
-	 * ========== Below are API to extract the interpreted information
-	 * out======= ==========================of the
-	 * parser===================================
-	 * ================================
-	 * ==========================================
-	 * ================================
-	 * ==========================================
+	 * =======================================================================
+	 * Below are API to extract the interpreted information out of the parser
+	 * =======================================================================
 	 */
 
 	public TaskType getTaskType() {
