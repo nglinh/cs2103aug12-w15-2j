@@ -12,17 +12,36 @@ import main.storage.WillNotWriteToCorruptFileException;
 
 import org.joda.time.DateTime;
 
+/**
+ * This class handles the add command. An object of this class extract
+ * information from an Addparser object and create a new task accordingly.
+ * 
+ * The view of database is shared among all handler objects.
+ * 
+ * @author A0088427U
+ * 
+ */
 class AddHandler extends CommandHandler {
 	private AddParser parser;
 	private Task newTask;
 	private String feedbackString;
 	private LogicToUi feedback;
 
+	/**
+	 * Constructor of the class
+	 * 
+	 * @param arguments
+	 *            : string to extract task details from.
+	 */
 	public AddHandler(String arguments) {
 		super(arguments);
 		parser = new AddParser(arguments);
 	}
 
+	/**
+	 * Override execute method in commandhandler. This method extract
+	 * information from the parser and use it to create new task.
+	 */
 	@Override
 	public LogicToUi execute() {
 
@@ -31,9 +50,7 @@ class AddHandler extends CommandHandler {
 			parser.parse();
 			TaskType taskType = parser.getTaskType();
 			switch (taskType) {
-			case FLOATING:
-				newTask = new Task(parser.getTaskName());
-				break;
+
 			case DEADLINE:
 				creatNewDeadlineTask();
 				break;
@@ -41,8 +58,7 @@ class AddHandler extends CommandHandler {
 				createNewTimedTask();
 				break;
 			default:
-				feedback = new LogicToUi(
-						"I could not determine the type of your event. Can you be more specific?");
+				newTask = new Task(parser.getTaskName());
 			}
 			updateDatabaseNSendToUndoStack();
 			String taskDetails = taskToString(newTask);
@@ -52,7 +68,8 @@ class AddHandler extends CommandHandler {
 		} catch (EmptyDescriptionException e) {
 			feedback = new LogicToUi(ERROR_TASKDES_EMPTY);
 		} catch (NoSuchElementException e) {
-			//empty catch
+			// empty catch, from updateDatabaseNSendToUndoStack method.
+			// there is no cases such an exception is thrown in addhandler.
 		} catch (IOException e) {
 			feedback = new LogicToUi(ERROR_IO);
 		} catch (WillNotWriteToCorruptFileException e) {
@@ -62,6 +79,10 @@ class AddHandler extends CommandHandler {
 		return feedback;
 	}
 
+	/**
+	 * This method create new timed task if the execute method detected parser
+	 * parse out a timed task
+	 */
 	private void createNewTimedTask() {
 		DateTime st = parser.getBeginTime();
 		DateTime et = parser.getEndTime();
@@ -69,12 +90,20 @@ class AddHandler extends CommandHandler {
 		newTask = new Task(newTaskName, st, et);
 	}
 
+	/**
+	 * This method create new deadline task if the execute method detected
+	 * parser parse out a deadline task
+	 */
 	private void creatNewDeadlineTask() {
 		DateTime dt = parser.getBeginTime();
 		String taskName = parser.getTaskName();
 		newTask = new Task(taskName, dt);
 	}
 
+	/**
+	 * This method update the database with new task and push current databse to
+	 * undo stack.
+	 */
 	@Override
 	protected void updateDatabaseNSendToUndoStack()
 			throws NoSuchElementException, IOException,

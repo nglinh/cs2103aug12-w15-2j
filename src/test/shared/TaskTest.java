@@ -412,13 +412,13 @@ public class TaskTest {
 	}
 	@Test
 	public void testchangetoDeadline() {
-		nameDeadline.changetoDeadline(DEADLINE_TRUE);
+		nameDeadline.changeToDeadline(DEADLINE_TRUE);
 		assertEquals(DEADLINE_TRUE, nameDeadline.getDeadline());
 		
-		nameTrue.changetoDeadline(DEADLINE_TRUE);
+		nameTrue.changeToDeadline(DEADLINE_TRUE);
 		assertEquals(DEADLINE_TRUE, nameTrue.getDeadline());
 		
-		nameTimed.changetoDeadline(DEADLINE_TRUE);
+		nameTimed.changeToDeadline(DEADLINE_TRUE);
 		assertEquals(DEADLINE_TRUE, nameTimed.getDeadline());
 	}
 	
@@ -599,7 +599,7 @@ public class TaskTest {
 		
 		newName = new Task(name);
 		
-		newName.changetoDeadline(new DateTime());
+		newName.changeToDeadline(new DateTime());
 		assertFalse("Different type", newName.isEqualTo(name));
 		
 		Task newStart = new Task(nameTimed);
