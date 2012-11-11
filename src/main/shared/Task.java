@@ -118,7 +118,7 @@ public class Task implements Comparable<Task> {
 	public Task(String name, DateTime startDate, DateTime endDate) {
 
 		Task newTask = new Task(name);
-		newTask.changetoTimed(startDate, endDate);
+		newTask.changeToTimed(startDate, endDate);
 		this.becomeThis(newTask);
 	}
 
@@ -312,7 +312,7 @@ public class Task implements Comparable<Task> {
 
 	}
 
-	public void changetoTimed(DateTime newStartDate, DateTime newEndDate)	{
+	public void changeToTimed(DateTime newStartDate, DateTime newEndDate)	{
 
 		if((newStartDate == null) 
 				|| (newStartDate.equals(INVALID_DATE_FIELD))

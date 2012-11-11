@@ -469,7 +469,7 @@ public class GuiMain extends GuiCommandBox{
 							task.changeStartAndEndDate(task.getStartDate(), date);
 						} else if (task.getType() == TaskType.DEADLINE) {
 							log.info(String.format("Task is deadline task, changing to timed task %1s %2s", task.getDeadline(), date));
-							task.changetoTimed(task.getDeadline(), date);
+							task.changeToTimed(task.getDeadline(), date);
 						} else if (task.getType() == TaskType.FLOATING) {
 							log.info(String.format("Task is floating task, changing to deadline tas with time %1s", date));
 							task.changeToDeadline(date);
