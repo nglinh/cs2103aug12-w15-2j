@@ -9,11 +9,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
-import javax.swing.JLabel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
-import java.awt.Window.Type;
 import java.awt.Toolkit;
 
 public class GuiError extends JDialog {
