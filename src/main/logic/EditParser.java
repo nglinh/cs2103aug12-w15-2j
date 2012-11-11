@@ -12,14 +12,15 @@ import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
+
 //TODO use isEqualTo
 public class EditParser extends CommandParser {
 	private static final String DASH = "-";
-	public boolean willChangeToFloating = false;
-	public boolean willChangeStartTime = false;
-	public boolean willChangeDeadline = false;
-	public boolean willChangeEndTime = false;
-	public boolean willChangeName = false;
+	private boolean willChangeToFloat = false;
+	private boolean willChangeStartTime = false;
+	private boolean willChangeDeadline = false;
+	private boolean willChangeEndTime = false;
+	private boolean willChangeName = false;
 
 	private String newName;
 	private DateTime newStartTime;
@@ -126,12 +127,13 @@ public class EditParser extends CommandParser {
 		case "tofloating":
 			// fall through
 		case "tofloat":
-			willChangeToFloating = true;
+			willChangeToFloat = true;
 			newType = TaskType.FLOATING;
 			break;
 		}
 	}
-	public int getToBeEditedSerial(){
+
+	public int getToBeEditedSerial() {
 		return toBeEditedSerial;
 	}
 
@@ -153,5 +155,25 @@ public class EditParser extends CommandParser {
 
 	public TaskType getNewType() {
 		return newType;
+	}
+
+	public boolean getWillChangeStartTime() {
+		return willChangeStartTime;
+	}
+
+	public boolean getWillChangeEndTime() {
+		return willChangeEndTime;
+	}
+
+	public boolean getWillChangeName() {
+		return willChangeName;
+	}
+
+	public boolean getWillChangeDeadline() {
+		return willChangeDeadline;
+	}
+
+	public boolean getWillChangeToFloat() {
+		return willChangeToFloat;
 	}
 }
