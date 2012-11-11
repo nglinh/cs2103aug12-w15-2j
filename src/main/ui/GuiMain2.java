@@ -78,6 +78,8 @@ import java.awt.event.WindowEvent;
 
 public class GuiMain2 extends GuiCommandBox{
 	
+	private static final int KEYBOARD_PAGE_OVERLAP = 50;
+	private static final int KEYBOARD_PAGE_OFFSET = 200;
 	private static final int TABLE_COLUMN_WIDTH_CHECKBOX = 20;
 	private static final String TABLE_COLUMN_WIDTH_DATE_MAX_TEXT = "WMW 00 MWM 0000 23:59pm";
 	private static final String TABLE_COLUMN_WIDTH_INDEX_MAX_TEXT = "9999";
@@ -412,6 +414,40 @@ public class GuiMain2 extends GuiCommandBox{
 		panelCmd.setLayout(new BorderLayout(0, 0));
 		
 		txtCmd = new JTextField();
+		txtCmd.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode() == KeyEvent.VK_PAGE_UP){
+					int offset = -1 * KEYBOARD_PAGE_OFFSET;
+					moveScroll(scrollPaneDated, offset);
+					moveScroll(scrollPaneUndated, offset);
+					moveScroll(scrollPaneTable, offset);
+				}
+				
+				if(arg0.getKeyCode() == KeyEvent.VK_PAGE_DOWN){
+					int offset = KEYBOARD_PAGE_OFFSET;
+					moveScroll(scrollPaneDated, offset);
+					moveScroll(scrollPaneUndated, offset);
+					moveScroll(scrollPaneTable, offset);
+				}
+			}
+
+			public void moveScroll(JScrollPane scrollPane, int offset) {
+				int scrollBarPos = scrollPane.getVerticalScrollBar().getValue();
+				int scrollElementHeight = scrollPane.getHeight() - KEYBOARD_PAGE_OVERLAP;
+				
+				if (Math.abs(offset) > scrollElementHeight){
+					if (offset < 0){
+						offset = -1 * scrollElementHeight;
+					}else{
+						offset = scrollElementHeight;
+					}
+				}
+				
+				scrollPane.getVerticalScrollBar().setValue(scrollBarPos + offset);
+				System.out.println(scrollPane.getHeight());
+			}
+		});
 		panelCmd.add(txtCmd, BorderLayout.NORTH);
 		
 		txtStatus = new JEditorPane();
@@ -1052,10 +1088,12 @@ public class GuiMain2 extends GuiCommandBox{
 		int month = date.getMonthOfYear();
 		int day = date.getDayOfMonth();
 		
+		// Scroll to date on Agenda View
 		String dateReferenceStr = "date-"+year+"-"+month+"-"+day;
 		log.info("Scroll to reference " + dateReferenceStr);
 		txtDatedTasks.scrollToReference(dateReferenceStr);
 		
+		// Scroll to date on List View
 		TableModel tableItems = table.getModel();
 		for (int i = 0; i < tableItems.getRowCount(); i++) {
 			if (((String) tableItems.getValueAt(i, MyTableModel.COL_START)).startsWith(dateTimeToLongerStringDateOnly(date))){
