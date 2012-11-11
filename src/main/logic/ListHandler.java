@@ -2,6 +2,7 @@
 package main.logic;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -30,19 +31,37 @@ public class ListHandler extends CommandHandler {
 		SearchTerms filter;
 
 		if (parser.isOverdue()) {
-			DateTime startDate = new DateTime(Long.MIN_VALUE);
-			DateTime endDate = new DateTime();
+			results = new ArrayList<Task>();
+			DateTime currentTime = new DateTime();
+			
+			List<Task> everything = dataBase.getAll();
 
-			filter = new SearchTerms(false, true, false, false, false,
-					startDate, endDate);
-
-			results = dataBase.search(filter);
-
+			for(Task entry : everything){
+				if(entry.isFloatingTask()) {
+					continue;
+				}
+				
+				DateTime toCompare;
+				
+				if(entry.isDeadlineTask()){
+					toCompare = entry.getDeadline();
+				} else if (entry.isTimedTask()){
+					toCompare = entry.getEndDate();
+				} else {
+					continue;
+				}
+				
+				if((!entry.isDone()) && toCompare.isBefore(currentTime)) {
+					results.add(entry);
+				}
+				
+			}
+			
 			String overdueStatusMsg = "Listing based on these parameters: \"overdue\" ";
 
 			lastShownObject.setLastShownList(results);
 			latestListingHandlerForUI = this;
-			return new LogicToUi(results, overdueStatusMsg, filter);
+			return new LogicToUi(results, overdueStatusMsg);
 		}
 
 
