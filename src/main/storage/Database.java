@@ -86,6 +86,7 @@ public class Database {
 	 * @return an List<Task> containing all the matched tasks
 	 */
 	public List<Task> search(SearchTerms terms) {
+		assert (terms != null);
 		List<Task> searchResults = new ArrayList<Task>();
 
 		for (Map.Entry<Integer, Task> entry : quickAccessTask.entrySet()) {
@@ -439,7 +440,7 @@ public class Database {
 	 * To delete given tasks in database
 	 * 
 	 * @param serial
-	 *            array of serial numbers of tasks to be deleted
+	 *            List of serial numbers of tasks to be deleted
 	 * 
 	 * @throws NoSuchElementException
 	 *             if at least one task by serial number cannot be found
@@ -465,7 +466,7 @@ public class Database {
 		}
 
 		for (Integer currentSerial : serial) {
-			boolean taskFound = true;
+			boolean taskFound = false;
 
 			for(Iterator<Task> iter = newList.iterator(); iter.hasNext();){
 				Task current = iter.next();
