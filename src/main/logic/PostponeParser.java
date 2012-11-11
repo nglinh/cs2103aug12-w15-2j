@@ -13,7 +13,18 @@ import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
-
+/**
+ * This class extends command parser class.
+ * 
+ * Postpone parser parses commands for postpone command.
+ * 
+ * Information about postponed task is to be extracted
+ * by postpone handler. Postpone parser does not release
+ * any of the information unless it is asked by its handler.
+ * 
+ * @author A0088427U
+ *
+ */
 public class PostponeParser extends CommandParser {
 	private String argument;
 	private Task toBePostponed;
@@ -26,7 +37,11 @@ public class PostponeParser extends CommandParser {
 	private DateTime newEndTime;
 	private List<Task> lastShownToUi;
 	private int toBePostponedSerial;
-
+	
+	/**
+	 * Constructor of postpone parser class.
+	 * @param arguments: string of command argument.
+	 */
 	public PostponeParser(String arguments) {
 		super(arguments);
 		argument = arguments;
@@ -37,45 +52,58 @@ public class PostponeParser extends CommandParser {
 	@Override
 	public void parse() throws EmptyDescriptionException,
 			CannotParseDateException, CannotPostponeFloatingException, NumberFormatException {
-		int index;
-		index = Integer.parseInt(getFirstWord(argument));
-		index--; // Since arraylist index starts from 0
-		argument = removeFirstWord(argument);
-		if (argument.length() == 0) {
-			throw new CannotParseDateException();
-		}
-
-		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
-			throw new NoSuchElementException();
-		}
-
-		toBePostponedSerial = lastShownToUi.get(index).getSerial();
+		int index = checkArgumentValidity();
 		toBePostponed = lastShownToUi.get(index);
+		toBePostponedSerial = toBePostponed.getSerial();
+		
 		if (toBePostponed.getType() == TaskType.FLOATING) {
 			throw new CannotPostponeFloatingException();
 		}
 		if (toBePostponed.getType() == TaskType.DEADLINE) {
 			deadlineGroups = parser.parseWCustomBaseDate(
 					toBePostponed.getDeadline(), argument);
-			newDeadline = new DateTime(deadlineGroups.get(0).getDates().get(0));
+			newDeadline = new DateTime(deadlineGroups.get(INT_0).getDates().get(INT_0));
 
 		}
 		if (toBePostponed.getType() == TaskType.TIMED) {
 			startGroups = parser.parseWCustomBaseDate(
-					toBePostponed.getStartDate(), argument);
+					toBePostponed.getStartDate(), argument);	// to get the period of time
+																// the task will be postponed
 
-			if (startGroups.size() == 0) {
+			if (startGroups.isEmpty()) {
 				throw new CannotParseDateException();
 			}
-			newStartTime = new DateTime(startGroups.get(0).getDates().get(0));
+			newStartTime = new DateTime(startGroups.get(INT_0).getDates().get(INT_0));
 
 			endGroups = parser.parseWCustomBaseDate(toBePostponed.getEndDate(),
 					argument);
-			if (endGroups.size() == 0) {
+			if (endGroups.isEmpty()) {
 				throw new CannotParseDateException();
 			}
-			newEndTime = new DateTime(endGroups.get(0).getDates().get(0));
+			newEndTime = new DateTime(endGroups.get(INT_0).getDates().get(INT_0));
 		}
+	}
+	/**
+	 * This method check if argument is empty and if the index
+	 * is out of bound
+	 * @return the index if it is valid( in bound)
+	 * @throws CannotParseDateException: if the argument is empty.
+	 */
+	private int checkArgumentValidity() throws CannotParseDateException {
+		int index;
+		if (argument.length() == 0) {
+			throw new CannotParseDateException();
+		}
+		index = Integer.parseInt(getFirstWord(argument));
+		index--; // Since arraylist index starts from 0
+		argument = removeFirstWord(argument);
+		if (argument.length() == 0) {
+			throw new CannotParseDateException();
+		}
+		if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
+			throw new NoSuchElementException();
+		}
+		return index;
 	}
 
 	public int getToBePostponedSerial() {
