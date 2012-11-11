@@ -29,6 +29,15 @@ public class ListHandler extends CommandHandler {
 		List<Task> results;
 
 		SearchTerms filter;
+		if(parser.isNoParam()){
+			List<Task> everything = dataBase.getAll();
+			lastShownObject.setLastShownList(everything);
+			latestListingHandlerForUI = this;
+			
+			return new LogicToUi(everything, parser.getStatusMsg());
+			
+		}
+		
 
 		if (parser.isOverdue()) {
 			results = new ArrayList<Task>();

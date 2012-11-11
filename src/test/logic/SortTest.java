@@ -105,7 +105,7 @@ public class SortTest {
 	}
 
 	@Test
-	public void defaultSort() {
+	public void sort() {
 		List<Task> results;
 		
 		commandTester("list");
