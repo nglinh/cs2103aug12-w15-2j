@@ -1,3 +1,5 @@
+//@author A0081007U
+
 package test.logic;
 
 import static org.junit.Assert.*;
@@ -132,17 +134,15 @@ public class SortTest {
 		
 		assertFalse(fail);
 		
-	}
-	
-	@Test
-	public void startSort() {
-		List<Task> results;
+		
+		
+		//Sort By start
 		
 		commandTester("list");
 		results = commandTester("sort start");
 		
-		DateTime previous = new DateTime(Long.MIN_VALUE);
-		boolean fail = false;
+		previous = new DateTime(Long.MIN_VALUE);
+		fail = false;
 		
 		for(Task comp : results){
 			DateTime currentComp;
@@ -164,18 +164,15 @@ public class SortTest {
 		
 		assertFalse(fail);
 		
-	}
-	
-	@Test
-	public void endSort() {
-		List<Task> results;
+		
+		//Sort By end
 		
 		commandTester("list");
 		results = commandTester("sort end");
 		
-		boolean fail = false;
+		fail = false;
 		
-		DateTime previous = new DateTime(Long.MIN_VALUE);
+		previous = new DateTime(Long.MIN_VALUE);
 		for(Task comp : results) {
 			DateTime currentComp;
 			
@@ -196,106 +193,95 @@ public class SortTest {
 		}
 		assertFalse(fail);
 		
-	}
-	
-	@Test
-	public void typeSort() {
-		List<Task> results;
+		
+		
+		//Sort by type
 		
 		commandTester("list");
 		results = commandTester("sort type");
 		
-		boolean fail = false;
+		fail = false;
 		
 		//In order of deadline, timed and floating
-		TaskType previous = TaskType.DEADLINE;
+		TaskType previousType = TaskType.DEADLINE;
 		for(Task comp : results) {
-			if(previous.equals(TaskType.TIMED) && comp.getType().equals(TaskType.DEADLINE)) {
+			if(previousType.equals(TaskType.TIMED) && comp.getType().equals(TaskType.DEADLINE)) {
 				fail = true;
 			}
 			
-			if(previous.equals(TaskType.FLOATING) && comp.getType().equals(TaskType.TIMED)) {
+			if(previousType.equals(TaskType.FLOATING) && comp.getType().equals(TaskType.TIMED)) {
 				fail = true;
 			}
 			
-			if(previous.equals(TaskType.FLOATING) && comp.getType().equals(TaskType.DEADLINE)) {
+			if(previousType.equals(TaskType.FLOATING) && comp.getType().equals(TaskType.DEADLINE)) {
 				fail = true;
 			}
 			
-			previous = comp.getType();
+			previousType = comp.getType();
 		}
 		assertFalse(fail);
-	}
-	
-	
-	@Test
-	public void doneSort() {
-		List<Task> results;
 		
+		
+		//Done Sort
 		commandTester("list");
 		results = commandTester("sort done");
 
-		boolean fail = false;
+		fail = false;
 		
 		//Undone tasks come first
-		boolean previous = false;
+		boolean prevDoneStatus = false;
 		for(Task comp : results) {
-			if(previous && (comp.isDone() == false)) {
+			if(prevDoneStatus && (comp.isDone() == false)) {
 				fail = true;
 			}
 			
-			previous = comp.isDone();
+			prevDoneStatus = comp.isDone();
 		}
 		assertFalse(fail);
-
-	}
-	
-	@Test
-	public void nameSort(){
+		
+		
 		
 		final int COMPARETO_BIGGER = 1;
-		List<Task> results;
+
 		
 		commandTester("list");
 		results = commandTester("sort name");
-		boolean fail = false;
+		fail = false;
 		
 		//Undone tasks come first
-		String previous = " ";
+		String prevName = " ";
 		for(Task comp : results) {
 			String compName = comp.getTaskName();
-			if(previous.compareTo(compName) == COMPARETO_BIGGER) {
+			if(prevName.compareTo(compName) == COMPARETO_BIGGER) {
 				fail = true;
 			}
 			
-			previous = compName;
+			prevName = compName;
 		}
 		assertFalse(fail);
-	}
-	
-	
-	
-	@Test
-	public void reverseDoneSort() {
-		List<Task> results;
+		
+		
+		
+
 		
 		commandTester("list");
 		results = commandTester("sort done reverse");
 
-		boolean fail = false;
+		fail = false;
 		
 		//done tasks come first
-		boolean previous = true;
+		prevDoneStatus = true;
 		for(Task comp : results) {
-			if(previous == false && comp.isDone()) {
+			if(prevDoneStatus == false && comp.isDone()) {
 				fail = true;
 			}
 			
-			previous = comp.isDone();
+			prevDoneStatus = comp.isDone();
 		}
 		assertFalse(fail);
-
 	}
+		
+
 	
 	
 	
