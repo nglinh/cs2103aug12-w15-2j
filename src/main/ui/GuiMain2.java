@@ -718,7 +718,7 @@ public class GuiMain2 extends GuiCommandBox{
 			
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 				if(e.getInputEvent() instanceof MouseEvent){
-					if(((MouseEvent)e.getInputEvent()).getClickCount() < 2){
+					if(((MouseEvent)e.getInputEvent()).getClickCount() < prefs.getInt(GuiPreferences.NUM_CLICKS_EDIT, 2)){
 						return;
 					}
 				}
