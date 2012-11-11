@@ -7,9 +7,11 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import main.shared.SearchTerms;
 import main.shared.Task;
 import main.storage.Database;
 import main.storage.WillNotWriteToCorruptFileException;
@@ -82,7 +84,7 @@ public class DatabaseTest {
 		filledListing.add(nameFalse);
 		filledListing.add(nameTrue);
 
-		
+
 
 		Collections.sort(filledListing);
 
@@ -117,12 +119,12 @@ public class DatabaseTest {
 
 			//Check the size read back is equal
 			assertEquals(filledListing.size(), initialClearListing.size());
-			
+
 			Collections.sort(initialClearListing);
 
 			for(int i = 0; i < filledListing.size(); i++){
 				assertEquals(filledListing.get(i).showInfo(), initialClearListing.get(i).showInfo());
-				
+
 			}
 
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
@@ -180,7 +182,7 @@ public class DatabaseTest {
 			initialClearListing = db.getAll();
 
 			assertEquals(filledListing.size(), initialClearListing.size());
-			
+
 			Collections.sort(initialClearListing);
 
 			for (int i = 0; i < initialClearListing.size(); i++) {
@@ -257,7 +259,7 @@ public class DatabaseTest {
 			fail();
 		} catch(AssertionError e){
 		}
-		
+
 		try {
 			//Wrong Serial number
 			db.update(Task.SERIAL_NUMBER_START - 1, name);
@@ -266,42 +268,42 @@ public class DatabaseTest {
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		}
-		
+
 		try {
 			db.setAll(new ArrayList<Task>());
 			//Add only one task and update it
 			db.add(name);
 			db.update(name.getSerial(), nameTimed);
 			initialClearListing = db.getAll();
-			
+
 			assertEquals(nameTimed.showInfo(), initialClearListing.get(0).showInfo());
-			
+
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		}
-		
+
 		try {
 			db.setAll(new ArrayList<Task>());
 			//Add 2 tasks and update 1
 			db.add(nameTimed);
 			db.add(nameTrue);
-			
+
 			db.update(nameTrue.getSerial(), nameDeadline);
 			initialClearListing = db.getAll();
-			
+
 			Collections.sort(initialClearListing);
-			
+
 			assertEquals(nameDeadline.showInfo(), initialClearListing.get(1).showInfo());
-			
+
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		}
-		
 
-		
-		
+
+
+
 	}
-	
+
 	@Test
 	public void testDelete() {
 		try {
@@ -311,7 +313,7 @@ public class DatabaseTest {
 			fail();
 		} catch (NoSuchElementException e) {
 		}
-		
+
 		int maxSerial = Task.SERIAL_NUMBER_START - 1;
 
 		for(Task entry : filledListing){
@@ -319,9 +321,9 @@ public class DatabaseTest {
 				maxSerial = entry.getSerial();
 			}
 		}
-		
+
 		maxSerial++;
-		
+
 		try {
 			db.setAll(filledListing);
 			db.delete(maxSerial);
@@ -330,46 +332,46 @@ public class DatabaseTest {
 			fail();
 		} catch (NoSuchElementException e) {
 		} 
-		
+
 		try {
 			db.setAll(filledListing);
 			db.delete(nameDeadlineTrue.getSerial());
-			
+
 			initialClearListing = db.getAll();
-			
+
 			//Ensure Task is deleted
 			for(Task entry : initialClearListing){
 				if(entry.getSerial() == nameDeadlineTrue.getSerial()){
 					fail();
 				}
 			}
-			
+
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		} catch (NoSuchElementException e) {
 			fail();
 		}
-			
+
 		try{	
 			db.delete(nameFalse.getSerial());
-			
+
 			initialClearListing = db.getAll();
-			
+
 			//Ensure Task is deleted
 			for(Task entry : initialClearListing){
 				if(entry.getSerial() == nameFalse.getSerial()){
 					fail();
 				}
 			}
-			
+
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
 		} catch (NoSuchElementException e) {
 			fail();
 		}
-		
-		
-		
+
+
+
 	}
 
 	@Test
@@ -399,6 +401,315 @@ public class DatabaseTest {
 		}
 
 	}
+
+	@Test
+	public void testSearch() {
+		try {
+			db.setAll(filledListing);
+		} catch (IOException | WillNotWriteToCorruptFileException e) {
+			fail();
+		}
+		
+		List<Task> results;
+		SearchTerms terms;
+		
+		//No keywords
+		terms = new SearchTerms(new String[0]);
+		results = db.search(terms);
+		assertEquals(filledListing.size(), results.size());
+		
+		
+		//No task will meet keywords
+		terms = new SearchTerms(new String[]{"No task will have this"});
+		results = db.search(terms);
+		assertEquals(0, results.size());
+		
+		//Those containing the keyword false and name
+		terms = new SearchTerms(new String[]{"false",  "name"});
+		results = db.search(terms);
+		assertEquals(2, results.size());
+		for(Task resultEntry : results){
+			if(!resultEntry.containsTerm("false")){
+				fail();
+			}
+			if(!resultEntry.containsTerm("name")){
+				fail();
+			}
+			
+		}
+		
+		//Fall within this range
+		terms = new SearchTerms(new DateTime().minusMonths(2), new DateTime().plusMonths(2));
+		results = db.search(terms);
+		assertEquals(4, results.size());
+		for(Task resultEntry : results){
+			if(!resultEntry.clashesWithRange(new DateTime().minusMonths(2), new DateTime().plusMonths(2))){
+				fail();
+			}
+	
+		}
+		
+		
+		//Keywords and Date Range
+		terms = new SearchTerms(new String[]{"month"}, new DateTime().minusMonths(2), new DateTime().plusMonths(2));
+		results = db.search(terms);
+		assertEquals(2, results.size());
+		for(Task resultEntry : results){
+			if(!resultEntry.clashesWithRange(new DateTime().minusMonths(2), new DateTime().plusMonths(2))){
+				fail();
+			}
+			
+			if(!resultEntry.containsTerm("month")){
+				fail();
+			}
+	
+		}
+		
+		//No flag
+		terms = new SearchTerms(false, false, false, false, false);
+		results = db.search(terms);
+		assertEquals(filledListing.size(), results.size());
+		
+		//Complete flag
+		terms = new SearchTerms(true, false, false, false, false);
+		results = db.search(terms);
+		assertEquals(2, results.size());
+		for(Task resultEntry : results){
+			if(!resultEntry.isDone()){
+				fail();
+			}
+		}
+		
+		//InComplete flag
+		terms = new SearchTerms(false, true, false, false, false);
+		results = db.search(terms);
+		assertEquals(5, results.size());
+		for(Task resultEntry : results){
+			if(resultEntry.isDone()){
+				fail();
+			}
+		}
+
+		//Timed flag
+		terms = new SearchTerms(false, false, true, false, false);
+		results = db.search(terms);
+		assertEquals(2, results.size());
+		for(Task resultEntry : results){
+			if(!resultEntry.isTimedTask()){
+				fail();
+			}
+		}
+		
+		//Deadline flag
+		terms = new SearchTerms(false, false, false, true, false);
+		results = db.search(terms);
+		assertEquals(2, results.size());
+		for(Task resultEntry : results){
+			if(!resultEntry.isDeadlineTask()){
+				fail();
+			}
+		}
+		
+		//Floating flag
+		terms = new SearchTerms(false, false, false, false, true);
+		results = db.search(terms);
+		assertEquals(3, results.size());
+		for(Task resultEntry : results){
+			if(!resultEntry.isFloatingTask()){
+				fail();
+			}
+		}
+		
+		
+		//For Searchterm class flags and keywords constructor
+		//InComplete flag
+		terms = new SearchTerms(false, true, false, false, false, new String[]{"tomorrow"});
+		results = db.search(terms);
+		assertEquals(2, results.size());
+		for(Task resultEntry : results){
+			if(resultEntry.isDone()){
+				fail();
+			}
+			if(!resultEntry.containsTerm("tomorrow")){
+				fail();
+			}
+			
+		}
+		
+		
+		//For Searchterm class flags and date range constructor
+		//InComplete flag
+		terms = new SearchTerms(false, true, false, false, false, new DateTime().minusDays(2), new DateTime().plusDays(2));
+		results = db.search(terms);
+		assertEquals(2, results.size());
+		for(Task resultEntry : results){
+			if(resultEntry.isDone()){
+				fail();
+			}
+			if(!resultEntry.clashesWithRange(new DateTime().minusDays(2), new DateTime().plusDays(2))){
+				fail();
+			}
+			
+
+			
+		}
+		
+		//For Searchterm class flags with keywords and date ranges constructor
+		//InComplete flag
+		terms = new SearchTerms(false, true, false, false, false, new String[]{"false"}, new DateTime().minusDays(2), new DateTime().plusDays(2));
+		results = db.search(terms);
+		assertEquals(1, results.size());
+		for(Task resultEntry : results){
+			if(resultEntry.isDone()){
+				fail();
+			}
+			if(!resultEntry.clashesWithRange(new DateTime().minusDays(2), new DateTime().plusDays(2))){
+				fail();
+			}
+			
+			if(!resultEntry.containsTerm("false")){
+				fail();
+			}
+			
+		}
+		
+		
+		
+	}
+
+	@Test
+	public void testDeleteMultiple() {
+		List<Integer> deletionList = new LinkedList<Integer>();
+		List<Task> obtainedList;
+
+		//Empty serial list
+		obtainedList = deleteHelper(new LinkedList<Integer>(), filledListing);
+		assertEquals("No change in size", filledListing.size(), obtainedList.size());
+		
+		//No Task List
+		obtainedList = deleteHelper(new LinkedList<Integer>(), new LinkedList<Task>());
+		assertEquals("No change in size", 0, obtainedList.size());
+
+		//Delete a task from empty database
+		int serial1 = filledListing.get(0).getSerial();
+		deletionList.add(serial1);
+		
+		try{
+			obtainedList = deleteHelper(deletionList, new LinkedList<Task>());
+			fail();
+		} catch(NoSuchElementException e){
+		}
+
+
+		//Delete 1 valid task
+
+		obtainedList = deleteHelper(deletionList, filledListing);
+		assertEquals("Size dropped by one", filledListing.size() - 1, obtainedList.size());
+		for(Task entry : obtainedList){
+			if(entry.getSerial() == serial1){
+				fail();
+			}
+		}
+		
+		//Delete 2 valid Tasks
+		int serial2 = filledListing.get(0).getSerial();
+		int serial3 = filledListing.get(filledListing.size() - 1).getSerial();
+		deletionList.clear();
+		deletionList.add(serial2);
+		deletionList.add(serial3);
+		
+		obtainedList = deleteHelper(deletionList, filledListing);
+		
+		assertEquals("Size dropped by 2", filledListing.size() - 2, obtainedList.size());
+		for(Task entry : obtainedList){
+			if(entry.getSerial() == serial2){
+				fail();
+			}
+			
+			if(entry.getSerial() == serial3){
+				fail();
+			}
+		}
+		
+		//Delete 1 invalid Tasks
+		int serial4 = Task.SERIAL_NUMBER_START - 1;
+		deletionList.clear();
+		deletionList.add(serial4);
+		
+		try{
+			deleteHelper(deletionList, filledListing);
+			fail();
+		} catch(NoSuchElementException e){
+		}
+		
+		obtainedList = db.getAll();
+		
+		assertEquals("Size no change", filledListing.size(), obtainedList.size());
+		
+		
+
+		//Delete 1 valid followed by 1 invalid task
+		int serial5 = filledListing.get(1).getSerial();
+		int serial6 = Task.SERIAL_NUMBER_START - 100;
+		deletionList.clear();
+		deletionList.add(serial5);
+		deletionList.add(serial6);
+
+		try{
+			deleteHelper(deletionList, filledListing);
+			fail();
+		} catch(NoSuchElementException e){
+		}
+		
+		obtainedList = db.getAll();
+		
+		assertEquals("Size no change", filledListing.size(), obtainedList.size());
+		
+		
+		//Delete 1 invalid followed by 1 valid task
+		int serial7 = Task.SERIAL_NUMBER_START - 100;
+		int serial8 = filledListing.get(filledListing.size() -1).getSerial();
+		deletionList.clear();
+		deletionList.add(serial7);
+		deletionList.add(serial8);
+
+		try{
+			deleteHelper(deletionList, filledListing);
+			fail();
+		} catch(NoSuchElementException e){
+		}
+		
+		obtainedList = db.getAll();
+		
+		assertEquals("Size no change", filledListing.size(), obtainedList.size());
+	
+		//Delete everything
+		deletionList.clear();
+		for(Task current : filledListing){
+			deletionList.add(current.getSerial());
+		}
+		
+		deleteHelper(deletionList, filledListing);
+		obtainedList = db.getAll();
+		
+		assertEquals("Nothing left", 0, obtainedList.size());
+	
+
+	}
+
+
+	private List<Task> deleteHelper(List<Integer> serials, List<Task> filledListing){
+		try {
+			db.setAll(filledListing);
+			db.delete(serials);
+			return db.getAll();
+		} catch (IOException | WillNotWriteToCorruptFileException e) {
+			fail();
+			return null;
+		}
+
+	}
+
 
 
 
