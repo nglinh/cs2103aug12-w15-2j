@@ -6,6 +6,17 @@ import java.util.NoSuchElementException;
 
 import main.shared.Task;
 
+/**
+ * This class implement deleteParser.
+ * 
+ * And object of deleteParser associates with only one object of deletehandler.
+ * Delete parser object parse the command argument and store the values.
+ * Information regarding the command can only be extracted by the associating
+ * deletehandler object.
+ * 
+ * @author A0088427U
+ * 
+ */
 public class DeleteParser extends CommandParser {
 	private boolean isOver;
 	private boolean isDone;
@@ -18,6 +29,12 @@ public class DeleteParser extends CommandParser {
 	private List<Integer> listOfToBeDeletedIndexes;
 	private int serial;
 
+	/**
+	 * Constructor of the class.
+	 * 
+	 * @param arguments
+	 *            : String argument of the delete command.
+	 */
 	public DeleteParser(String arguments) {
 		super(arguments);
 		isOver = false;
@@ -31,6 +48,14 @@ public class DeleteParser extends CommandParser {
 		lastShownToUi = lastShownObject.getLastShownList();
 	}
 
+	/**
+	 * Overrides the parse method in command handler.
+	 * 
+	 * @throws NumberFormatException
+	 *             : in case the number indicating index cannot be parsed as an
+	 *             integer.
+	 */
+	@Override
 	public void parse() throws NumberFormatException {
 		switch (arg.toLowerCase()) {
 		case "over":
@@ -58,7 +83,7 @@ public class DeleteParser extends CommandParser {
 
 		}
 
-		if (listOfToBeDeletedIndexes.size() == 1) {
+		if (listOfToBeDeletedIndexes.size() == INT_1) {
 			onlyOneIndexFound = true;
 			serial = lastShownToUi.get(index).getSerial();
 		}
@@ -68,22 +93,28 @@ public class DeleteParser extends CommandParser {
 	public int getSerialOfTask() {
 		return serial;
 	}
-	public boolean isDone(){
+
+	public boolean isDone() {
 		return isDone;
 	}
-	public boolean isOver(){
+
+	public boolean isOver() {
 		return isOver;
 	}
-	public boolean isAll(){
+
+	public boolean isAll() {
 		return isAll;
 	}
-	public boolean isOnlyOneIndexFound(){
+
+	public boolean isOnlyOneIndexFound() {
 		return onlyOneIndexFound;
 	}
-	public List<Integer> getListOfToBeDeletedSerials(){
+
+	public List<Integer> getListOfToBeDeletedSerials() {
 		return listOfToBeDeletedSerials;
 	}
-	public List<Integer> getListOfToBeDeletedIndexes(){
+
+	public List<Integer> getListOfToBeDeletedIndexes() {
 		return listOfToBeDeletedIndexes;
 	}
 }
