@@ -45,6 +45,22 @@ public class EditTest {
 		assertEquals(expected.showInfo(), actual.showInfo());
 	}
 	
+	@Test
+	public void editTimedTaskErrorTimeFloatingToTimed() {
+		Task expected = new Task("project meeting at com");
+		Task actual = CommandTester("add \"project meeting at com\"", "edit 1 -starttime 5pm -endtime 4pm");
+		// Exceptions should NOT be thrown!
+		assertEquals(expected.showInfo(), actual.showInfo());
+	}
+	
+	@Test
+	public void editTimedTaskErrorTimeDeadlineToTimed() {
+		Task expected = new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0));
+		Task actual = CommandTester("add \"project meeting at com\" at 3pm", "edit 1 -starttime 5pm -endtime 4pm");
+		// Exceptions should NOT be thrown!
+		assertEquals(expected.showInfo(), actual.showInfo());
+	}
+	
 	public Task CommandTester(String addCommand, String editCommand) {		
 		LogicToUi returnValue;
 		List<Task> backup = Database.getInstance().getAll();

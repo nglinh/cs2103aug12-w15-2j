@@ -93,6 +93,9 @@ public class EditHandler extends CommandHandler {
 			}
 			copy.changeToTimed(parser.getNewStartTime(), parser.getNewEndTime());
 		} else {
+			if (copy.getStartDate().isAfter(parser.getNewEndTime())) {
+				throw new STimeBeforeETimeException();
+			}
 			copy.changeStartAndEndDate(copy.getStartDate(),
 					parser.getNewEndTime());
 		}
@@ -111,6 +114,9 @@ public class EditHandler extends CommandHandler {
 			}
 			copy.changeToTimed(parser.getNewStartTime(), parser.getNewEndTime());
 		} else {
+			if (parser.getNewStartTime().isAfter(copy.getEndDate())) {
+				throw new STimeBeforeETimeException();
+			}
 			copy.changeStartAndEndDate(parser.getNewStartTime(),
 					copy.getEndDate());
 		}
