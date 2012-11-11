@@ -49,8 +49,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
-import com.joestelmach.natty.DateGroup;
+import edu.emory.mathcs.backport.java.util.Collections;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -60,7 +62,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JButton;
@@ -160,6 +161,16 @@ public class GuiMain2 extends GuiCommandBox{
 		log.entering(this.getClass().getName(), "<init>");
 		setUiLookAndFeel();
 		
+		prefs = Preferences.userNodeForPackage(this.getClass());
+		prefs.addPreferenceChangeListener(new PreferenceChangeListener(){
+
+			@Override
+			public void preferenceChange(PreferenceChangeEvent arg0) {
+				preferenceShowHint = prefs.getBoolean(GuiPreferences.SHOW_HINTS, true);				
+			}
+			
+		});
+		
 		initialize();
 		log.exiting(this.getClass().getName(), "<init>");
 	}
@@ -171,16 +182,6 @@ public class GuiMain2 extends GuiCommandBox{
 	@SuppressWarnings("serial")
 	protected void initialize() {
 		log.entering(this.getClass().getName(), "initialize");
-		
-		prefs = Preferences.userNodeForPackage(this.getClass());		
-		prefs.addPreferenceChangeListener(new PreferenceChangeListener(){
-
-			@Override
-			public void preferenceChange(PreferenceChangeEvent arg0) {
-				preferenceShowHint = prefs.getBoolean(GuiPreferences.SHOW_HINTS, true);				
-			}
-			
-		});
 				
 		frmDoit = new JFrame();
 		frmDoit.addWindowFocusListener(new WindowFocusListener() {
@@ -234,7 +235,9 @@ public class GuiMain2 extends GuiCommandBox{
 			public void actionPerformed(ActionEvent arg0) {
 				executeCommand("list");
 				executeCommand("sort");
-				jumpToTasksToday();
+				if(prefs.getBoolean(GuiPreferences.HOME_GOES_TO_TODAY, true)){
+					jumpToTasksToday();
+				}
 				if(prefs.getBoolean(GuiPreferences.HOME_GOES_TO_DEFAULT_VIEW, true)){
 					switchCard(prefs.get(GuiPreferences.DEFAULT_VIEW, GuiMain2.CARD_AGENDA));
 				}
@@ -664,6 +667,10 @@ public class GuiMain2 extends GuiCommandBox{
 					//GuiMain2 window = new GuiMain2();
 					GuiMain2 window = GuiMain2.getInstance();
 					window.frmDoit.setVisible(true);
+					
+					if(prefs.getBoolean(GuiPreferences.DEFAULT_SHOW_TODAY, true)){
+						jumpToTasksToday();
+					}				
 				} catch (Exception e) {
 					//e.printStackTrace();
 					log.log(Level.WARNING, "Error launching GuiMain2", e);
@@ -1030,6 +1037,7 @@ public class GuiMain2 extends GuiCommandBox{
 	
 	private void jumpToTasksToday(){
 		// assert datesOfTasks is sorted
+		
 		DateTime today = new DateTime().withTimeAtStartOfDay();
 		for(DateTime date : datesOfTasks){
 			if(date.equals(today) || date.isAfter(today)){
@@ -1047,5 +1055,18 @@ public class GuiMain2 extends GuiCommandBox{
 		String dateReferenceStr = "date-"+year+"-"+month+"-"+day;
 		log.info("Scroll to reference " + dateReferenceStr);
 		txtDatedTasks.scrollToReference(dateReferenceStr);
+		
+		TableModel tableItems = table.getModel();
+		for (int i = 0; i < tableItems.getRowCount(); i++) {
+			if (((String) tableItems.getValueAt(i, MyTableModel.COL_START)).startsWith(dateTimeToLongerStringDateOnly(date))){
+				table.setRowSelectionInterval(i, i);
+				table.scrollRectToVisible(new Rectangle(table.getCellRect(i, 0, true)));
+				break;
+			}
+		}
+	}
+	
+	private String dateTimeToLongerStringDateOnly(DateTime toBeConverted) {
+		return DateTimeFormat.forPattern("EEE dd-MMM-yyyy").print(toBeConverted);
 	}
 }

@@ -29,6 +29,10 @@ import java.awt.Dialog.ModalityType;
 
 public class GuiPreferences extends UI {
 
+	static final String DEFAULT_VIEW = "DoIt! Default View";
+	static final String DEFAULT_SHOW_TODAY = "DoIt! Show today's tasks on start";
+	
+	static final String HOME_GOES_TO_TODAY = "DoIt! Home goes to today's tasks";
 	static final String SHORTCUT_KEY_EXTRA = "DoIt! ShortcutKey Extra";
 	static final String SHORTCUT_KEY_WIN = "DoIt! ShortcutKey Win";
 	static final String SHORTCUT_KEY_SHIFT = "DoIt! ShortcutKey Shift";
@@ -36,7 +40,7 @@ public class GuiPreferences extends UI {
 	static final String SHORTCUT_KEY_CTRL = "DoIt! ShortcutKey Ctrl";
 	static final String HOME_GOES_TO_DEFAULT_VIEW = "DoIt! Home goes to Default View";
 	static final String SHOW_HINTS = "DoIt! Show hints";
-	static final String DEFAULT_VIEW = "DoIt! Default View";
+	
 	
 	private JDialog frmDoitPreferences;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
@@ -78,7 +82,7 @@ public class GuiPreferences extends UI {
 		frmDoitPreferences.setType(Type.POPUP);
 		frmDoitPreferences.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 		frmDoitPreferences.setTitle("DoIt! Preferences");
-		frmDoitPreferences.setBounds(100, 100, 359, 195);
+		frmDoitPreferences.setBounds(100, 100, 359, 241);
 		frmDoitPreferences.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		JLabel lblDefaultViewOn = new JLabel("Default View:");
@@ -89,20 +93,20 @@ public class GuiPreferences extends UI {
 		rdbtnList = new JRadioButton("List");
 		buttonGroup.add(rdbtnList);
 		
+		chckbxShowTodaysTasks = new JCheckBox("Show today's tasks on start");
+		
+		JLabel lblHome = new JLabel("Home:");
+		chckbxHomeDefault = new JCheckBox("Home goes to default view");
+		chckbxHomeToday = new JCheckBox("Home goes to today's tasks");
+		
 		JLabel lblShow = new JLabel("Show:");
-		
-		JLabel lblQuickAddShortcut = new JLabel("Quick Add Shortcut:");
-		
-		chckbxCommandHints = new JCheckBox("Command Hints");
-		
+		chckbxCommandHints = new JCheckBox("Command hints");
+
+		JLabel lblQuickAddShortcut = new JLabel("Quick Add Shortcut:");			
 		chckbxCtrl = new JCheckBox("Ctrl");
-		
 		chckbxAlt = new JCheckBox("Alt");
-		
 		chckbxShift = new JCheckBox("Shift");
-		
 		chckbxWin = new JCheckBox("Win");
-		
 		txtShortcut = new JTextField();
 		txtShortcut.setText("A");
 		txtShortcut.setColumns(2);
@@ -116,8 +120,10 @@ public class GuiPreferences extends UI {
 				}else{
 					prefs.put(DEFAULT_VIEW, GuiMain2.CARD_LIST);
 				}
+				prefs.putBoolean(DEFAULT_SHOW_TODAY, chckbxShowTodaysTasks.isSelected());
 				
-				prefs.putBoolean(HOME_GOES_TO_DEFAULT_VIEW, chckbxHomeGoesTo.isSelected());
+				prefs.putBoolean(HOME_GOES_TO_DEFAULT_VIEW, chckbxHomeDefault.isSelected());
+				prefs.putBoolean(HOME_GOES_TO_TODAY, chckbxHomeToday.isSelected());
 				
 				prefs.putBoolean(SHOW_HINTS, chckbxCommandHints.isSelected());
 					
@@ -139,8 +145,6 @@ public class GuiPreferences extends UI {
 			}
 		});
 		
-		chckbxHomeGoesTo = new JCheckBox("Home goes to Default View");
-		
 		JButton btnReset = new JButton("Reset");
 		btnReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -161,12 +165,12 @@ public class GuiPreferences extends UI {
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblDefaultViewOn)
+						.addComponent(lblQuickAddShortcut)
 						.addComponent(lblShow)
-						.addComponent(lblQuickAddShortcut))
+						.addComponent(lblHome))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(chckbxCommandHints)
-						.addComponent(chckbxHomeGoesTo)
+						.addComponent(chckbxShowTodaysTasks)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(rdbtnAgenda)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -176,17 +180,21 @@ public class GuiPreferences extends UI {
 								.addComponent(btnReset)
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addComponent(btnSave))
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(chckbxCtrl)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(chckbxAlt)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(chckbxShift)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(chckbxWin)
-								.addGap(6)
-								.addComponent(txtShortcut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(chckbxCtrl)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(chckbxAlt)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(chckbxShift)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(chckbxWin)
+									.addGap(6)
+									.addComponent(txtShortcut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(chckbxHomeToday)
+								.addComponent(chckbxCommandHints)))
+						.addComponent(chckbxHomeDefault))
+					.addContainerGap(6, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -197,12 +205,18 @@ public class GuiPreferences extends UI {
 						.addComponent(rdbtnAgenda)
 						.addComponent(rdbtnList))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(chckbxHomeGoesTo)
+					.addComponent(chckbxShowTodaysTasks)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(chckbxCommandHints)
-						.addComponent(lblShow))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblHome)
+						.addComponent(chckbxHomeDefault))
+					.addGap(8)
+					.addComponent(chckbxHomeToday)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblShow)
+						.addComponent(chckbxCommandHints))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(chckbxCtrl)
 						.addComponent(lblQuickAddShortcut)
@@ -214,7 +228,7 @@ public class GuiPreferences extends UI {
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnSave)
 						.addComponent(btnReset))
-					.addContainerGap(15, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		frmDoitPreferences.getContentPane().setLayout(groupLayout);
 		
@@ -225,7 +239,10 @@ public class GuiPreferences extends UI {
 		}else{
 			rdbtnList.setSelected(true);
 		}
-		chckbxHomeGoesTo.setSelected(prefs.getBoolean(HOME_GOES_TO_DEFAULT_VIEW, true));
+		chckbxShowTodaysTasks.setSelected(prefs.getBoolean(DEFAULT_SHOW_TODAY, true));
+		
+		chckbxHomeDefault.setSelected(prefs.getBoolean(HOME_GOES_TO_DEFAULT_VIEW, true));
+		chckbxHomeToday.setSelected(prefs.getBoolean(HOME_GOES_TO_TODAY, true));
 		
 		chckbxCommandHints.setSelected(prefs.getBoolean(SHOW_HINTS, true));
 			
@@ -252,7 +269,9 @@ public class GuiPreferences extends UI {
 	}
 
 	private static GuiPreferences theOne;
-	private JCheckBox chckbxHomeGoesTo;
+	private JCheckBox chckbxHomeDefault;
+	private JCheckBox chckbxShowTodaysTasks;
+	private JCheckBox chckbxHomeToday;
 	public static GuiPreferences getInstance() {
 		if(theOne == null){
 			theOne = new GuiPreferences();
