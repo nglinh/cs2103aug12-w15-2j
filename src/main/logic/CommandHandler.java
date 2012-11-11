@@ -116,6 +116,8 @@ public abstract class CommandHandler {
 	 *            task to be changed to string form
 	 * @return converted string
 	 */
+	
+	//@author A0081007U
 	protected String taskToString(Task toBeConverted) {
 		if (toBeConverted.isTimedTask()) {
 			return ("Timed task " + "\"" + toBeConverted.getTaskName() + "\""
