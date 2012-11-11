@@ -32,11 +32,21 @@ public class EditHandler extends CommandHandler {
 			toBeEditedSerial = parser.getToBeEditedSerial();
 			toBeEdited = dataBase.locateATask(toBeEditedSerial);
 			copy = new Task(toBeEdited); // Create a copy to modify.
-			changeDeadline();
-			changename();
-			changeStartTime();
-			changeEndTime();
-			changeToFloat();
+			if (parser.willChangeDeadline) {
+				changeDeadline();
+			}
+			if (parser.willChangeName) {
+				changename();
+			}
+			if (parser.willChangeStartTime) {
+				changeStartTime();
+			}
+			if (parser.willChangeEndTime) {
+				changeEndTime();
+			}
+			if (parser.willChangeToFloating) {
+				changeToFloat();
+			}
 			if (copy.isEqualTo(toBeEdited)) {
 				feedback = new LogicToUi(MESSAGE_NOTHING_UPDATED,
 						toBeEditedSerial);
@@ -63,55 +73,49 @@ public class EditHandler extends CommandHandler {
 	}
 
 	private void changeToFloat() {
-		if (parser.willChangeToFloating) {
-			copy.changetoFloating();
-		}
+		assert (parser.willChangeToFloating);
+		copy.changetoFloating();
 	}
 
 	private void changeEndTime() throws DoNotChangeBothSTimeAndETimeException {
-		if (parser.willChangeEndTime) {
-			if (copy.getType() != TaskType.TIMED) {
-				if (!parser.willChangeStartTime) {
-					throw new DoNotChangeBothSTimeAndETimeException();
-				}
-				copy.changetoTimed(parser.getNewStartTime(),
-						parser.getNewEndTime());
-			} else {
-				copy.changeStartAndEndDate(copy.getStartDate(),
-						parser.getNewEndTime());
+		assert (parser.willChangeEndTime);
+		if (copy.getType() != TaskType.TIMED) {
+			if (!parser.willChangeStartTime) {
+				throw new DoNotChangeBothSTimeAndETimeException();
 			}
+			copy.changetoTimed(parser.getNewStartTime(), parser.getNewEndTime());
+		} else {
+			copy.changeStartAndEndDate(copy.getStartDate(),
+					parser.getNewEndTime());
 		}
 	}
 
 	private void changeStartTime() throws DoNotChangeBothSTimeAndETimeException {
-		if (parser.willChangeStartTime) {
-			if (copy.getType() != TaskType.TIMED) {
-				if (!parser.willChangeEndTime) {
-					throw new DoNotChangeBothSTimeAndETimeException();
-				}
-				copy.changetoTimed(parser.getNewStartTime(),
-						parser.getNewEndTime());
-			} else {
-				copy.changeStartAndEndDate(parser.getNewStartTime(),
-						copy.getEndDate());
+		assert (parser.willChangeStartTime);
+		if (copy.getType() != TaskType.TIMED) {
+			if (!parser.willChangeEndTime) {
+				throw new DoNotChangeBothSTimeAndETimeException();
 			}
+			copy.changetoTimed(parser.getNewStartTime(), parser.getNewEndTime());
+		} else {
+			copy.changeStartAndEndDate(parser.getNewStartTime(),
+					copy.getEndDate());
 		}
+
 	}
 
 	private void changename() {
-		if (parser.willChangeName) {
-			copy.changeName(parser.getNewName());
-		}
+		copy.changeName(parser.getNewName());
+
 	}
 
 	private void changeDeadline() {
-		if (parser.willChangeDeadline) {
-			if (copy.getType() != TaskType.DEADLINE) {
-				copy.changetoDeadline(parser.getNewDeadline());
-			} else {
-				copy.changeDeadline(parser.getNewDeadline());
-			}
+		if (copy.getType() != TaskType.DEADLINE) {
+			copy.changeToDeadline(parser.getNewDeadline());
+		} else {
+			copy.changeDeadline(parser.getNewDeadline());
 		}
+
 	}
 
 	@Override

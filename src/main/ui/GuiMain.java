@@ -436,7 +436,7 @@ public class GuiMain extends GuiCommandBox{
 							task.changeDeadline(date);
 						} else if (task.getType() == TaskType.FLOATING) {
 							log.info(String.format("Task is floating task, changing to deadline tas with time %1s", date));
-							task.changetoDeadline(date);
+							task.changeToDeadline(date);
 						}
 	
 					} else {
@@ -444,7 +444,7 @@ public class GuiMain extends GuiCommandBox{
 						// Did not manage to parse out a date
 						if (task.getType() == TaskType.TIMED) {
 							log.info(String.format("Task is timed task, changing to deadline task with time %1s", task.getEndDate()));
-							task.changetoDeadline(task.getEndDate());
+							task.changeToDeadline(task.getEndDate());
 						} else if (task.getType() == TaskType.DEADLINE) {
 							log.info("Task is deadline task, changing to floating task");
 							task.changetoFloating();
@@ -472,7 +472,7 @@ public class GuiMain extends GuiCommandBox{
 							task.changetoTimed(task.getDeadline(), date);
 						} else if (task.getType() == TaskType.FLOATING) {
 							log.info(String.format("Task is floating task, changing to deadline tas with time %1s", date));
-							task.changetoDeadline(date);
+							task.changeToDeadline(date);
 						}
 					} else {					
 						log.fine("Did not manage to parse a date");
@@ -480,7 +480,7 @@ public class GuiMain extends GuiCommandBox{
 						// Did not manage to parse out a date
 						if (task.getType() == TaskType.TIMED) {
 							log.info(String.format("Task is timed task, changing to deadline task with time %1s", task.getStartDate()));
-							task.changetoDeadline(task.getStartDate());
+							task.changeToDeadline(task.getStartDate());
 						}
 					}
 	

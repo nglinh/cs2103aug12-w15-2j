@@ -84,7 +84,7 @@ public class Task implements Comparable<Task> {
 	public Task(String name, DateTime deadline) {
 
 		Task newTask = new Task(name);
-		newTask.changetoDeadline(deadline);
+		newTask.changeToDeadline(deadline);
 		this.becomeThis(newTask);
 
 	}
@@ -296,7 +296,7 @@ public class Task implements Comparable<Task> {
 		this.endDate = INVALID_DATE_FIELD;
 	}
 
-	public void changetoDeadline(DateTime newDeadline)	{
+	public void changeToDeadline(DateTime newDeadline)	{
 		if((newDeadline == null) 
 				|| (newDeadline.equals(INVALID_DATE_FIELD))) {
 			throw new IllegalArgumentException("Illegal date to change to deadline: " + newDeadline);
