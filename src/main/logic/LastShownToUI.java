@@ -5,6 +5,7 @@ package main.logic;
  * 
  * This class implements the Singleton pattern since only one list of last shown to UI tasks
  * should be maintained.  
+ * @author A0088427U
  */
 import java.util.ArrayList;
 import java.util.List;
