@@ -48,7 +48,7 @@ public class Cli extends UI{
 	protected static final String TABLE_ENTRY_DONE = "*";
 	protected static final String TABLE_EMPTY_DATE_FIELD = "        -        ";
 	
-	private final String LINE_BREAK = System.getProperty("line.separator");
+	protected final String LINE_BREAK = System.getProperty("line.separator");
 
 	Scanner scan = new Scanner(System.in);
 	
@@ -74,14 +74,17 @@ public class Cli extends UI{
 			log.info("Output this string \"" + consoleOut + "\"");
 
 			System.out.println();
+			
+			System.out.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + LINE_BREAK);
 			System.out.println(consoleOut);
+			System.out.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + LINE_BREAK);
 			System.out.print(MESSAGE_NEXT_COMMAND);
 		}
 
 	}
 
 
-	protected String processInput(String lineFromInput) {
+	public String processInput(String lineFromInput) {
 
 		assert(lineFromInput != null);
 		lineFromInput = lineFromInput.trim();
@@ -138,7 +141,6 @@ public class Cli extends UI{
 
 		StringBuffer screenTable = new StringBuffer();
 
-		screenTable.append("Current Date/Time is: "+ super.currentTimeInLongerForm() + LINE_BREAK);
 
 		screenTable.append(TABLE_TOP_AND_BOTTOM + LINE_BREAK);
 		screenTable.append(TABLE_HEADER + LINE_BREAK);

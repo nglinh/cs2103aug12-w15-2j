@@ -83,12 +83,16 @@ public class CliWithJline extends Cli{
 				lineFromInput = console.readLine();
 				log.info("Received this command \"" + lineFromInput + "\"");
 				
-				getConsoleSizeAndAdjustOutput();
-				String consoleOut = processInput(lineFromInput);
+				setUpEnvironmentBasedOnConsoleSize();
+				
+				
+				String consoleOut = super.processInput(lineFromInput);
 				log.info("Output this string \"" + consoleOut + "\"");
 				
 				console.println();
+				console.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + super.LINE_BREAK);
 				console.println(consoleOut);
+				console.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + super.LINE_BREAK);
 
 			}
 
@@ -99,7 +103,7 @@ public class CliWithJline extends Cli{
 
 	}
 
-	private void getConsoleSizeAndAdjustOutput(){
+	private void setUpEnvironmentBasedOnConsoleSize(){
 		//DoIT is only guaranteed to display properly for the minimum description width, 
 		//below that, the header for the description will be too small.
 		if(consoleWidth == console.getTerminal().getWidth()){
