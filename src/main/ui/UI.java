@@ -17,7 +17,6 @@ import java.util.logging.Level;
 
 import javax.swing.JComponent;
 import javax.swing.Painter;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -25,8 +24,6 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import main.LogHandler;
 import main.shared.LogicToUi;
@@ -145,11 +142,11 @@ public abstract class UI {
 				if (fontPreferred == null){
 					fontPreferred = fontName;
 				}
-				return fontName;
+				return fontPreferred;
 			}
 		}
 		fontPreferred = "Sans-serif";
-		return "Sans-serif";
+		return fontPreferred;
 	}
 	
 	public class FillPainter implements Painter<JComponent> {
