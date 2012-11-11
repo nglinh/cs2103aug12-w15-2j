@@ -7,17 +7,16 @@ import java.util.NoSuchElementException;
 import main.shared.Task;
 
 public class DeleteParser extends CommandParser {
-	public boolean isOver;
-	public boolean isDone;
-	public boolean isAll;
-	public boolean onlyOneIndexFound;
-	int index;
-	String arg;
-	Task toBeDeleted;
-	List<Task> lastShownToUi;
-	List<Integer> listOfToBeDeletedSerials;
-	List<Integer> listOfToBeDeletedIndexes;
-	int serial;
+	private boolean isOver;
+	private boolean isDone;
+	private boolean isAll;
+	private boolean onlyOneIndexFound;
+	private int index;
+	private String arg;
+	private List<Task> lastShownToUi;
+	private List<Integer> listOfToBeDeletedSerials;
+	private List<Integer> listOfToBeDeletedIndexes;
+	private int serial;
 
 	public DeleteParser(String arguments) {
 		super(arguments);
@@ -26,14 +25,14 @@ public class DeleteParser extends CommandParser {
 		isAll = false;
 		onlyOneIndexFound = false;
 		arg = arguments;
-		
+
 		listOfToBeDeletedIndexes = new LinkedList<Integer>();
 		listOfToBeDeletedSerials = new LinkedList<Integer>();
 		lastShownToUi = lastShownObject.getLastShownList();
 	}
 
 	public void parse() throws NumberFormatException {
-		switch(arg.toLowerCase()){
+		switch (arg.toLowerCase()) {
 		case "over":
 			isOver = true;
 			return;
@@ -44,33 +43,47 @@ public class DeleteParser extends CommandParser {
 			isAll = true;
 			return;
 		}
-		
-		
-		
-		String[] indexes = arg.split(" ");
-		
-		
-		for(String indexString : indexes){
+
+		String[] indexes = arg.split(STRING_SPACE);
+
+		for (String indexString : indexes) {
 			index = Integer.parseInt(indexString);
-			index--; //To account for index starting from 1
-			if ((index < 0) || ((index + 1) > lastShownToUi.size())) {
+			index--; // To account for index starting from 1
+			if ((index < INT_0) || ((index + INT_1) > lastShownToUi.size())) {
 				throw new NoSuchElementException();
 			}
-			
 
 			listOfToBeDeletedSerials.add(lastShownToUi.get(index).getSerial());
-			listOfToBeDeletedIndexes.add(index + 1);
-			
+			listOfToBeDeletedIndexes.add(index + INT_1);
+
 		}
-		
-		if(listOfToBeDeletedIndexes.size() == 1){
+
+		if (listOfToBeDeletedIndexes.size() == 1) {
 			onlyOneIndexFound = true;
 			serial = lastShownToUi.get(index).getSerial();
 		}
-	
 
 	}
-	public int getSerialOfTask(){
+
+	public int getSerialOfTask() {
 		return serial;
+	}
+	public boolean isDone(){
+		return isDone;
+	}
+	public boolean isOver(){
+		return isOver;
+	}
+	public boolean isAll(){
+		return isAll;
+	}
+	public boolean isOnlyOneIndexFound(){
+		return onlyOneIndexFound;
+	}
+	public List<Integer> getListOfToBeDeletedSerials(){
+		return listOfToBeDeletedSerials;
+	}
+	public List<Integer> getListOfToBeDeletedIndexes(){
+		return listOfToBeDeletedIndexes;
 	}
 }
