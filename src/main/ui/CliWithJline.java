@@ -92,7 +92,6 @@ public class CliWithJline extends Cli{
 				console.println();
 				console.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + super.LINE_BREAK);
 				console.println(consoleOut);
-				console.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + super.LINE_BREAK);
 
 			}
 

@@ -97,6 +97,8 @@ public class Database {
 			}
 		}
 		
+		Collections.sort(searchResults);
+		
 
 		return searchResults;
 	}
