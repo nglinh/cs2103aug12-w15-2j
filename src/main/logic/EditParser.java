@@ -27,11 +27,11 @@ import main.shared.Task.TaskType;
  */
 public class EditParser extends CommandParser {
 	private static final String DASH = "-";
-	private boolean willChangeToFloat = false;
-	private boolean willChangeStartTime = false;
-	private boolean willChangeDeadline = false;
-	private boolean willChangeEndTime = false;
-	private boolean willChangeName = false;
+	private boolean isChangedToFloat = false;
+	private boolean isStartTimeChanged = false;
+	private boolean isDeadlineChanged = false;
+	private boolean isEndTimeChanged = false;
+	private boolean isNameChanged = false;
 
 	private String newName;
 	private DateTime newStartTime;
@@ -150,7 +150,7 @@ public class EditParser extends CommandParser {
 		case "tofloating":
 			// fall through
 		case "tofloat":
-			willChangeToFloat = true;
+			isChangedToFloat = true;
 			newType = TaskType.FLOATING;
 			break;
 		}
@@ -167,7 +167,7 @@ public class EditParser extends CommandParser {
 	 */
 	private void extractNewName(String newField)
 			throws EmptyDescriptionException {
-		willChangeName = true;
+		isNameChanged = true;
 		newName = newField;
 		if (newName.length() == 0) {
 			throw new EmptyDescriptionException();
@@ -184,7 +184,7 @@ public class EditParser extends CommandParser {
 	 */
 	private void extractNewDeadline(List<DateGroup> groupsOfDates)
 			throws CannotParseDateException {
-		willChangeDeadline = true;
+		isDeadlineChanged = true;
 		if (!groupsOfDates.isEmpty()) {
 			newDeadline = new DateTime(groupsOfDates.get(0).getDates().get(0));
 		} else {
@@ -202,7 +202,7 @@ public class EditParser extends CommandParser {
 	 */
 	private void extractNewET(List<DateGroup> groupsOfDates)
 			throws CannotParseDateException {
-		willChangeEndTime = true;
+		isEndTimeChanged = true;
 		if (!groupsOfDates.isEmpty()) {
 			newEndTime = new DateTime(groupsOfDates.get(INT_0).getDates()
 					.get(INT_0));
@@ -221,7 +221,7 @@ public class EditParser extends CommandParser {
 	 */
 	private void extractNewST(List<DateGroup> groupsOfDates)
 			throws CannotParseDateException {
-		willChangeStartTime = true;
+		isStartTimeChanged = true;
 		if (!groupsOfDates.isEmpty()) {
 			newStartTime = new DateTime(groupsOfDates.get(INT_0).getDates()
 					.get(INT_0));
@@ -254,23 +254,23 @@ public class EditParser extends CommandParser {
 		return newType;
 	}
 
-	public boolean getWillChangeStartTime() {
-		return willChangeStartTime;
+	public boolean willChangeStartTime() {
+		return isStartTimeChanged;
 	}
 
-	public boolean getWillChangeEndTime() {
-		return willChangeEndTime;
+	public boolean willChangeEndTime() {
+		return isEndTimeChanged;
 	}
 
-	public boolean getWillChangeName() {
-		return willChangeName;
+	public boolean willChangeName() {
+		return isNameChanged;
 	}
 
-	public boolean getWillChangeDeadline() {
-		return willChangeDeadline;
+	public boolean willChangeDeadline() {
+		return isDeadlineChanged;
 	}
 
-	public boolean getWillChangeToFloat() {
-		return willChangeToFloat;
+	public boolean willChangeToFloat() {
+		return isChangedToFloat;
 	}
 }
