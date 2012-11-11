@@ -108,7 +108,7 @@ public class ListTest {
 	public void overdueTest() {
 		String command = "list overdue";
 		DateTime currentTime = new DateTime();
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(1 , result.size());
 		
@@ -140,7 +140,7 @@ public class ListTest {
 		DateTime start = new DateTime().withTimeAtStartOfDay();
 		DateTime end = new DateTime().plusDays(1).withTime(23, 59, 59, 999);
 		
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(3 , result.size());
 		
@@ -158,7 +158,7 @@ public class ListTest {
 		DateTime start = new DateTime().withTimeAtStartOfDay();
 		DateTime end = new DateTime().withTime(23, 59, 59, 999);
 		
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(2 , result.size());
 		
@@ -176,7 +176,7 @@ public class ListTest {
 		DateTime start = new DateTime().plusDays(1).withTimeAtStartOfDay();
 		DateTime end = new DateTime().plusDays(1).withTime(23, 59, 59, 999);
 		
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(3 , result.size());
 		
@@ -192,7 +192,7 @@ public class ListTest {
 	public void doneTest(){
 		String command = "list done";
 
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(1 , result.size());
 		
@@ -204,7 +204,7 @@ public class ListTest {
 		
 		command = "list completed";
 
-		result = CommandTester(command);
+		result = commandTester(command);
 		
 		assertEquals(1 , result.size());
 		
@@ -219,7 +219,7 @@ public class ListTest {
 	public void undoneTest(){
 		String command = "list undone";
 
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(7 , result.size());
 		
@@ -231,7 +231,7 @@ public class ListTest {
 		
 		command = "list incomplete";
 
-		result = CommandTester(command);
+		result = commandTester(command);
 		
 		assertEquals(7 , result.size());
 		
@@ -246,7 +246,7 @@ public class ListTest {
 	public void timedTest(){
 		String command = "list timed";
 
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(3 , result.size());
 		
@@ -261,7 +261,7 @@ public class ListTest {
 	public void deadlineTest(){
 		String command = "list deadline";
 
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(2 , result.size());
 		
@@ -276,7 +276,7 @@ public class ListTest {
 	public void floatingTest(){
 		String command = "list floating";
 
-		List<Task> result = CommandTester(command);
+		List<Task> result = commandTester(command);
 		
 		assertEquals(3 , result.size());
 		
@@ -287,7 +287,7 @@ public class ListTest {
 		}
 	}
 	
-	private List<Task> CommandTester(String command){
+	private List<Task> commandTester(String command){
 		Logic logic = Logic.getInstance();
 		LogicToUi result = logic.uiCommunicator(command);
 		return result.getList();
