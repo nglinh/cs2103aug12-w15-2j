@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class LogicPostponeTest {
+public class PostponeTest {
 
 	@Test
 	public void test() {
