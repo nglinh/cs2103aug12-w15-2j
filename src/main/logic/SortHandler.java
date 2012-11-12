@@ -15,7 +15,11 @@ import main.shared.LogicToUi.SortStatus;
 import main.shared.Task.SortByEndDate;
 import main.shared.Task.SortByStartDate;
 import main.storage.WillNotWriteToCorruptFileException;
-
+/**
+ * Each object of this class handles a sort command.
+ * An object of this class associates with an object of sortparser. 
+ *
+ */
 public class SortHandler extends CommandHandler{
 
 	private SortParser parser;
@@ -23,13 +27,19 @@ public class SortHandler extends CommandHandler{
 	private static Comparator<Task> latestSorter = new SortByStartDate();
 	private static SortStatus latestSorting = SortStatus.START;
 	private List<Task> listFromLastListingCommand; 
-	
+	/**
+	 * Constructor of the sorthandler class.
+	 * @param arguments
+	 */
 	public SortHandler(String arguments){
 		super(arguments);
 		parser = new SortParser(arguments);
 	}
 	
-	
+	/**
+	 * This method overrides execute method inside command handler class
+	 * 
+	 */
 	@Override
 	public LogicToUi execute() {
 		parser.parse();
