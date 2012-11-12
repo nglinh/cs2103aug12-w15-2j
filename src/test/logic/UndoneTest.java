@@ -141,6 +141,13 @@ public class UndoneTest {
 			assertTrue(afterResult.get(i).isEqualTo(filledListing.get(i)));
 		}
 		
+		commandTester("list");
+		commandTester("undone 1.2");
+		afterResult = commandTester("list");
+		for(int i = 0; i < filledListing.size(); i++){
+			assertTrue(afterResult.get(i).isEqualTo(filledListing.get(i)));
+		}
+		
 	}
 	
 	@Test

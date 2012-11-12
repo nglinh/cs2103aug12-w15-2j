@@ -38,6 +38,27 @@ public class EditTest {
 	}
 	
 	@Test
+	public void editDeadlineTaskTimeOutsideBoundary() {
+		Task expected = new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0));
+		Task actual = CommandTester("add \"project meeting at com\" at 3pm", "edit 0 -deadline 4pm");		
+		assertEquals(expected.showInfo(), actual.showInfo());
+	}
+	
+	@Test
+	public void editDeadlineTaskTimeOutsideBoundary2() {
+		Task expected = new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0));
+		Task actual = CommandTester("add \"project meeting at com\" at 3pm", "edit 2 -deadline 4pm");		
+		assertEquals(expected.showInfo(), actual.showInfo());
+	}
+	
+	@Test
+	public void editDeadlineTaskTimeFloatingPointIndex() {
+		Task expected = new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0));
+		Task actual = CommandTester("add \"project meeting at com\" at 3pm", "edit 1.2 -deadline 4pm");		
+		assertEquals(expected.showInfo(), actual.showInfo());
+	}
+	
+	@Test
 	public void editTimedTaskErrorTime() {
 		Task expected = new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0), new DateTime().withTime(16, 0, 0, 0));
 		Task actual = CommandTester("add \"project meeting at com\" from 3pm to 4pm", "edit 1 -starttime 5pm -endtime 4pm");
@@ -60,6 +81,8 @@ public class EditTest {
 		// Exceptions should NOT be thrown!
 		assertEquals(expected.showInfo(), actual.showInfo());
 	}
+	
+	
 	
 	public Task CommandTester(String addCommand, String editCommand) {		
 		LogicToUi returnValue;

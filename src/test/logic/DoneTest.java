@@ -142,6 +142,13 @@ public class DoneTest {
 			assertTrue(afterResult.get(i).isEqualTo(filledListing.get(i)));
 		}
 		
+		commandTester("list");
+		commandTester("done 1.2");
+		afterResult = commandTester("list");
+		for(int i = 0; i < filledListing.size(); i++){
+			assertTrue(afterResult.get(i).isEqualTo(filledListing.get(i)));
+		}
+		
 	}
 	
 	@Test
