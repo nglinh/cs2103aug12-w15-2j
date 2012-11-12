@@ -115,13 +115,13 @@ public class GuiTrayIcon extends UI {
 
 			ActionListener mainWindowListener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GuiMain2.getInstance().runUI(GuiMain2.CARD_LIST);
+					GuiMain.getInstance().runUI(GuiMain.CARD_LIST);
 				}
 			};
 
 			ActionListener mainWindow2Listener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GuiMain2.getInstance().runUI(GuiMain2.CARD_AGENDA);
+					GuiMain.getInstance().runUI(GuiMain.CARD_AGENDA);
 				}
 			};
 
@@ -191,12 +191,12 @@ public class GuiTrayIcon extends UI {
 			registerHotKey();
 			addHotKeyHandler();
 
-			GuiMain2.getInstance().runUI();
+			GuiMain.getInstance().runUI();
 
 		} else {
 
 			// System Tray is not supported
-			GuiMain2.getInstance().runUI();
+			GuiMain.getInstance().runUI();
 
 		}
 	}

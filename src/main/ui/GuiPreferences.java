@@ -126,9 +126,9 @@ public class GuiPreferences extends UI {
 			public void actionPerformed(ActionEvent arg0) {
 				Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 				if (rdbtnAgenda.isSelected()) {
-					prefs.put(DEFAULT_VIEW, GuiMain2.CARD_AGENDA);
+					prefs.put(DEFAULT_VIEW, GuiMain.CARD_AGENDA);
 				} else {
-					prefs.put(DEFAULT_VIEW, GuiMain2.CARD_LIST);
+					prefs.put(DEFAULT_VIEW, GuiMain.CARD_LIST);
 				}
 				prefs.putBoolean(DEFAULT_SHOW_TODAY, chckbxShowTodaysTasks.isSelected());
 				
@@ -279,7 +279,7 @@ public class GuiPreferences extends UI {
 		
 		// Show preferences in window
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-		if (prefs.get(DEFAULT_VIEW, GuiMain2.CARD_AGENDA).equals(GuiMain2.CARD_AGENDA)) {
+		if (prefs.get(DEFAULT_VIEW, GuiMain.CARD_AGENDA).equals(GuiMain.CARD_AGENDA)) {
 			rdbtnAgenda.setSelected(true);
 		} else {
 			rdbtnList.setSelected(true);
