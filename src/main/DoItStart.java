@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import main.ui.Cli;
 import main.ui.CliWithJline;
+import main.ui.GuiMain;
 import main.ui.GuiTrayIcon;
 import main.ui.UI;
 
@@ -32,23 +33,31 @@ public class DoItStart {
 		
 		if (args.length == 0) {
 			log.info("Start tray icon");
-			doITUi = GuiTrayIcon.getInstance();
+			UI trayIcon = GuiTrayIcon.getInstance();
+			trayIcon.runUI();	
+			UI mainWindow = GuiMain.getInstance();
+			mainWindow.runUI();	
 			
+		} else if (args[0].equals("-tray")) {
+			log.info("Start tray icon only");
+			doITUi = GuiTrayIcon.getInstance();
+			doITUi.runUI();	
+		
 		} else if (args[0].equals("-cli") && isConsoleAttached()) {
 			log.info("Start CliWithJline");
 			doITUi = new CliWithJline();
+			doITUi.runUI();	
 		
 		} else if (args[0].equals("-clisafe")) {
 			log.info("Start Cli safe mode");
 			doITUi = new Cli();
+			doITUi.runUI();	
 
 		} else {
 			log.log(Level.WARNING, "Unknown arguments, start CLi safe mode");
 			doITUi = new Cli();
+			doITUi.runUI();	
 		}
-		
-		log.info("Launch UI");
-		doITUi.runUI();	
 
 	}
 
