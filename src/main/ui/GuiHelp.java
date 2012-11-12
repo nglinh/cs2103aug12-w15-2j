@@ -16,8 +16,6 @@ import java.net.URL;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
 
-import org.joda.time.DateTime;
-
 //@author A0086826R
 
 public class GuiHelp extends UI{
@@ -89,7 +87,6 @@ public class GuiHelp extends UI{
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					log.finer("Hyperlink activated (calendar) " + e.getURL().getPath());
-					//System.out.println(e.getURL().getPath());
 					editorPane.scrollToReference(e.getURL().getRef());
 				}
 			}
