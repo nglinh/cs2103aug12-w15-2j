@@ -3,6 +3,7 @@ package test.logic;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -101,6 +102,17 @@ public class ListTest {
 
 		} catch (IOException | WillNotWriteToCorruptFileException e) {
 			fail();
+		}
+	}
+	
+	@Test
+	public void allTest() {
+		String command = "list";
+		List<Task> result = commandTester(command);
+		
+		assertEquals(filledListing.size(), result.size());
+		for(int i = 0; i < filledListing.size(); i++){
+			assertTrue(filledListing.get(0).isEqualTo(result.get(0)));
 		}
 	}
 

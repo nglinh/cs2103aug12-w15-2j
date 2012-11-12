@@ -1,3 +1,4 @@
+//@author A0081007U
 package main.ui;
 
 /**  
@@ -97,6 +98,8 @@ public abstract class UI {
 	protected void exit() {
 		sendCommandToLogic(COMMAND_EXIT);
 	}
+	
+	//@author A0086826
 	
 	protected void setUiLookAndFeel() {
 		try {

@@ -23,7 +23,7 @@ public class ExitHandler extends CommandHandler {
 	protected void updateDatabaseNSendToUndoStack()
 			throws NoSuchElementException, IOException,
 			WillNotWriteToCorruptFileException {
-		//empty method.
+		throw new UnsupportedOperationException();
 		
 	}
 

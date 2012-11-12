@@ -3,7 +3,8 @@ package main.storage;
 
 /**  
  * Database.java 
- * A class for managing all queries to the database and disk
+ * A class for managing all queries to the database and disk, 
+ *  most public methods will do a clone to prevent internal references from being leaked.
  * @author  Yeo Kheng Meng
  */
 
@@ -81,12 +82,13 @@ public class Database {
 	 * Returned result is a clone of the tasks in database, operations done on
 	 * the result will not affect the database
 	 * 
-	 * @param terms
-	 *            Input in the form of a search term class
+	 * @param terms Input in the form of a search term class
 	 * @return an List<Task> containing all the matched tasks
 	 */
 	public List<Task> search(SearchTerms terms) {
 		assert (terms != null);
+		log.info("Search request made");
+		
 		List<Task> searchResults = new ArrayList<Task>();
 
 		for (Map.Entry<Integer, Task> entry : quickAccessTask.entrySet()) {
@@ -96,6 +98,8 @@ public class Database {
 				searchResults.add(new Task(currentEntry));
 			}
 		}
+		
+		Collections.sort(searchResults);
 		
 
 		return searchResults;
@@ -157,7 +161,7 @@ public class Database {
 		boolean areAllConditionsSatisfied = taskDone && taskUndone
 				&& taskFloating && taskDeadline && taskTimed && keywordMatched
 				&& dateRangeMatched;
-
+		
 		return areAllConditionsSatisfied;
 	}
 
@@ -186,12 +190,12 @@ public class Database {
 	}
 
 	/**
-	 * To return the list of all tasks in database. Unsorted
+	 * To return the list of all tasks in database. Sorted
 	 * <p>
 	 * Returned result is a clone of the tasks in database, operations done on
 	 * the result will not affect the database
 	 * 
-	 * @return an List<Task> containing all the tasks in database
+	 * @return a List<Task> containing all the tasks in database
 	 */
 
 	public List<Task> getAll() {
@@ -210,6 +214,13 @@ public class Database {
 
 		return result;
 	}
+	
+	/**
+	 * Overwrites all tasks in the database with this list
+	 * @param incoming the list of tasks to overwrite
+	 * @throws IOException if file cannot be written, database will not me modified
+	 * @throws WillNotWriteToCorruptFileException if file already corrupt
+	 */
 
 	public void setAll(List<Task> incoming) throws IOException,
 	WillNotWriteToCorruptFileException {
@@ -238,11 +249,8 @@ public class Database {
 	/**
 	 * To add a new task to database
 	 * 
-	 * @param newTask
-	 *            Task to be added
-	 * @throws IOException
-	 *             if cannot commit changes to file, database will not be
-	 *             modified
+	 * @param newTask Task to be added
+	 * @throws IOException if cannot commit changes to file, database will not be modified
 	 * @throws WillNotWriteToCorruptFileException
 	 */
 
@@ -250,6 +258,8 @@ public class Database {
 	WillNotWriteToCorruptFileException {
 		assert (newTask != null);
 
+		log.info("Adding a task " + newTask.getTaskName());
+		
 		verifyFileWritingAbility();
 
 		Task newTaskClone = new Task(newTask);
@@ -278,12 +288,10 @@ public class Database {
 	/**
 	 * To locate existing task in database
 	 * 
-	 * @param serial
-	 *            Serial number of task to be located
+	 * @param serial  Serial number of task to be located
 	 * 
 	 * @return the located task with matching serial number
-	 * @throws NoSuchElementException
-	 *             if existing Task by serial number cannot be found
+	 * @throws NoSuchElementException if existing Task by serial number cannot be found
 	 */
 
 	public Task locateATask(int serial) throws NoSuchElementException {
@@ -301,16 +309,11 @@ public class Database {
 	/**
 	 * To update existing task in database
 	 * 
-	 * @param originalSerial
-	 *            Serial number of task to be updated
-	 * @param updated
-	 *            The new task to replace the old
+	 * @param originalSerial Serial number of task to be updated
+	 * @param updated The new task to replace the old
 	 * 
-	 * @throws NoSuchElementException
-	 *             if existing Task by serial number cannot be found
-	 * @throws IOException
-	 *             if cannot commit changes to file, database will not be
-	 *             modified
+	 * @throws NoSuchElementException if existing Task by serial number cannot be found
+	 * @throws IOException if cannot commit changes to file, database will not be modified
 	 * @throws WillNotWriteToCorruptFileException
 	 */
 
@@ -382,14 +385,10 @@ public class Database {
 	/**
 	 * To delete existing task in database
 	 * 
-	 * @param serial
-	 *            Serial number of task to be deleted
+	 * @param serial  Serial number of task to be deleted
 	 * 
-	 * @throws NoSuchElementException
-	 *             if existing Task by serial number cannot be found
-	 * @throws IOException
-	 *             if cannot commit changes to file, database will not be
-	 *             modified
+	 * @throws NoSuchElementException if existing Task by serial number cannot be found
+	 * @throws IOException if cannot commit changes to file, database will not be modified
 	 * @throws WillNotWriteToCorruptFileException
 	 */
 
@@ -439,14 +438,10 @@ public class Database {
 	/**
 	 * To delete given tasks in database
 	 * 
-	 * @param serial
-	 *            List of serial numbers of tasks to be deleted
+	 * @param serial List of serial numbers of tasks to be deleted
 	 * 
-	 * @throws NoSuchElementException
-	 *             if at least one task by serial number cannot be found
-	 * @throws IOException
-	 *             if cannot commit changes to file, database will not be
-	 *             modified
+	 * @throws NoSuchElementException if at least one task by serial number cannot be found
+	 * @throws IOException if cannot commit changes to file, database will not be modified
 	 * @throws WillNotWriteToCorruptFileException
 	 */
 
@@ -498,9 +493,7 @@ public class Database {
 	/**
 	 * To delete ALL tasks in database
 	 * 
-	 * @throws IOException
-	 *             if cannot commit changes to file, database will not be
-	 *             modified
+	 * @throws IOException if cannot commit changes to file, database will not be modified
 	 * @throws WillNotWriteToCorruptFileException
 	 */
 

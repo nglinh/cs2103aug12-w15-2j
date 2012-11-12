@@ -26,7 +26,7 @@ public abstract class CommandParser {
 			.getInstance();
 	/**
 	 * Constructor to be implemented by children class
-	 * @param arguments: argument of the command.
+	 * @param arguments : argument of the command.
 	 */
 	public CommandParser(String arguments) {
 	}
@@ -50,8 +50,5 @@ public abstract class CommandParser {
 		return string.split(" ")[0];
 	}
 
-	protected String[] splitArgumentsBySpaces(String arguments) {
-		return arguments.split(" ");
-	}
 
 }

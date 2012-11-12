@@ -29,6 +29,15 @@ public class ListHandler extends CommandHandler {
 		List<Task> results;
 
 		SearchTerms filter;
+		if(parser.isNoParam()){
+			List<Task> everything = dataBase.getAll();
+			lastShownObject.setLastShownList(everything);
+			latestListingHandlerForUI = this;
+			
+			return new LogicToUi(everything, parser.getStatusMsg());
+			
+		}
+		
 
 		if (parser.isOverdue()) {
 			results = new ArrayList<Task>();
@@ -104,11 +113,10 @@ public class ListHandler extends CommandHandler {
 	}
 
 	@Override
-	@Deprecated
 	protected void updateDatabaseNSendToUndoStack()
 			throws NoSuchElementException, IOException,
 			WillNotWriteToCorruptFileException {
-		// empty method.
+		throw new UnsupportedOperationException();
 		
 	}
 
