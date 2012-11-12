@@ -124,41 +124,8 @@ public class GuiPreferences extends UI {
 		btnSave = new JButton("Save Preferences");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-				if (rdbtnAgenda.isSelected()) {
-					prefs.put(DEFAULT_VIEW, GuiMain.CARD_AGENDA);
-				} else {
-					prefs.put(DEFAULT_VIEW, GuiMain.CARD_LIST);
-				}
-				prefs.putBoolean(DEFAULT_SHOW_TODAY, chckbxShowTodaysTasks.isSelected());
-				
-				prefs.putBoolean(HOME_GOES_TO_DEFAULT_VIEW, chckbxHomeDefault.isSelected());
-				prefs.putBoolean(HOME_GOES_TO_TODAY, chckbxHomeToday.isSelected());
-				
-				prefs.putBoolean(SHOW_HINTS, chckbxCommandHints.isSelected());
-				
-				if (rdbtnDoubleClick.isSelected()) {
-					prefs.putInt(NUM_CLICKS_EDIT, 2);
-				} else {
-					prefs.putInt(NUM_CLICKS_EDIT, 1);
-				}
-					
-				prefs.putBoolean(SHORTCUT_KEY_CTRL, chckbxCtrl.isSelected());
-				prefs.putBoolean(SHORTCUT_KEY_ALT, chckbxAlt.isSelected());
-				prefs.putBoolean(SHORTCUT_KEY_SHIFT, chckbxShift.isSelected());
-				prefs.putBoolean(SHORTCUT_KEY_WIN, chckbxWin.isSelected());
-				
-				String shortcutExtra = txtShortcut.getText().trim().toUpperCase();
-				if (shortcutExtra.length() == 1) {
-					prefs.put(SHORTCUT_KEY_EXTRA, shortcutExtra);
-				} else {
-					JOptionPane.showMessageDialog(frmDoitPreferences,
-							ERR_INVALID_SHORTCUT_CHAR);
-					return;
-				}
-				
+				savePreferences();				
 				frmDoitPreferences.dispose();
-
 			}
 		});
 		
@@ -172,8 +139,7 @@ public class GuiPreferences extends UI {
 					log.log(Level.WARNING,
 							"Exception when clearing preferences", e1);
 				}
-				frmDoitPreferences.dispose();
-				runUI();
+				loadPreferences();
 			}
 		});
 		
@@ -279,6 +245,10 @@ public class GuiPreferences extends UI {
 		frmDoitPreferences.getContentPane().setLayout(groupLayout);
 		
 		// Show preferences in window
+		loadPreferences();
+	}
+
+	private void loadPreferences() {
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 		if (prefs.get(DEFAULT_VIEW, GuiMain.CARD_AGENDA).equals(GuiMain.CARD_AGENDA)) {
 			rdbtnAgenda.setSelected(true);
@@ -318,6 +288,41 @@ public class GuiPreferences extends UI {
 				}
 			}
 		});		
+	}
+
+	private void savePreferences() {
+		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+		if (rdbtnAgenda.isSelected()) {
+			prefs.put(DEFAULT_VIEW, GuiMain.CARD_AGENDA);
+		} else {
+			prefs.put(DEFAULT_VIEW, GuiMain.CARD_LIST);
+		}
+		prefs.putBoolean(DEFAULT_SHOW_TODAY, chckbxShowTodaysTasks.isSelected());
+		
+		prefs.putBoolean(HOME_GOES_TO_DEFAULT_VIEW, chckbxHomeDefault.isSelected());
+		prefs.putBoolean(HOME_GOES_TO_TODAY, chckbxHomeToday.isSelected());
+		
+		prefs.putBoolean(SHOW_HINTS, chckbxCommandHints.isSelected());
+		
+		if (rdbtnDoubleClick.isSelected()) {
+			prefs.putInt(NUM_CLICKS_EDIT, 2);
+		} else {
+			prefs.putInt(NUM_CLICKS_EDIT, 1);
+		}
+			
+		prefs.putBoolean(SHORTCUT_KEY_CTRL, chckbxCtrl.isSelected());
+		prefs.putBoolean(SHORTCUT_KEY_ALT, chckbxAlt.isSelected());
+		prefs.putBoolean(SHORTCUT_KEY_SHIFT, chckbxShift.isSelected());
+		prefs.putBoolean(SHORTCUT_KEY_WIN, chckbxWin.isSelected());
+		
+		String shortcutExtra = txtShortcut.getText().trim().toUpperCase();
+		if (shortcutExtra.length() == 1) {
+			prefs.put(SHORTCUT_KEY_EXTRA, shortcutExtra);
+		} else {
+			JOptionPane.showMessageDialog(frmDoitPreferences,
+					ERR_INVALID_SHORTCUT_CHAR);
+			return;
+		}
 	}
 
 	private static GuiPreferences theOne;
