@@ -74,15 +74,24 @@ import java.awt.Toolkit;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowEvent;
 
+//@author A0086826R
+
 public class GuiMain2 extends GuiCommandBox{
+	
+	private static final String FIRST_LAUNCH_NO_TASKS_UNDATED = "Placeholder text for first launch with no tasks undated";
+	private static final String FIRST_LAUNCH_NO_TASKS_DATED = "Placeholder text for first launch with no tasks";
+	private static final String NOTHING_TO_SHOW_UNDATED = "Nothing here";
+	private static final String NOTHING_TO_SHOW_DATED = "Ooops! There nothing to show here. Click the home button to see all your tasks.";
 	
 	private static final int KEYBOARD_PAGE_OVERLAP = 50;
 	private static final int KEYBOARD_PAGE_OFFSET = 200;
+	
 	private static final int TABLE_COLUMN_WIDTH_CHECKBOX = 20;
 	private static final String TABLE_COLUMN_WIDTH_DATE_MAX_TEXT = "WMW 00 MWM 0000 23:59pm";
 	private static final String TABLE_COLUMN_WIDTH_INDEX_MAX_TEXT = "9999";
 	private static final int TABLE_COLUMN_WIDTH_EXTRA = 10;
 	private static final String TABLE_EMPTY_DATE_FIELD = "";
+	
 	public static final String CARD_AGENDA = "agendaCard";
 	public static final String CARD_LIST = "listCard";
 
@@ -96,26 +105,18 @@ public class GuiMain2 extends GuiCommandBox{
 	protected JEditorPane txtStatus;
 	protected JPopupMenu popupCmdHint;
 	protected JEditorPane txtCmdHint;
-		
+
 	private JPanel panelCmd;
 	private JScrollPane scrollPaneDated;
 	private JScrollPane scrollPaneUndated;
-	//private JEditorPane txtStatus;
-	//private JTextField txtCmd;
-	
+	// private JEditorPane txtStatus;
+	// private JTextField txtCmd;
+
 	private DateTime lastShownCalendarDate;
 	private Set<DateTime> datesOfTasks;
-	
+
 	private static GuiMain2 theOne = null;
-	public static GuiMain2 getInstance(){
-		LogHandler.getLogInstance().info("Getting instance of GuiMain2");
-		if (theOne == null){
-			LogHandler.getLogInstance().info("Instance does not exist, creating GuiMain2");
-			theOne = new GuiMain2();
-		}
-		return theOne;
-	}
-	
+
 	Map<ToggleButtonModel, Integer> checkboxToIndexMapForDated;
 	Map<ToggleButtonModel, Integer> checkboxToIndexMapForUndated;
 	private JToolBar toolBar;
@@ -134,23 +135,23 @@ public class GuiMain2 extends GuiCommandBox{
 	private JTextField txtTaskEdit;
 	private Component horizontalGlue;
 	private Component horizontalGlue_1;
-	
+
 	private Preferences prefs;
+	
+	public static GuiMain2 getInstance() {
+		LogHandler.getLogInstance().info("Getting instance of GuiMain2");
+		if (theOne == null) {
+			LogHandler.getLogInstance().info(
+					"Instance does not exist, creating GuiMain2");
+			theOne = new GuiMain2();
+		}
+		return theOne;
+	}
 	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		/*EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					GuiMain2 window = new GuiMain2();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});*/
 		GuiMain2.getInstance().runUI();
 	}
 
@@ -160,17 +161,18 @@ public class GuiMain2 extends GuiCommandBox{
 	private GuiMain2() {
 		log.entering(this.getClass().getName(), "<init>");
 		setUiLookAndFeel();
-		
+
 		prefs = Preferences.userNodeForPackage(this.getClass());
-		prefs.addPreferenceChangeListener(new PreferenceChangeListener(){
+		prefs.addPreferenceChangeListener(new PreferenceChangeListener() {
 
 			@Override
 			public void preferenceChange(PreferenceChangeEvent arg0) {
-				preferenceShowHint = prefs.getBoolean(GuiPreferences.SHOW_HINTS, true);				
+				preferenceShowHint = prefs.getBoolean(
+						GuiPreferences.SHOW_HINTS, true);
 			}
-			
+
 		});
-		
+
 		initialize();
 		log.exiting(this.getClass().getName(), "<init>");
 	}
@@ -349,7 +351,7 @@ public class GuiMain2 extends GuiCommandBox{
         txtTaskEdit.setText("txtTaskEdit");
         panel_1.add(txtTaskEdit, BorderLayout.NORTH);
         txtTaskEdit.setColumns(10);
-        
+         
         // ***********************
         // * Panel for List View *
         // ***********************
@@ -480,7 +482,8 @@ public class GuiMain2 extends GuiCommandBox{
 		List<Task> firstLaunchTasks = sendCommandToLogic("refresh").getList();
 		if(firstLaunchTasks.isEmpty()){
 			//txtDatedTasks.setText(Hint.getInstance().helpForThisCommandHTML("help"));
-			txtDatedTasks.setText("Placeholder text for first launch with no tasks");
+			txtDatedTasks.setText(FIRST_LAUNCH_NO_TASKS_DATED);
+			txtUndatedTasks.setText(FIRST_LAUNCH_NO_TASKS_UNDATED);
 		}else{
 			showTasksList(firstLaunchTasks);
 		}
@@ -546,76 +549,83 @@ public class GuiMain2 extends GuiCommandBox{
 		log.exiting(this.getClass().getName(), "updateWindow");
 	}
 	
-	public void update(LogicToUi returnValue){
+	public void update(LogicToUi returnValue) {
 		List<Task> refreshedList = sendCommandToLogic("refresh").getList();
-		showTasksList(refreshedList, returnValue.getLastChangedSerial());		
+		showTasksList(refreshedList, returnValue.getLastChangedSerial());
 		showStatus(returnValue.getString());
 		GuiUpdate.update(this);
 	}
 	
-	public void showTasksList(List<Task> taskList){
+	public void showTasksList(List<Task> taskList) {
 		showTasksList(taskList, -1);
 	}
-	
-	public void showTasksList(List<Task> taskList, int highlightSerial){
+
+	public void showTasksList(List<Task> taskList, int highlightSerial) {
 		showTasksListInAgenda(taskList, highlightSerial);
 		showTasksListInTable(taskList);
 	}
 	
-	public void showTasksListInAgenda(List<Task> taskList, int highlightSerial){
+	public void showTasksListInAgenda(List<Task> taskList, int highlightSerial) {
 		log.entering(this.getClass().getName(), "taskList");
-		
-		// This code moves the current caret position to the middle of the current
-		// view, and stores it. After updating, we move the caret back to the same position
+
+		// This code moves the current caret position to the middle of the
+		// current
+		// view, and stores it. After updating, we move the caret back to the
+		// same position
 		// to keep the same view in place.
 		int txtDatedTasksCaretPos = 0, txtUndatedTasksCaretPos = 0;
-		try{
+		try {
 			txtDatedTasksCaretPos = moveCaretToMiddleOfScrollPane(txtDatedTasks);
 			txtUndatedTasksCaretPos = moveCaretToMiddleOfScrollPane(txtUndatedTasks);
-		}catch(IllegalArgumentException e){
-			log.log(Level.WARNING, "Error with caret position before updating list", e);
+		} catch (IllegalArgumentException e) {
+			log.log(Level.WARNING,
+					"Error with caret position before updating list", e);
 		}
 		
 		// We check if there are tasks to show
-		if (taskList.size() > 0){
-		
+		if (taskList.size() > 0) {
+
 			// Now we render the HTML code that we will display to the user,
 			// and set the JEditorPane to the HTML
 			DatedTaskListRenderer dtr = new DatedTaskListRenderer(taskList);
-			if(highlightSerial >= 0){
+			if (highlightSerial >= 0) {
 				dtr.setHighlightSerial(highlightSerial);
 			}
 			String datedTaskListHtml = dtr.render();
 			datesOfTasks = dtr.datesWithTasks.keySet();
 			log.finest(datedTaskListHtml);
 			txtDatedTasks.setText(datedTaskListHtml);
-					
+
 			UndatedTaskListRenderer udtr = new UndatedTaskListRenderer(taskList);
-			if(highlightSerial >= 0){
+			if (highlightSerial >= 0) {
 				udtr.setHighlightSerial(highlightSerial);
 			}
 			String undatedTaskListHtml = udtr.render();
 			log.finest(undatedTaskListHtml);
 			txtUndatedTasks.setText(undatedTaskListHtml);
-			
+
 			log.finest("Dated task index list: " + dtr.getIndexList());
 			log.finest("Undated task index list: " + udtr.getIndexList());
 			
 			// Checkbox handler
 			
-			// Note that we use HashMap here instead of other Map such as TreeMap
+			// Note that we use HashMap here instead of other Map such as
+			// TreeMap
 			// because ToggleButtonModel is not comparable
 			checkboxToIndexMapForDated = new HashMap<ToggleButtonModel, Integer>();
 			checkboxToIndexMapForUndated = new HashMap<ToggleButtonModel, Integer>();
-			
+
 			// Checkbox handler for dated tasks column
-			setCheckBoxHandler(txtDatedTasks, checkboxToIndexMapForDated, dtr.getIndexList());
-			setCheckBoxHandler(txtUndatedTasks, checkboxToIndexMapForUndated, udtr.getIndexList());
+			setCheckBoxHandler(txtDatedTasks, checkboxToIndexMapForDated,
+					dtr.getIndexList());
+			setCheckBoxHandler(txtUndatedTasks, checkboxToIndexMapForUndated,
+					udtr.getIndexList());
 		
-		}else{
-			txtDatedTasks.setText("Ooops! There nothing to show here. Click the home button to see all your tasks.");
-			txtUndatedTasks.setText("Nothing here");
-		}		
+		} else {
+			txtDatedTasks
+					.setText(NOTHING_TO_SHOW_DATED);
+			txtUndatedTasks.setText(NOTHING_TO_SHOW_UNDATED);
+		}
 		
 		// After re-rendering the JEditorPane, we set the caret position so that the
 		// JEditorPane does not scroll back to the start

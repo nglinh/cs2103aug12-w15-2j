@@ -35,6 +35,8 @@ import java.awt.event.KeyEvent;
 
 public class GuiMain extends GuiCommandBox{
 	
+	//@author A0086826R
+	
 	private static final int TABLE_COLUMN_WIDTH_CHECKBOX = 20;
 	private static final String TABLE_COLUMN_WIDTH_DATE_MAX_TEXT = "WMW 00 MWM 0000 23:59pm";
 	private static final String TABLE_COLUMN_WIDTH_INDEX_MAX_TEXT = "9999";
@@ -62,11 +64,13 @@ public class GuiMain extends GuiCommandBox{
 	public static void main(String[] args) {
 		new GuiMain().runUI();
 	}
-	
+
 	public static GuiMain getInstance() {
 		LogHandler.getLogInstance().info("Getting instance of this class");
 		if (theOne == null) {
-			LogHandler.getLogInstance().info("Previous instance did not exist, instantiating this class");
+			LogHandler
+					.getLogInstance()
+					.info("Previous instance did not exist, instantiating this class");
 			theOne = new GuiMain();
 		}
 		return theOne;
@@ -77,9 +81,9 @@ public class GuiMain extends GuiCommandBox{
 	 */
 	private GuiMain() {
 		log.entering(this.getClass().getName(), "constructor");
-		
+
 		setUiLookAndFeel();
-		
+
 		initialize();
 		log.exiting(this.getClass().getName(), "constructor");
 	}
