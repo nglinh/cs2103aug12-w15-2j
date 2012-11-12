@@ -12,12 +12,12 @@ import main.shared.Task.TaskType;
 
 import com.joestelmach.natty.DateGroup;
 
+//@author A0088427U
+
 /**
  * This class defines the parser for add command. Each AddParser object
  * associates with 1 command only. The information extracted from the argument
  * is private and to be extracted using designed API (get methods).
- * 
- * @author A0088427U
  * 
  */
 public class AddParser extends CommandParser {

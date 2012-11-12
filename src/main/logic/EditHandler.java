@@ -13,13 +13,13 @@ import main.shared.Task;
 import main.shared.Task.TaskType;
 import main.storage.WillNotWriteToCorruptFileException;
 
+//@author A0088427U
+
 /**
  * This class handles the edit command.
  * 
  * It creates a new object of class edit parser and extract information from the
  * parser.
- * 
- * @author A0088427U
  * 
  */
 public class EditHandler extends CommandHandler {

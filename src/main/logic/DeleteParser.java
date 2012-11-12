@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 
 import main.shared.Task;
 
+//@author A0088427U
+
 /**
  * This class implement deleteParser.
  * 
@@ -13,8 +15,6 @@ import main.shared.Task;
  * Delete parser object parse the command argument and store the values.
  * Information regarding the command can only be extracted by the associating
  * deletehandler object.
- * 
- * @author A0088427U
  * 
  */
 public class DeleteParser extends CommandParser {

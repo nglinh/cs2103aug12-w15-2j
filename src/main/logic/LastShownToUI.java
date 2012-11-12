@@ -1,5 +1,7 @@
 package main.logic;
 
+//@author A0088427U
+
 /**
  * This class serves as a wrapper of the last shown to UI list of tasks.
  * 

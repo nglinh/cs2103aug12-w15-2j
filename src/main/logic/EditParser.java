@@ -13,6 +13,7 @@ import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
 
+//@author A0088427U
 /**
  * This class is to parser the edit command.
  * 
@@ -21,8 +22,6 @@ import main.shared.Task.TaskType;
  * Parsed information is to be extracted by the corresponding edit handler on
  * request. An Editparser object will NOT return information on its extracted
  * information unless requested by it's corresponding EditHandler.
- * 
- * @author A0088427U
  * 
  */
 public class EditParser extends CommandParser {

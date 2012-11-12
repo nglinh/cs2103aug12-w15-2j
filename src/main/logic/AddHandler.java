@@ -12,15 +12,16 @@ import main.storage.WillNotWriteToCorruptFileException;
 
 import org.joda.time.DateTime;
 
+//@author A0088427U
+
 /**
  * This class handles the add command. An object of this class extract
  * information from an Addparser object and create a new task accordingly.
  * 
  * The view of database is shared among all handler objects.
  * 
- * @author A0088427U
- * 
  */
+
 class AddHandler extends CommandHandler {
 	private AddParser parser;
 	private Task newTask;

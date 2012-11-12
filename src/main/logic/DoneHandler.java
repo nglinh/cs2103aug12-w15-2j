@@ -9,13 +9,14 @@ import main.shared.LogicToUi;
 import main.shared.Task;
 import main.storage.WillNotWriteToCorruptFileException;
 
+
+//@author A0088427U
+
 /**
  * An object of this class handles the done command.
  * 
  * An object of this class create an done parser object and extract index of the
  * task to be changed out of it. All changes are made by commandhandler object.
- * 
- * @author A0088427U
  * 
  */
 public class DoneHandler extends CommandHandler {
