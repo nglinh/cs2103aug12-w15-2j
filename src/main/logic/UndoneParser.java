@@ -5,6 +5,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import main.shared.Task;
 
+/**
+ * This class extends the commandparser class.
+ * 
+ * An object of undone parser class associates with one undone handler. Undone
+ * parser extract the information regarding the task to be undone and pass this
+ * information to undone handler on request.
+ * 
+ */
 public class UndoneParser extends CommandParser {
 
 	private String arguments;
@@ -12,6 +20,13 @@ public class UndoneParser extends CommandParser {
 	private List<Task> lastShownToUi;
 	private int serial;
 
+	/**
+	 * Constructor of the undone parser class.
+	 * 
+	 * @param arguments
+	 *            : the argument string to be passed. In particular the string
+	 *            is supposed to be the index number of the task.
+	 */
 	public UndoneParser(String arguments) {
 		super(arguments);
 		this.arguments = arguments;
@@ -19,6 +34,11 @@ public class UndoneParser extends CommandParser {
 		lastShownToUi = lastShownObject.getLastShownList();
 	}
 
+	/**
+	 * This method overrides the parse method in command parser class. It checks
+	 * the validity of the index number and extract the serial number of the
+	 * task to be undone.
+	 */
 	@Override
 	public void parse() throws NumberFormatException {
 		if (arguments.length() == 0) {

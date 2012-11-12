@@ -9,24 +9,39 @@ import main.shared.LogicToUi;
 import main.shared.Task;
 import main.storage.WillNotWriteToCorruptFileException;
 
-public class UndoHandler extends CommandHandler{
+/**
+ * Each object of this class handles a undo operation. The object call the undo
+ * stack to revert the data to the previous state.
+ * 
+ */
 
+public class UndoHandler extends CommandHandler {
+	private static final String ERROR_NO_MORE_UNDO = "You don't have any more undo steps left";
+
+	/**
+	 * Constructor of the class.
+	 * 
+	 * @param arguments
+	 *            : empty argument since undo command does not need any extra
+	 *            information
+	 */
 	public UndoHandler(String arguments) {
 		super(arguments);
 	}
-
-	private static final String ERROR_NO_MORE_UNDO = "You don't have any more undo steps left";
-
-	public LogicToUi execute(){
-		if(super.undoStepsRemaining() == 0){
+	/**
+	 * This method overrides the execute method in command handler class.
+	 * 
+	 */
+	public LogicToUi execute() {
+		if (super.undoStepsRemaining() == 0) {
 			return new LogicToUi(ERROR_NO_MORE_UNDO);
 		}
-
 
 		try {
 			List<Task> previous = super.peekUndoClones();
 			dataBase.setAll(previous);
-			String status = "The " + super.popAndGetPrevUndoMsg() + " has been undone";
+			String status = "The " + super.popAndGetPrevUndoMsg()
+					+ " has been undone";
 
 			super.popUndoClones();
 			feedback = new LogicToUi(status);
@@ -37,7 +52,6 @@ public class UndoHandler extends CommandHandler{
 			feedback = new LogicToUi(ERROR_FILE_CORRUPTED);
 		}
 
-
 		return feedback;
 	}
 
@@ -47,6 +61,6 @@ public class UndoHandler extends CommandHandler{
 			throws NoSuchElementException, IOException,
 			WillNotWriteToCorruptFileException {
 		// empty method
-		
+
 	}
 }

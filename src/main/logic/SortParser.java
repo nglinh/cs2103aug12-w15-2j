@@ -2,7 +2,12 @@
 
 package main.logic;
 
-
+/**
+ * An object of this class parse sort commands. Each instance of this class
+ * associates with 1 sort handler object. Arguments regarding the sort command
+ * are passed to sort handler on request.
+ * 
+ */
 public class SortParser extends CommandParser {
 
 	private String arguments;
@@ -17,20 +22,30 @@ public class SortParser extends CommandParser {
 
 	private String[] parsed;
 
+	/**
+	 * Constructor of sortParser class.
+	 * 
+	 * @param arguments
+	 *            : argument to be parsed.
+	 */
 	public SortParser(String arguments) {
 		super(arguments);
 		this.arguments = arguments.toLowerCase();
 		parsed = this.arguments.split(" ");
 	}
 
+	/**
+	 * This method overrides the parse method in commandparser class. It
+	 * extracts information out of the argument string.
+	 */
 	@Override
-	public void parse()  {
+	public void parse() {
 		if (parsed.length == 0) {
 			start = true;
 			return;
 		}
 
-		for(String param : parsed){
+		for (String param : parsed) {
 			if (param.equals("descending") || param.equals("reverse")) {
 				reverse = true;
 			}
@@ -50,7 +65,7 @@ public class SortParser extends CommandParser {
 			} else if (param.equals("name")) {
 				name = true;
 
-			} 
+			}
 
 		}
 	}
@@ -66,12 +81,15 @@ public class SortParser extends CommandParser {
 	public boolean getStart() {
 		return start;
 	}
+
 	public boolean getEnd() {
 		return end;
 	}
+
 	public boolean getName() {
 		return name;
 	}
+
 	public boolean getReverse() {
 		return reverse;
 	}
