@@ -10,12 +10,12 @@ import main.shared.SearchTerms;
 import main.shared.Task;
 import main.storage.WillNotWriteToCorruptFileException;
 
-public class SearchHandler extends CommandHandler{
-	
+public class SearchHandler extends CommandHandler {
+
 	private String arguments;
 	private SearchParser parser;
-	
-	public SearchHandler(String arguments){
+
+	public SearchHandler(String arguments) {
 		super(arguments);
 		this.arguments = arguments;
 		parser = new SearchParser(arguments);
@@ -27,7 +27,7 @@ public class SearchHandler extends CommandHandler{
 			return new LogicToUi("No search terms specified.");
 		}
 		parser.parse();
-		
+
 		String[] keywords = parser.getKeyWords();
 
 		SearchTerms terms = new SearchTerms(keywords);
@@ -38,7 +38,7 @@ public class SearchHandler extends CommandHandler{
 		for (String keyword : keywords) {
 			statusMsg += " \"" + keyword + "\" ";
 		}
-		
+
 		lastShownObject.setLastShownList(results);
 		latestListingHandlerForUI = this;
 
@@ -51,7 +51,7 @@ public class SearchHandler extends CommandHandler{
 			throws NoSuchElementException, IOException,
 			WillNotWriteToCorruptFileException {
 		// empty method.
-		
+
 	}
 
 }
