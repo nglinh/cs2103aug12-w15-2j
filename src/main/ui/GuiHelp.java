@@ -86,8 +86,9 @@ public class GuiHelp extends UI{
 		editorPane.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					log.finer("Hyperlink activated (calendar) " + e.getURL().getPath());
-					editorPane.scrollToReference(e.getURL().getRef());
+					// For some reason, e.getURL().getRef() returns null when compiled
+					// to a JAR so we use e.getDescription() instead.
+					editorPane.scrollToReference(e.getDescription().substring(1));
 				}
 			}
 		});
