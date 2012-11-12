@@ -206,19 +206,19 @@ public class GuiTrayIcon extends UI {
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
 		int modifierKeys = 0;
-		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_CTRL, false)) {
+		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_CTRL, GuiPreferences.SHORTCUT_KEY_CTRL_DEFAULT)) {
 			modifierKeys += JIntellitype.MOD_CONTROL;
 		}
-		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_ALT, false)) {
+		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_ALT, GuiPreferences.SHORTCUT_KEY_ALT_DEFAULT)) {
 			modifierKeys += JIntellitype.MOD_ALT;
 		}
-		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_SHIFT, false)) {
+		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_SHIFT, GuiPreferences.SHORTCUT_KEY_SHIFT_DEFAULT)) {
 			modifierKeys += JIntellitype.MOD_SHIFT;
 		}
-		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_WIN, true)) {
+		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_WIN, GuiPreferences.SHORTCUT_KEY_WIN_DEFAULT)) {
 			modifierKeys += JIntellitype.MOD_WIN;
 		}
-		int extraKey = (int) prefs.get(GuiPreferences.SHORTCUT_KEY_EXTRA, "A").charAt(0);
+		int extraKey = (int) prefs.get(GuiPreferences.SHORTCUT_KEY_EXTRA, GuiPreferences.SHORTCUT_KEY_EXTRA_DEFAULT).charAt(0);
 
 		try {
 			JIntellitype.getInstance().registerHotKey(keyIdentifier,

@@ -34,18 +34,35 @@ public class GuiPreferences extends UI {
 	
 	private static final String ERR_INVALID_SHORTCUT_CHAR = "The character you have selected for the shortcut is invalid. Please re-enter.";
 	
-	static final String DEFAULT_VIEW = "DoIt! Default View";
-	static final String DEFAULT_SHOW_TODAY = "DoIt! Show today's tasks on start";
-
-	static final String HOME_GOES_TO_TODAY = "DoIt! Home goes to today's tasks";
-	static final String SHORTCUT_KEY_EXTRA = "DoIt! ShortcutKey Extra";
-	static final String SHORTCUT_KEY_WIN = "DoIt! ShortcutKey Win";
-	static final String SHORTCUT_KEY_SHIFT = "DoIt! ShortcutKey Shift";
-	static final String SHORTCUT_KEY_ALT = "DoIt! ShortcutKey Alt";
-	static final String SHORTCUT_KEY_CTRL = "DoIt! ShortcutKey Ctrl";
-	static final String HOME_GOES_TO_DEFAULT_VIEW = "DoIt! Home goes to Default View";
-	static final String SHOW_HINTS = "DoIt! Show hints";
-	static final String NUM_CLICKS_EDIT = "DoIt! Number of clicks on a task in agenda view to edit the task";
+	// Preferences Configuration Constants
+	static final String  DEFAULT_VIEW = "DoIt! Default View";
+	static final String  DEFAULT_VIEW_DEAFULT = GuiMain.CARD_AGENDA;
+	
+	static final String  DEFAULT_SHOW_TODAY = "DoIt! Show today's tasks on start";
+	static final boolean DEFAULT_SHOW_TODAY_DEFAULT = true;
+	
+	static final String  HOME_GOES_TO_DEFAULT_VIEW = "DoIt! Home goes to Default View";
+	static final boolean HOME_GOES_TO_DEFAULT_VIEW_DEFAULT = true;
+	
+	static final String  HOME_GOES_TO_TODAY = "DoIt! Home goes to today's tasks";
+	static final boolean HOME_GOES_TO_TODAY_DEFAULT = true;
+	
+	static final String  NUM_CLICKS_EDIT = "DoIt! Number of clicks on a task in agenda view to edit the task";
+	static final int     NUM_CLICKS_EDIT_DEFAULT = 2;
+	
+	static final String  SHOW_HINTS = "DoIt! Show hints";
+	static final boolean SHOW_HINTS_DEFAULT = true;
+	
+	static final String  SHORTCUT_KEY_CTRL = "DoIt! ShortcutKey Ctrl";
+	static final boolean SHORTCUT_KEY_CTRL_DEFAULT = false;
+	static final String  SHORTCUT_KEY_ALT = "DoIt! ShortcutKey Alt";
+	static final boolean SHORTCUT_KEY_ALT_DEFAULT = false;
+	static final String  SHORTCUT_KEY_SHIFT = "DoIt! ShortcutKey Shift";
+	static final boolean SHORTCUT_KEY_SHIFT_DEFAULT = false;
+	static final String  SHORTCUT_KEY_WIN = "DoIt! ShortcutKey Win";
+	static final boolean SHORTCUT_KEY_WIN_DEFAULT = true;
+	static final String  SHORTCUT_KEY_EXTRA = "DoIt! ShortcutKey Extra";
+	static final String  SHORTCUT_KEY_EXTRA_DEFAULT = "A";
 
 	private JDialog frmDoitPreferences;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
@@ -118,7 +135,7 @@ public class GuiPreferences extends UI {
 		chckbxShift = new JCheckBox("Shift");
 		chckbxWin = new JCheckBox("Win");
 		txtShortcut = new JTextField();
-		txtShortcut.setText("A");
+		txtShortcut.setText(SHORTCUT_KEY_EXTRA_DEFAULT);
 		txtShortcut.setColumns(2);
 		
 		btnSave = new JButton("Save Preferences");
@@ -250,30 +267,30 @@ public class GuiPreferences extends UI {
 
 	private void loadPreferences() {
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-		if (prefs.get(DEFAULT_VIEW, GuiMain.CARD_AGENDA).equals(GuiMain.CARD_AGENDA)) {
+		if (prefs.get(DEFAULT_VIEW, GuiMain.CARD_AGENDA).equals(DEFAULT_VIEW_DEAFULT)) {
 			rdbtnAgenda.setSelected(true);
 		} else {
 			rdbtnList.setSelected(true);
 		}
-		chckbxShowTodaysTasks.setSelected(prefs.getBoolean(DEFAULT_SHOW_TODAY, true));
+		chckbxShowTodaysTasks.setSelected(prefs.getBoolean(DEFAULT_SHOW_TODAY, DEFAULT_SHOW_TODAY_DEFAULT));
 		
-		chckbxHomeDefault.setSelected(prefs.getBoolean(HOME_GOES_TO_DEFAULT_VIEW, true));
-		chckbxHomeToday.setSelected(prefs.getBoolean(HOME_GOES_TO_TODAY, true));
+		chckbxHomeDefault.setSelected(prefs.getBoolean(HOME_GOES_TO_DEFAULT_VIEW, HOME_GOES_TO_DEFAULT_VIEW_DEFAULT));
+		chckbxHomeToday.setSelected(prefs.getBoolean(HOME_GOES_TO_TODAY, HOME_GOES_TO_TODAY_DEFAULT));
 		
-		chckbxCommandHints.setSelected(prefs.getBoolean(SHOW_HINTS, true));
+		chckbxCommandHints.setSelected(prefs.getBoolean(SHOW_HINTS, SHOW_HINTS_DEFAULT));
 		
-		if (prefs.getInt(NUM_CLICKS_EDIT, 2) == 2) {
+		if (prefs.getInt(NUM_CLICKS_EDIT, NUM_CLICKS_EDIT_DEFAULT) == 2) {
 			rdbtnDoubleClick.setSelected(true);
 		} else {
 			rdbtnSingleClick.setSelected(true);
 		}
 			
-		chckbxCtrl.setSelected(prefs.getBoolean(SHORTCUT_KEY_CTRL, false));
-		chckbxAlt.setSelected(prefs.getBoolean(SHORTCUT_KEY_ALT, false));
-		chckbxShift.setSelected(prefs.getBoolean(SHORTCUT_KEY_SHIFT, false));
-		chckbxWin.setSelected(prefs.getBoolean(SHORTCUT_KEY_WIN, true));
+		chckbxCtrl.setSelected(prefs.getBoolean(SHORTCUT_KEY_CTRL, SHORTCUT_KEY_CTRL_DEFAULT));
+		chckbxAlt.setSelected(prefs.getBoolean(SHORTCUT_KEY_ALT, SHORTCUT_KEY_ALT_DEFAULT));
+		chckbxShift.setSelected(prefs.getBoolean(SHORTCUT_KEY_SHIFT, SHORTCUT_KEY_SHIFT_DEFAULT));
+		chckbxWin.setSelected(prefs.getBoolean(SHORTCUT_KEY_WIN, SHORTCUT_KEY_WIN_DEFAULT));
 		
-		txtShortcut.setText(prefs.get(SHORTCUT_KEY_EXTRA, "A"));
+		txtShortcut.setText(prefs.get(SHORTCUT_KEY_EXTRA, SHORTCUT_KEY_EXTRA_DEFAULT));
 	}
 
 	@Override
