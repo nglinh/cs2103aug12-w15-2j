@@ -29,7 +29,9 @@ public class LogHandler {
 				
 				
 				theOneLogger.addHandler(getFileHandler());
-				theOneLogger.addHandler(new SocketHandler("127.0.0.1", 8888));
+	
+				// Commented away as may be needed for debugging in future.
+				//theOneLogger.addHandler(new SocketHandler("127.0.0.1", 8888));
 			} catch (SecurityException | IOException e) {
 			}
 		}
