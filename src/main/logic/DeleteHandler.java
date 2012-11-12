@@ -11,6 +11,8 @@ import main.shared.LogicToUi;
 import main.shared.Task;
 import main.storage.WillNotWriteToCorruptFileException;
 
+//@author A0088427U
+
 /**
  * An object of this class handles delete command.
  * 

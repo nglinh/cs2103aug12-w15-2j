@@ -13,6 +13,9 @@ import main.logic.exceptions.EmptyDescriptionException;
 import main.shared.NattyParserWrapper;
 import main.shared.Task;
 import main.shared.Task.TaskType;
+
+//@author A0088427U
+
 /**
  * This class extends command parser class.
  * 
@@ -21,8 +24,6 @@ import main.shared.Task.TaskType;
  * Information about postponed task is to be extracted
  * by postpone handler. Postpone parser does not release
  * any of the information unless it is asked by its handler.
- * 
- * @author A0088427U
  *
  */
 public class PostponeParser extends CommandParser {

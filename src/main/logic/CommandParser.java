@@ -3,6 +3,9 @@ package main.logic;
 import main.logic.exceptions.CannotParseDateException;
 import main.logic.exceptions.CannotPostponeFloatingException;
 import main.logic.exceptions.EmptyDescriptionException;
+
+//@author A0088427U
+
 /**
  * This class is to be extended by all parser class. 
  * 
@@ -14,8 +17,6 @@ import main.logic.exceptions.EmptyDescriptionException;
  * extension. All supported command will need to implement a
  * parser and a handler.
  * 
- * @author A0088427U
- *
  */
 public abstract class CommandParser {
 	protected static final int INT_2 = 2;

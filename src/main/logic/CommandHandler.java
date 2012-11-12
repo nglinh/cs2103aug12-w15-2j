@@ -14,6 +14,8 @@ import main.shared.Task;
 import main.storage.Database;
 import main.storage.WillNotWriteToCorruptFileException;
 
+//@author A0088427U
+
 /**
  * This class is to be extended by any supported command. It provide back-bone
  * APIs needed for any handlers to execute the command.
@@ -21,7 +23,7 @@ import main.storage.WillNotWriteToCorruptFileException;
  * The intention of this class is to allow easy extension for new features
  * without touching the current supported ones.
  * 
- * @author A0088427U
+ * 
  * 
  */
 public abstract class CommandHandler {

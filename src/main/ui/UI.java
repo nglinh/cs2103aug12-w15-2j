@@ -97,7 +97,7 @@ public abstract class UI {
 		sendCommandToLogic(COMMAND_EXIT);
 	}
 	
-	//@author A0086826
+	//@author A0086826R
 	
 	protected void setUiLookAndFeel() {
 		try {

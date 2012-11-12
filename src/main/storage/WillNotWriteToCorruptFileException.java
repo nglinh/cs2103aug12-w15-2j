@@ -1,4 +1,7 @@
 package main.storage;
+
+//@author A0081007U
+
 /**  
  * WillNotWriteToCorruptFileException.java 
  * An exception class returned when Database refuses to write to a corrupted file to preserve user data

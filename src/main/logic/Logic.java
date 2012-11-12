@@ -6,6 +6,8 @@ import main.LogHandler;
 import main.logic.exceptions.NoSuchCommandException;
 import main.shared.LogicToUi;
 
+//@author A0088427U
+
 /**
  * This class defines the Logic component of DoIt! task manager. It takes the
  * command string from UI, process the command and send changes to database to
