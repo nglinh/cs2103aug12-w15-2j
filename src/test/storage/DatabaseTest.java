@@ -151,14 +151,6 @@ public class DatabaseTest {
 	public void testAdd() {
 
 		try {
-			db.add(null);
-			fail();
-		} catch (IOException | WillNotWriteToCorruptFileException e) {
-			fail();
-		} catch (AssertionError e){
-		}
-
-		try {
 
 			db.setAll(new ArrayList<Task>()); //Clear the file
 			db.add(nameTimedFalse);
@@ -252,13 +244,6 @@ public class DatabaseTest {
 	public void testUpdate() {
 
 		//Since the act of updating will changed the state of the Task object, try to work on different Task objects
-		try {
-			db.update(0, null);
-			fail();
-		} catch (NoSuchElementException | IOException| WillNotWriteToCorruptFileException e) {
-			fail();
-		} catch(AssertionError e){
-		}
 
 		try {
 			//Wrong Serial number
