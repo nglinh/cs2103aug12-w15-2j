@@ -19,7 +19,9 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.Toolkit;
 
-public class GuiQuickAdd extends GuiCommandBox{
+//@author A0086826R
+
+public class GuiQuickAdd extends GuiCommandBox {
 
 	private JFrame frmDoit;
 	private JTextField txtCmd;
@@ -63,11 +65,12 @@ public class GuiQuickAdd extends GuiCommandBox{
 	 */
 	public void initialize() {
 		frmDoit = new JFrame();
-		frmDoit.setIconImage(Toolkit.getDefaultToolkit().getImage(GuiQuickAdd.class.getResource("/resource/icon.png")));
+		frmDoit.setIconImage(Toolkit.getDefaultToolkit().getImage(
+				GuiQuickAdd.class.getResource("/resource/icon.png")));
 		frmDoit.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				
+
 			}
 		});
 		frmDoit.addFocusListener(new FocusAdapter() {
@@ -80,7 +83,7 @@ public class GuiQuickAdd extends GuiCommandBox{
 		frmDoit.setType(Type.UTILITY);
 		frmDoit.setAlwaysOnTop(true);
 		frmDoit.setBounds(100, 100, 220, 180);
-		
+
 		txtCmd = new JTextField();
 		txtCmd.setText("add ");
 		txtCmd.addFocusListener(new FocusAdapter() {
@@ -90,13 +93,13 @@ public class GuiQuickAdd extends GuiCommandBox{
 		});
 		frmDoit.getContentPane().add(txtCmd, BorderLayout.SOUTH);
 		txtCmd.setColumns(10);
-		
+
 		txtStatus = new JEditorPane();
 		txtStatus.setEditable(false);
 		txtStatus.setBackground(new Color(0, 0, 0, 0));
 		txtStatus.setOpaque(false);
 		frmDoit.getContentPane().add(txtStatus, BorderLayout.CENTER);
-		
+
 		// Popup for hints
 		popupCmdHint = new JPopupMenu();
 		popupCmdHint.setFocusable(false);
@@ -108,31 +111,31 @@ public class GuiQuickAdd extends GuiCommandBox{
 		txtCmdHint.setFocusCycleRoot(false);
 		txtCmdHint.setFocusable(false);
 		popupCmdHint.add(txtCmdHint);
-		
+
 		configureWidgets(txtCmd, txtStatus, txtCmdHint, popupCmdHint);
-		
+
 		txtStatus.setText("Type your command below...");
-		
+
 		// Don't show hint
 		super.preferenceShowHint = false;
 		
 		// Position window
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        Rectangle maxWin = ge.getMaximumWindowBounds();
-        int x = (int) maxWin.getMaxX() - frmDoit.getWidth();
-        int y = (int) maxWin.getMaxY() - frmDoit.getHeight();
-        frmDoit.setLocation(x, y);
+		Rectangle maxWin = ge.getMaximumWindowBounds();
+		int x = (int) maxWin.getMaxX() - frmDoit.getWidth();
+		int y = (int) maxWin.getMaxY() - frmDoit.getHeight();
+		frmDoit.setLocation(x, y);
 	}
-	
-	public void runUI(){
+
+	public void runUI() {
 		frmDoit.setVisible(true);
 		txtCmd.requestFocus();
 	}
 	
-	public void showOrHideUI(){
-		if(frmDoit.isVisible()){
+	public void showOrHideUI() {
+		if (frmDoit.isVisible()) {
 			frmDoit.setVisible(false);
-		}else{
+		} else {
 			frmDoit.setVisible(true);
 			txtCmd.requestFocus();
 		}
@@ -147,16 +150,16 @@ public class GuiQuickAdd extends GuiCommandBox{
 		txtCmd.setText("add ");
 
 		txtStatus.setText(returnValue.getString());
-		
+
 		// Update other windows
-		//GuiMain.getInstance().updateWindow(this);
-		//GuiMain2.getInstance().updateWindow(this);
+		// GuiMain.getInstance().updateWindow(this);
+		// GuiMain2.getInstance().updateWindow(this);
 		GuiUpdate.update(this);
 	}
 
 	public void updateWindow(Object source) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

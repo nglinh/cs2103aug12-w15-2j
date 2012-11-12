@@ -29,8 +29,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+//@author A0086826R
+
 public class GuiTrayIcon extends UI {
 	
+	private static final String ERR_ALREADY_RUNNING = "DoIt! is already running! Check your system tray for DoIt's icon.";
 	Logger log = LogHandler.getLogInstance();
 	File dllFile;
 	private int keyIdentifier = 1;
@@ -45,37 +48,33 @@ public class GuiTrayIcon extends UI {
 			return null;
 		}
 	}
-
-
 	
-	public void initialize(){
+	public void initialize() {
 		final TrayIcon trayIcon;
-		
+
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-		prefs.addPreferenceChangeListener(new PreferenceChangeListener(){
+		prefs.addPreferenceChangeListener(new PreferenceChangeListener() {
 
 			@Override
 			public void preferenceChange(PreferenceChangeEvent arg0) {
 				JIntellitype.getInstance().unregisterHotKey(keyIdentifier);
 				registerHotKey();
 			}
-			
+
 		});
-		
-		if(checkFilePermissions().contains("lock")){
+
+		if (checkFilePermissions().contains("lock")) {
 			setUiLookAndFeel();
-			JOptionPane.showMessageDialog(null, "DoIt! is already running! Check your system tray for DoIt's icon.");
+			JOptionPane.showMessageDialog(null, ERR_ALREADY_RUNNING);
 			exit();
 		}
-		
+
 		if (SystemTray.isSupported()) {
 
-		    SystemTray tray = SystemTray.getSystemTray();
-		    Image image = createImageIcon("/resource/icon.png","").getImage();
-		    
-		    //Toolkit.getDefaultToolkit().getImage("computer.gif");
+			SystemTray tray = SystemTray.getSystemTray();
+			Image image = createImageIcon("/resource/icon.png", "").getImage();
 
-		    MouseListener mouseListener = new MouseListener() {
+			MouseListener mouseListener = new MouseListener() {
 		                
 		        public void mouseClicked(MouseEvent e) {
 		            log.info("Tray Icon - Mouse clicked!");
@@ -99,169 +98,166 @@ public class GuiTrayIcon extends UI {
 		        }
 		    };
 
-		    ActionListener exitListener = new ActionListener() {
-		        public void actionPerformed(ActionEvent e) {
-		        	log.info(e.getActionCommand());
-		        	log.info("Exiting...");
-		        	
-		        	try{
-		        		JIntellitype.getInstance().unregisterHotKey(keyIdentifier);
-		        		JIntellitype.getInstance().cleanUp();
-				    }catch(Exception e1){
-				    }
-		            exit();
-		        }
-		    };
-		    
-		    ActionListener mainWindowListener = new ActionListener() {
-		        public void actionPerformed(ActionEvent e) {
-		        	GuiMain2.getInstance().runUI(GuiMain2.CARD_LIST);
-		        }
-		    };
-		    
-		    ActionListener mainWindow2Listener = new ActionListener() {
-		        public void actionPerformed(ActionEvent e) {
-		        	GuiMain2.getInstance().runUI(GuiMain2.CARD_AGENDA);
-		        }
-		    };
-		    
-		    ActionListener quickAddWindowListener = new ActionListener() {
-		        public void actionPerformed(ActionEvent e) {
-		        	GuiQuickAdd.getInstance().runUI();
-		        }
-		    };
+			ActionListener exitListener = new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					log.info(e.getActionCommand());
+					log.info("Exiting...");
+
+					try {
+						JIntellitype.getInstance().unregisterHotKey(
+								keyIdentifier);
+						JIntellitype.getInstance().cleanUp();
+					} catch (Exception e1) {
+					}
+					exit();
+				}
+			};
+
+			ActionListener mainWindowListener = new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GuiMain.getInstance().runUI(GuiMain.CARD_LIST);
+				}
+			};
+
+			ActionListener mainWindow2Listener = new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GuiMain.getInstance().runUI(GuiMain.CARD_AGENDA);
+				}
+			};
+
+			ActionListener quickAddWindowListener = new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GuiQuickAdd.getInstance().runUI();
+				}
+			};
 		            
-		    PopupMenu popup = new PopupMenu();
-		    MenuItem mainWindowItem = new MenuItem("List View");
-		    mainWindowItem.addActionListener(mainWindowListener);
-		    MenuItem mainWindow2Item = new MenuItem("Agenda View");
-		    mainWindow2Item.addActionListener(mainWindow2Listener);
-		    MenuItem quickAddWindowItem = new MenuItem("Quick Add");
-		    quickAddWindowItem.addActionListener(quickAddWindowListener);
-		    MenuItem exitItem = new MenuItem("Exit");
-		    exitItem.addActionListener(exitListener);
-		    popup.add(mainWindowItem);
-		    popup.add(mainWindow2Item);
-		    popup.add(quickAddWindowItem);
-		    popup.add(exitItem);
+			PopupMenu popup = new PopupMenu();
+			MenuItem mainWindowItem = new MenuItem("List View");
+			mainWindowItem.addActionListener(mainWindowListener);
+			MenuItem mainWindow2Item = new MenuItem("Agenda View");
+			mainWindow2Item.addActionListener(mainWindow2Listener);
+			MenuItem quickAddWindowItem = new MenuItem("Quick Add");
+			quickAddWindowItem.addActionListener(quickAddWindowListener);
+			MenuItem exitItem = new MenuItem("Exit");
+			exitItem.addActionListener(exitListener);
+			popup.add(mainWindowItem);
+			popup.add(mainWindow2Item);
+			popup.add(quickAddWindowItem);
+			popup.add(exitItem);
 
-		    trayIcon = new TrayIcon(image, "DoIt!", popup);
+			trayIcon = new TrayIcon(image, "DoIt!", popup);
 
-		    ActionListener actionListener = new ActionListener() {
-		        public void actionPerformed(ActionEvent e) {
-		        	/*
-		            trayIcon.displayMessage("Action Event", 
-		                "An Action Event Has Been Performed!",
-		                TrayIcon.MessageType.INFO); */
-		        	GuiQuickAdd.getInstance().runUI();
-		        }
-		    };
-		            
-		    trayIcon.setImageAutoSize(true);
-		    trayIcon.addActionListener(actionListener);
-		    trayIcon.addMouseListener(mouseListener);
+			ActionListener actionListener = new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GuiQuickAdd.getInstance().runUI();
+				}
+			};
 
-		    try {
-		        tray.add(trayIcon);
-		    } catch (AWTException e) {
-		    	log.severe("TrayIcon could not be added.");
-		    }
-		    
+			trayIcon.setImageAutoSize(true);
+			trayIcon.addActionListener(actionListener);
+			trayIcon.addMouseListener(mouseListener);
+
+			try {
+				tray.add(trayIcon);
+			} catch (AWTException e) {
+				log.severe("TrayIcon could not be added.");
+			}
+
 		    // Extract DLL to temporary folder
 			try {
-				dllFile = File.createTempFile("Doit-JIntellitype-", ".dll");			
-			    FileOutputStream dllFileWriter = new FileOutputStream(dllFile);
-			    InputStream dllStream;
-			    if(System.getProperty("os.arch").equals("amd64")){
-			    	dllStream = this.getClass().getResourceAsStream("/resource/JIntellitype64.dll");
-			    }else{
-			    	dllStream = this.getClass().getResourceAsStream("/resource/JIntellitype.dll");
-			    }
-			    byte[] b = new byte[1024];
-			    int len;
-			    while((len = dllStream.read(b)) >= 0){
-			    	dllFileWriter.write(b, 0, len);
-			    }
-			    dllFileWriter.close();
-			    dllStream.close();
-			    JIntellitype.setLibraryLocation(dllFile.getAbsolutePath());
-			    dllFile.deleteOnExit();
+				dllFile = File.createTempFile("Doit-JIntellitype-", ".dll");
+				FileOutputStream dllFileWriter = new FileOutputStream(dllFile);
+				InputStream dllStream;
+				if (System.getProperty("os.arch").equals("amd64")) {
+					dllStream = this.getClass().getResourceAsStream(
+							"/resource/JIntellitype64.dll");
+				} else {
+					dllStream = this.getClass().getResourceAsStream(
+							"/resource/JIntellitype.dll");
+				}
+				byte[] b = new byte[1024];
+				int len;
+				while ((len = dllStream.read(b)) >= 0) {
+					dllFileWriter.write(b, 0, len);
+				}
+				dllFileWriter.close();
+				dllStream.close();
+				JIntellitype.setLibraryLocation(dllFile.getAbsolutePath());
+				dllFile.deleteOnExit();
 			} catch (IOException e1) {
 				log.log(Level.WARNING, "Unable to extract JIntelliType DLL", e1);
 			}
-			
+
 			registerHotKey();
 			addHotKeyHandler();
-		    
-		    GuiMain2.getInstance().runUI();
+
+			GuiMain.getInstance().runUI();
 
 		} else {
 
-		    //  System Tray is not supported
-			GuiMain2.getInstance().runUI();
+			// System Tray is not supported
+			GuiMain.getInstance().runUI();
 
 		}
 	}
 
 	public void registerHotKey() {
-		
+
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-		
+
 		int modifierKeys = 0;
-		if(prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_CTRL, false)){
+		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_CTRL, false)) {
 			modifierKeys += JIntellitype.MOD_CONTROL;
 		}
-		if(prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_ALT, false)){
+		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_ALT, false)) {
 			modifierKeys += JIntellitype.MOD_ALT;
 		}
-		if(prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_SHIFT, false)){
+		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_SHIFT, false)) {
 			modifierKeys += JIntellitype.MOD_SHIFT;
 		}
-		if(prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_WIN, true)){
+		if (prefs.getBoolean(GuiPreferences.SHORTCUT_KEY_WIN, true)) {
 			modifierKeys += JIntellitype.MOD_WIN;
 		}
 		int extraKey = (int) prefs.get(GuiPreferences.SHORTCUT_KEY_EXTRA, "A").charAt(0);
-		
-		try{
-			JIntellitype.getInstance().registerHotKey(keyIdentifier, modifierKeys,
-					extraKey);			
-		}catch(Exception e){
+
+		try {
+			JIntellitype.getInstance().registerHotKey(keyIdentifier,
+					modifierKeys, extraKey);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void addHotKeyHandler(){
+	private void addHotKeyHandler() {
 		JIntellitype.getInstance().addHotKeyListener(new HotkeyListener() {
-	       	// listen for hotkey
-			
-	    	public void onHotKey(int aIdentifier) {
-	    	    if (aIdentifier == keyIdentifier){
-	    	       GuiQuickAdd.getInstance().showOrHideUI();
-	    	    }
-	    	}
-	    });
+			// listen for hotkey
+
+			public void onHotKey(int aIdentifier) {
+				if (aIdentifier == keyIdentifier) {
+					GuiQuickAdd.getInstance().showOrHideUI();
+				}
+			}
+		});
 	}
-	
-	public static void main(String[] args){
+
+	public static void main(String[] args) {
 		new GuiTrayIcon().runUI();
 	}
 	
-	private GuiTrayIcon(){
+	private GuiTrayIcon() {
 		initialize();
 	}
 	
-	public static GuiTrayIcon getInstance(){
-		if(theOne==null){
+	public static GuiTrayIcon getInstance() {
+		if (theOne == null) {
 			theOne = new GuiTrayIcon();
 		}
 		return theOne;
 	}
 
-
-
 	@Override
 	public void runUI() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

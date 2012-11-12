@@ -31,6 +31,8 @@ import java.util.ListIterator;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+//@author A0086826R
+
 public class GuiCommandBox extends UI {
 
 	Logger log = LogHandler.getLogInstance();
@@ -51,7 +53,7 @@ public class GuiCommandBox extends UI {
 	private HintPosEnum hintPos = HintPosEnum.UNDEFINED;
 	private Rectangle previousWindowRect;
 	private String hintPreviousCommand = "";
-	
+
 	public boolean preferenceShowHint = true;
 
 	/**
@@ -75,7 +77,7 @@ public class GuiCommandBox extends UI {
 	 * Create the application.
 	 */
 	public GuiCommandBox() {
-		
+
 	}
 
 	/**
@@ -141,12 +143,10 @@ public class GuiCommandBox extends UI {
 		txtCmdHint.setEditorKit(hintBoxKit);
 
 		StyleSheet hintBoxStyleSheet = hintBoxKit.getStyleSheet();
-				
-		hintBoxStyleSheet.addRule("body, p {font-family:"+getPreferredFont()+";}");
-		hintBoxStyleSheet
-				.addRule(".hint h1 {margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
-		hintBoxStyleSheet
-				.addRule(".hint h2 {margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
+
+		hintBoxStyleSheet.addRule("body, p {font-family:" + getPreferredFont() + ";}");
+		hintBoxStyleSheet.addRule(".hint h1 {margin:0px 0px 0px 0px; padding:0px 0px 0px 0px;}");
+		hintBoxStyleSheet.addRule(".hint h2 {margin:10px 0px 0px 0px; padding:0px 0px 0px 0px;}");
 		hintBoxStyleSheet.addRule(".hint p {margin-top:5px;}");
 		hintBoxStyleSheet.addRule(".status a{color:#4D7E99;text-decoration:none;}");
 
@@ -166,6 +166,7 @@ public class GuiCommandBox extends UI {
 				}
 			}
 		});
+		
 		txtStatus.setBackground(new Color(0, 0, 0, 0));
 		txtStatus.setOpaque(false);
 		txtStatus.setEditable(false);
@@ -177,36 +178,39 @@ public class GuiCommandBox extends UI {
 	public void executeCommand(String text) {
 
 		log.entering(this.getClass().getName(), "executeCommmand");
-		
+
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-		if(text.equals("help")){
+		if (text.equals("help")) {
 			GuiHelp.getInstance().runUI();
 			txtCmd.setText("");
-		}else if(text.equals("help off")){
+		} else if (text.equals("help off")) {
 			prefs.putBoolean(GuiPreferences.SHOW_HINTS, false);
 			showStatus("Help is now off");
 			txtCmd.setText("");
-		}else if(text.equals("help on")){
+		} else if (text.equals("help on")) {
 			prefs.putBoolean(GuiPreferences.SHOW_HINTS, true);
 			showStatus("Help is now on");
 			txtCmd.setText("");
-		}else{
+		} else {
 
 			// Call command parser
 			log.info("Sending the following command to logic: " + text);
-			try{
+			try {
 				LogicToUi returnValue = sendCommandToLogic(text);
-				
+
 				// Set command text box to empty
 				log.finer("Set text box to empty after sending command to logic");
 				txtCmd.setText("");
-		
+
 				update(returnValue);
-			}catch(Exception e){
+			} catch (Exception e) {
 				StringWriter sw = new StringWriter();
 				e.printStackTrace(new PrintWriter(sw));
 				String stackTrace = sw.toString();
-				GuiError.ShowErrorMessage("Uh-oh, an error has occured. Check that your command is valid.\nIf you need to contact support, please take note of the following:","Command that caused the error:\n"+ text + "\nStack trace:\n" + stackTrace);
+				GuiError.ShowErrorMessage(
+						"Uh-oh, an error has occured. Check that your command is valid.\nIf you need to contact support, please take note of the following:",
+						"Command that caused the error:\n" + text
+								+ "\nStack trace:\n" + stackTrace);
 			}
 		}
 
@@ -216,7 +220,8 @@ public class GuiCommandBox extends UI {
 	protected void showStatus(String status) {
 		txtStatus
 				.setText("<html><table align=\"center\" width=\"100%\" class=\"status\"><tr><td valign=\"middle\" align=\"left\">"
-						+ HTMLEncoder.encode(status) + "</td><td width=1 valign=\"middle\" align=\"right\"><a href=\"http://doit/undo\">undo</a></td></tr></table></html>");
+						+ HTMLEncoder.encode(status)
+						+ "</td><td width=1 valign=\"middle\" align=\"right\"><a href=\"http://doit/undo\">undo</a></td></tr></table></html>");
 	}
 
 	public void update(LogicToUi returnValue) {
@@ -260,14 +265,14 @@ public class GuiCommandBox extends UI {
 			log.fine("Command box key recevied: keyCode " + arg0.getKeyCode());
 			if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
 				log.info("Enter key pressed");
-				
+
 				String userCommand = txtCmd.getText().trim();
-				executeCommand(userCommand);				
-				
+				executeCommand(userCommand);
+
 				commandHistory.add(userCommand);
 				commandHistoryIterator = commandHistory
 						.listIterator(commandHistory.size());
-			
+
 				popupCmdHint.setVisible(false);
 			} else if (arg0.getKeyCode() == java.awt.event.KeyEvent.VK_ESCAPE) {
 				log.info("Escape key pressed");
@@ -286,7 +291,8 @@ public class GuiCommandBox extends UI {
 					txtCmd.setText(commandHistoryIterator.next());
 					showHint();
 				}
-			} else if(arg0.isControlDown() && arg0.getKeyCode() == java.awt.event.KeyEvent.VK_Z){
+			} else if (arg0.isControlDown()
+					&& arg0.getKeyCode() == java.awt.event.KeyEvent.VK_Z) {
 				log.info("Ctrl-z pressed");
 				executeCommand("undo");
 			} else {
@@ -296,9 +302,9 @@ public class GuiCommandBox extends UI {
 
 		protected void showHint() {
 			log.entering(this.getClass().getName(), "showHint");
-			
+
 			log.fine("Preference to show hint? " + preferenceShowHint);
-			if(!preferenceShowHint){
+			if (!preferenceShowHint) {
 				return;
 			}
 
@@ -380,9 +386,5 @@ public class GuiCommandBox extends UI {
 
 		}
 	}
-
-	protected void showHint() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }
