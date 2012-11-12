@@ -46,11 +46,10 @@ public class SearchHandler extends CommandHandler{
 	}
 
 	@Override
-	@Deprecated
 	protected void updateDatabaseNSendToUndoStack()
 			throws NoSuchElementException, IOException,
 			WillNotWriteToCorruptFileException {
-		// empty method.
+		throw new UnsupportedOperationException();
 		
 	}
 
