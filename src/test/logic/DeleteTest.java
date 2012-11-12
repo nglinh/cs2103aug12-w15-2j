@@ -55,6 +55,32 @@ public class DeleteTest {
 	}
 	
 	@Test
+	public void outofBoundaryDelete3() {
+		String addCommand = "add \"project meeting at com\" at 3pm";
+		String deleteCommand = "delete 1.2";
+		Task notPresentTask = new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0));		
+		int result = CommandTester(addCommand, deleteCommand, notPresentTask);
+		assertEquals(ERR_TASK_FOUND, result); // task should be found, as the index was invalid
+		
+		notPresentTask = new Task("something else", new DateTime().withTime(15, 0, 0, 0));		
+		result = CommandTester(addCommand, deleteCommand, notPresentTask);
+		assertEquals(0, result); // zero because no change should be expected
+	}
+	
+	@Test
+	public void outofBoundaryDelete4() {
+		String addCommand = "add \"project meeting at com\" at 3pm";
+		String deleteCommand = "delete -1";
+		Task notPresentTask = new Task("project meeting at com", new DateTime().withTime(15, 0, 0, 0));		
+		int result = CommandTester(addCommand, deleteCommand, notPresentTask);
+		assertEquals(ERR_TASK_FOUND, result); // task should be found, as the index was invalid
+		
+		notPresentTask = new Task("something else", new DateTime().withTime(15, 0, 0, 0));		
+		result = CommandTester(addCommand, deleteCommand, notPresentTask);
+		assertEquals(0, result); // zero because no change should be expected
+	}
+	
+	@Test
 	public void multipleTasksDelete() {
 		String[] addCommands = new String[]{"add \"project meeting at com\" at 3pm", "add abcdefg at 2pm"};
 		String deleteCommand = "delete 1 2";
