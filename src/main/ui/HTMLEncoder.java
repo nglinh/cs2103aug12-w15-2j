@@ -13,16 +13,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
-public class HTMLEncoder {
+//@author A0086826R
 
+public class HTMLEncoder {
+	
 	public static String encode(String strToEncode) {
 		// Sources:
 		// http://www.roseindia.net/xml/dom/CreatXMLFile.shtml
 		// http://stackoverflow.com/questions/4142046/create-xml-file-using-java
-		
+
 		StringWriter strWriter = new StringWriter();
 		try {
-			
+
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -40,7 +42,7 @@ public class HTMLEncoder {
 					.getFirstChild());
 			StreamResult result = new StreamResult(strWriter);
 			transformer.transform(source, result);
-			
+
 		} catch (Exception e) {
 
 		}

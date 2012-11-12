@@ -28,11 +28,15 @@ import java.util.prefs.Preferences;
 import java.awt.Dialog.ModalityType;
 import javax.swing.SwingConstants;
 
-public class GuiPreferences extends UI {
+//@author A0086826R
 
+public class GuiPreferences extends UI {
+	
+	private static final String ERR_INVALID_SHORTCUT_CHAR = "The character you have selected for the shortcut is invalid. Please re-enter.";
+	
 	static final String DEFAULT_VIEW = "DoIt! Default View";
 	static final String DEFAULT_SHOW_TODAY = "DoIt! Show today's tasks on start";
-	
+
 	static final String HOME_GOES_TO_TODAY = "DoIt! Home goes to today's tasks";
 	static final String SHORTCUT_KEY_EXTRA = "DoIt! ShortcutKey Extra";
 	static final String SHORTCUT_KEY_WIN = "DoIt! ShortcutKey Win";
@@ -42,8 +46,7 @@ public class GuiPreferences extends UI {
 	static final String HOME_GOES_TO_DEFAULT_VIEW = "DoIt! Home goes to Default View";
 	static final String SHOW_HINTS = "DoIt! Show hints";
 	static final String NUM_CLICKS_EDIT = "DoIt! Number of clicks on a task in agenda view to edit the task";
-	
-	
+
 	private JDialog frmDoitPreferences;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextField txtShortcut;
@@ -55,7 +58,7 @@ public class GuiPreferences extends UI {
 	private JCheckBox chckbxShift;
 	private JCheckBox chckbxAlt;
 	private JCheckBox chckbxCtrl;
-	
+
 	Logger log = LogHandler.getLogInstance();
 
 	/**
@@ -82,32 +85,33 @@ public class GuiPreferences extends UI {
 		frmDoitPreferences.setModalityType(ModalityType.APPLICATION_MODAL);
 		frmDoitPreferences.setResizable(false);
 		frmDoitPreferences.setType(Type.POPUP);
-		frmDoitPreferences.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
+		frmDoitPreferences
+				.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 		frmDoitPreferences.setTitle("DoIt! Preferences");
 		frmDoitPreferences.setBounds(100, 100, 359, 301);
 		frmDoitPreferences.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		JLabel lblDefaultViewOn = new JLabel("Default View:");
 		lblDefaultViewOn.setHorizontalAlignment(SwingConstants.RIGHT);
-		
+
 		rdbtnAgenda = new JRadioButton("Agenda");
 		buttonGroup.add(rdbtnAgenda);
-		
+
 		rdbtnList = new JRadioButton("List");
 		buttonGroup.add(rdbtnList);
-		
+
 		chckbxShowTodaysTasks = new JCheckBox("Show today's tasks on start");
-		
+
 		JLabel lblHome = new JLabel("Home Button:");
 		lblHome.setHorizontalAlignment(SwingConstants.RIGHT);
 		chckbxHomeDefault = new JCheckBox("Home goes to default view");
 		chckbxHomeToday = new JCheckBox("Home goes to today's tasks");
-		
+
 		JLabel lblShow = new JLabel("Show:");
 		lblShow.setHorizontalAlignment(SwingConstants.RIGHT);
 		chckbxCommandHints = new JCheckBox("Command hints");
 
-		JLabel lblQuickAddShortcut = new JLabel("Quick Add Shortcut:");			
+		JLabel lblQuickAddShortcut = new JLabel("Quick Add Shortcut:");
 		lblQuickAddShortcut.setHorizontalAlignment(SwingConstants.RIGHT);
 		chckbxCtrl = new JCheckBox("Ctrl");
 		chckbxAlt = new JCheckBox("Alt");
@@ -121,10 +125,10 @@ public class GuiPreferences extends UI {
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-				if(rdbtnAgenda.isSelected()){
-					prefs.put(DEFAULT_VIEW, GuiMain2.CARD_AGENDA);
-				}else{
-					prefs.put(DEFAULT_VIEW, GuiMain2.CARD_LIST);
+				if (rdbtnAgenda.isSelected()) {
+					prefs.put(DEFAULT_VIEW, GuiMain.CARD_AGENDA);
+				} else {
+					prefs.put(DEFAULT_VIEW, GuiMain.CARD_LIST);
 				}
 				prefs.putBoolean(DEFAULT_SHOW_TODAY, chckbxShowTodaysTasks.isSelected());
 				
@@ -133,9 +137,9 @@ public class GuiPreferences extends UI {
 				
 				prefs.putBoolean(SHOW_HINTS, chckbxCommandHints.isSelected());
 				
-				if(rdbtnDoubleClick.isSelected()){
+				if (rdbtnDoubleClick.isSelected()) {
 					prefs.putInt(NUM_CLICKS_EDIT, 2);
-				}else{
+				} else {
 					prefs.putInt(NUM_CLICKS_EDIT, 1);
 				}
 					
@@ -145,10 +149,11 @@ public class GuiPreferences extends UI {
 				prefs.putBoolean(SHORTCUT_KEY_WIN, chckbxWin.isSelected());
 				
 				String shortcutExtra = txtShortcut.getText().trim().toUpperCase();
-				if(shortcutExtra.length() == 1){
+				if (shortcutExtra.length() == 1) {
 					prefs.put(SHORTCUT_KEY_EXTRA, shortcutExtra);
-				}else{
-					JOptionPane.showMessageDialog(frmDoitPreferences, "The character you have selected for the shortcut is invalid. Please re-enter.");
+				} else {
+					JOptionPane.showMessageDialog(frmDoitPreferences,
+							ERR_INVALID_SHORTCUT_CHAR);
 					return;
 				}
 				
@@ -164,7 +169,8 @@ public class GuiPreferences extends UI {
 				try {
 					prefs.clear();
 				} catch (BackingStoreException e1) {
-					log.log(Level.WARNING, "Exception when clearing preferences", e1);
+					log.log(Level.WARNING,
+							"Exception when clearing preferences", e1);
 				}
 				frmDoitPreferences.dispose();
 			}
@@ -172,10 +178,10 @@ public class GuiPreferences extends UI {
 		
 		JLabel lblInAgendaView = new JLabel("In Agenda View,");
 		lblInAgendaView.setHorizontalAlignment(SwingConstants.RIGHT);
-		
+
 		rdbtnSingleClick = new JRadioButton("Single click");
 		buttonGroup_1.add(rdbtnSingleClick);
-		
+
 		rdbtnDoubleClick = new JRadioButton("Double click");
 		buttonGroup_1.add(rdbtnDoubleClick);
 		
@@ -273,9 +279,9 @@ public class GuiPreferences extends UI {
 		
 		// Show preferences in window
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-		if(prefs.get(DEFAULT_VIEW, GuiMain2.CARD_AGENDA).equals(GuiMain2.CARD_AGENDA)){
+		if (prefs.get(DEFAULT_VIEW, GuiMain.CARD_AGENDA).equals(GuiMain.CARD_AGENDA)) {
 			rdbtnAgenda.setSelected(true);
-		}else{
+		} else {
 			rdbtnList.setSelected(true);
 		}
 		chckbxShowTodaysTasks.setSelected(prefs.getBoolean(DEFAULT_SHOW_TODAY, true));
@@ -285,9 +291,9 @@ public class GuiPreferences extends UI {
 		
 		chckbxCommandHints.setSelected(prefs.getBoolean(SHOW_HINTS, true));
 		
-		if(prefs.getInt(NUM_CLICKS_EDIT, 2) == 2){
+		if (prefs.getInt(NUM_CLICKS_EDIT, 2) == 2) {
 			rdbtnDoubleClick.setSelected(true);
-		}else{
+		} else {
 			rdbtnSingleClick.setSelected(true);
 		}
 			

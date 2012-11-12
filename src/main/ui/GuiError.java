@@ -14,8 +14,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import java.awt.Toolkit;
 
-public class GuiError extends JDialog {
+//@author A0086826R
 
+public class GuiError extends JDialog {
+	
 	/**
 	 * 
 	 */
@@ -28,8 +30,8 @@ public class GuiError extends JDialog {
 	public static void main(String[] args) {
 		ShowErrorMessage("Hello", "Hello");
 	}
-	
-	public static void ShowErrorMessage(String preMessage, String message){
+
+	public static void ShowErrorMessage(String preMessage, String message) {
 		try {
 			GuiError dialog = new GuiError(preMessage, message);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -43,7 +45,8 @@ public class GuiError extends JDialog {
 	 * Create the dialog.
 	 */
 	public GuiError(String preMessage, String message) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(GuiError.class.getResource("/resource/icon.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(
+				GuiError.class.getResource("/resource/icon.png")));
 		setType(Type.POPUP);
 		setTitle("DoIt! Error");
 		setModalityType(ModalityType.APPLICATION_MODAL);
@@ -85,7 +88,8 @@ public class GuiError extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						((JDialog) contentPanel.getRootPane().getParent()).dispose();
+						((JDialog) contentPanel.getRootPane().getParent())
+								.dispose();
 					}
 				});
 				okButton.setActionCommand("OK");
