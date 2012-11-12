@@ -88,7 +88,7 @@ public class GuiPreferences extends UI {
 		frmDoitPreferences
 				.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 		frmDoitPreferences.setTitle("DoIt! Preferences");
-		frmDoitPreferences.setBounds(100, 100, 359, 301);
+		frmDoitPreferences.setBounds(100, 100, 380, 300);
 		frmDoitPreferences.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		JLabel lblDefaultViewOn = new JLabel("Default View:");
@@ -104,8 +104,8 @@ public class GuiPreferences extends UI {
 
 		JLabel lblHome = new JLabel("Home Button:");
 		lblHome.setHorizontalAlignment(SwingConstants.RIGHT);
-		chckbxHomeDefault = new JCheckBox("Home goes to default view");
-		chckbxHomeToday = new JCheckBox("Home goes to today's tasks");
+		chckbxHomeDefault = new JCheckBox("Jumps to Default View (Agenda/List)");
+		chckbxHomeToday = new JCheckBox("Scrolls to today's tasks");
 
 		JLabel lblShow = new JLabel("Show:");
 		lblShow.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -173,6 +173,7 @@ public class GuiPreferences extends UI {
 							"Exception when clearing preferences", e1);
 				}
 				frmDoitPreferences.dispose();
+				runUI();
 			}
 		});
 		
