@@ -168,7 +168,7 @@ public class GuiMain extends GuiCommandBox{
 			@Override
 			public void preferenceChange(PreferenceChangeEvent arg0) {
 				preferenceShowHint = prefs.getBoolean(
-						GuiPreferences.SHOW_HINTS, true);
+						GuiPreferences.SHOW_HINTS, GuiPreferences.SHOW_HINTS_DEFAULT);
 			}
 
 		});
@@ -237,11 +237,11 @@ public class GuiMain extends GuiCommandBox{
 			public void actionPerformed(ActionEvent arg0) {
 				executeCommand("list");
 				executeCommand("sort");
-				if(prefs.getBoolean(GuiPreferences.HOME_GOES_TO_TODAY, true)){
+				if(prefs.getBoolean(GuiPreferences.HOME_GOES_TO_TODAY, GuiPreferences.HOME_GOES_TO_TODAY_DEFAULT)){
 					jumpToTasksToday();
 				}
-				if(prefs.getBoolean(GuiPreferences.HOME_GOES_TO_DEFAULT_VIEW, true)){
-					switchCard(prefs.get(GuiPreferences.DEFAULT_VIEW, GuiMain.CARD_AGENDA));
+				if(prefs.getBoolean(GuiPreferences.HOME_GOES_TO_DEFAULT_VIEW, GuiPreferences.HOME_GOES_TO_DEFAULT_VIEW_DEFAULT)){
+					switchCard(prefs.get(GuiPreferences.DEFAULT_VIEW, GuiPreferences.DEFAULT_VIEW_DEAFULT));
 				}
 			}
 		});
@@ -489,7 +489,7 @@ public class GuiMain extends GuiCommandBox{
 		}
 		
 		txtTaskEdit.setVisible(false);
-		switchCard(prefs.get(GuiPreferences.DEFAULT_VIEW, GuiMain.CARD_AGENDA));
+		switchCard(prefs.get(GuiPreferences.DEFAULT_VIEW, GuiPreferences.DEFAULT_VIEW_DEAFULT));
 
 		showStatus(fileStatus);
 		
@@ -711,7 +711,7 @@ public class GuiMain extends GuiCommandBox{
 					GuiMain window = GuiMain.getInstance();
 					window.frmDoit.setVisible(true);
 					
-					if(prefs.getBoolean(GuiPreferences.DEFAULT_SHOW_TODAY, true)){
+					if(prefs.getBoolean(GuiPreferences.DEFAULT_SHOW_TODAY, GuiPreferences.DEFAULT_SHOW_TODAY_DEFAULT)){
 						jumpToTasksToday();
 					}				
 				} catch (Exception e) {
@@ -728,7 +728,7 @@ public class GuiMain extends GuiCommandBox{
 			
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 				if(e.getInputEvent() instanceof MouseEvent){
-					if(((MouseEvent)e.getInputEvent()).getClickCount() < prefs.getInt(GuiPreferences.NUM_CLICKS_EDIT, 2)){
+					if(((MouseEvent)e.getInputEvent()).getClickCount() < prefs.getInt(GuiPreferences.NUM_CLICKS_EDIT, GuiPreferences.NUM_CLICKS_EDIT_DEFAULT)){
 						return;
 					}
 				}
