@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+	<title>Help</title>
+</head>
+
+<body class="help">
+	<h1>Help</h1>
+
+	<p>DoIt! is a simple and easy to use task management application. To get
+	started, just type your command into the command box in the main window.
+	The following commands are accepted:</p>
+
+	<ul>
+		<li>help</li>
+		<li><a href="#cmdAdd">add</a>, <a href="#cmdEdit">edit</a>, <a href="#cmdPostpone">postpone</a></li>
+		<li><a href="#cmdList">list</a>, <a href="#cmdSort">sort,</a>, <a href="#cmdSearch">search</a>, <a href="#cmdRefresh">refresh</a></li>
+		<li><a href="#cmdDone">done</a>, <a href="#cmdUndone">undone</a></li>
+		<li><a href="#cmdDelete">delete</a></li>
+		<li><a href="#cmdUndo">undo</a></li>
+		<li><a href="#cmdExit">exit</a></li>
+	</ul>
+
+	<p>Click on the command to see more details about the command. Or simply type the command word into the command box, and you will be able to
+	see how to use it. Type "help on" if you have previously turned the command	help off!</p>
+	
+	<p>Or learn more about the <a href="#UserInterface">user interface</a>.</p>
+
+	<p>DoIt! supports several types of tasks:</p>
+	<ul>
+		<li>Floating tasks: Tasks which have no time component.</li>
+		<li>Deadline tasks: Tasks which have one time as deadline.</li>
+		<li>Timed tasks: Tasks which have a start and end time.</li>
+	</ul>
+
+	<h1><a name="UserInterface">User Interface</a></h1>
+
+	<p>DoIt! user interface consist of forms: the agenda view and the list
+	view.</p>
+
+	<h2>Agenda View</h2>
+
+	<p>The agenda view gives you an at-a-glance view of your tasks organised by
+	date. It consists of two panes: the left pane shows your tasks that have a
+	date (deadline and timed tasks) while the right pane shows your tasks with
+	no date (floating tasks).</p>
+
+	<p>The calendar allows you to quickly jump to your tasks on a particular
+	day. Days that you have tasks are bolded.</p>
+
+	<h2>List View</h2>
+
+	<p>The list view lets you see all your tasks in a spreadsheet-like form.
+	You can also perform actions like editing by double-clicking on the
+	respective cell, as well as deleting your tasks by selecting the respective
+	rows you want to delete and then pressing the "delete" button.</p>
+
+	<h2>Toolbar</h2>
+
+	<p>The toolbar at the top of DoIt's main window contains the following
+	buttons:</p>
+
+	<dl>
+		<dt>Home</dt>
+
+		<dd>Resets any search or list filters. Also (optionally) jumps to the
+		default view (Agenda or List view) and jumps to today's tasks.
+		Customize this in the settings.</dd>
+
+		<dt>Undo</dt>
+
+		<dd>Undo the last performed action.</dd>
+
+		<dt>Agenda View/List View</dt>
+
+		<dd>Switch to the selected view.</dd>
+
+		<dt>Preferences</dt>
+
+		<dd>Shows the preferences dialog.</dd>
+
+		<dt>Help</dt>
+
+		<dd>Shows this help dialog.</dd>
+	</dl>
+
+	<h2>Command Box</h2>
+
+	<p>Use the command box right at the bottom of the window to perform all
+	sorts of operations on your tasks list. Type in the command you want and
+	press Enter to execute the command. The status of the command will be shown
+	in the space below.</p>
+	
+	<h2>Quick Add Box</h2>
+
+	<p>DoIt! has a handy quick add box. Use the system tray icon to open the quick add box, or use the keyboard shortcut (default Windows key + A, customizable in perferences).</p>
+
+	<h1>Commands</h1>
+		
+	<h2><a name="cmdAdd">Add</a></h2>
+	<p>Adds a task to database</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>add</strong> read a book<br>
+	<strong>add</strong> school camp <strong>from</strong> 3pm today
+	<strong>to</strong> 5pm tomorrow<br>
+	<strong>a</strong> hand in homework <strong>by</strong> Monday 6pm
+	(<strong>a</strong> is a shortcut for add)<br></p>
+	<p>If DoIt misinterprets the task name as the time, put inverted commas
+	around <strong>"task name"</strong>:<br>
+	add <strong>"</strong>read book from page 1000 to 1100<strong>"</strong> by
+	Friday.<br></p>
+	
+	<h2><a name="cmdEdit">Edit</a></h2>
+	<p>Edits the selected task</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>edit</strong> [index] [parameter] [new value] ...<br>
+	<strong>edit</strong> 1 -name go home (Change name of task at index 1 to
+	"go home")<br>
+	<strong>edit</strong> 10 -deadline today 6pm (Change deadline of task 10 to
+	6pm today. Will convert to deadline task if not previously.)<br>
+	<strong>edit</strong> 2 -start 3pm 5 sept -end 4pm 6 sept (Change start and
+	end times of timed tasks)<br></p>
+	<p>To maximise DoIT's chances in correctly updating your task, try to
+	change one parameter at a time.<br></p>
+	
+	<h2><a name="cmdPostpone">Postpone</a></h2>
+	<p>Postpones a task</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>postpone</strong> [index] [time parameter]<br>
+	<strong>postpone</strong> 1 3 hours (postpones task at index 1 by 3
+	hours)<br></p>
+	<p>This command has no effect on floating tasks. Start and End times for
+	timed tasks will shift together.<br></p>
+	
+	<h2><a name="cmdList">List</a></h2>
+	<p>Shows the list of tasks in your schedule</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>list</strong> [parameter(s)]<br>
+	<strong>list</strong> today (Tasks that happen today)<br>
+	<strong>ls</strong> undone floating (Floating tasks that are
+	incomplete)<br>
+	<strong>l</strong> overdue (Tasks that are before the current moment and
+	are incomplete)<br></p>
+	<p>Possible parameters: "done", "undone", "timed", "deadline", "floating",
+	"today", "tomorrow", "overdue"<br></p>
+
+	<h2><a name="cmdSort">Sort</a></h2>
+	<p>Sorts the current list of tasks</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>sort</strong> [parameter] "descending"<br>
+	<strong>sort</strong> type (Order of deadline, timed, floating)<br>
+	<strong>sort</strong> done (Undone tasks come first)<br>
+	<strong>sort</strong> start (By start time/deadline)<br>
+	<strong>sort</strong> end (By end time/deadline)<br>
+	<strong>sort</strong> name (Alphabetical order)<br></p>
+	<p>Add "descending" or "reverse" parameter to sort by descending order
+	instead.<br>
+	Only up to 1 parameter except "descending" is allowed. Default is sort by
+	start/deadline in ascending order.<br>
+	Sort works best in List view. Sort will be maintained each time the view is
+	updated<br></p>
+
+	<h2><a name="cmdSearch">Search</a></h2>
+	<p>Search for task(s) based on keywords</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>search</strong> "keyword1" "keyword2" ...<br>
+	<strong>search</strong> birthday (search for tasks with "birthday" in
+	description)<br>
+	<strong>search</strong> birthday family (search for tasks with "birthday"
+	and "family" in description)<br></p>
+	<p>The keyword search is case-insensitive. Time range search is not
+	supported yet.<br></p>
+	
+	<h2><a name="cmdRefresh">Refresh</a></h2>
+	<p>Refreshes your list based on the latest list or search parameters.</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>undo</strong><br></p>
+	<p>This command has no effect in the graphical interface.<br></p>
+
+	<h2><a name="cmdDone">Done</a></h2>
+	<p>Marks the task specified by index as done.</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>done</strong> [index]<br></p>
+	<p>Obtain the "index" number from the list. "index" will be based on last
+	shown list.<br></p>
+
+	<h2><a name="cmdUndone">Undone</a></h2>
+	<p>Marks the task specified by index as undone.</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>undone</strong> [index]<br></p>
+	<p>Obtain the "index" number from the list. "index" will be based on last
+	shown list.<br></p>
+	
+	<h2><a name="cmdDelete">Delete</a></h2>
+	<p>Deletes task(s) from your schedule</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>delete</strong> [index] (Deletes the task at index)<br>
+	<strong>delete done</strong> (Delete all completed tasks)<br>
+	<strong>del</strong> over (Delete all tasks before this moment)<br>
+	<strong>d</strong> all (Deletes <strong>EACH AND EVERY</strong> task in
+	your schedule)<br></p>
+
+	<h2><a name="cmdUndo">Undo</a></h2>
+	<p>Undos the last change you made to the database.</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>undo</strong><br></p>
+	<p>DoIT places no limit on the number of undo steps<br></p>
+
+	<h2><a name="cmdExit"><a name="cmdExit">Exit</a></a></h2>
+	<p>Exits DoIT</p>
+	<h3>Usage/Examples :</h3>
+	<p><strong>exit</strong><br>
+	<strong>quit</strong><br></p>
+	<p>All undo steps will be lost when DoIT quits.<br></p>
+</body>
+</html>
