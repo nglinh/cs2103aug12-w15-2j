@@ -114,6 +114,13 @@ public class AddTest{
 	}
 	
 	@Test
+	public void deadlineTaskWithFullStop() {
+		Task result = CommandTester("add lunch by 12pm.");
+		Task expected = new Task("lunch", new DateTime().withTime(12, 00, 00, 00));
+		assertEquals(result.showInfo(), expected.showInfo());
+	}
+	
+	@Test
 	public void deadlineTaskRelative() {
 		DateTime day = new DateTime().withDayOfWeek(5).withTime(23, 59, 0, 0);
 		System.out.println(day);
