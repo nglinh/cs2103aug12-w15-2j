@@ -78,8 +78,8 @@ import java.awt.event.WindowEvent;
 
 public class GuiMain extends GuiCommandBox{
 	
-	private static final String FIRST_LAUNCH_NO_TASKS_UNDATED = "Placeholder text for first launch with no tasks undated";
-	private static final String FIRST_LAUNCH_NO_TASKS_DATED = "Placeholder text for first launch with no tasks";
+	private static final String FIRST_LAUNCH_NO_TASKS_UNDATED = "Nothing here";
+	private static final String FIRST_LAUNCH_NO_TASKS_DATED = "Ooops! There nothing to show here. Why not add some tasks?";
 	private static final String NOTHING_TO_SHOW_UNDATED = "Nothing here";
 	private static final String NOTHING_TO_SHOW_DATED = "Ooops! There nothing to show here. Click the home button to see all your tasks.";
 	
