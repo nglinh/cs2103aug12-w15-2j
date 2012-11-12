@@ -13,7 +13,17 @@ import main.shared.Task;
 import main.shared.Task.TaskType;
 import main.storage.WillNotWriteToCorruptFileException;
 
+/**
+ * This class handles the edit command.
+ * 
+ * It creates a new object of class edit parser and extract information from the
+ * parser.
+ * 
+ * @author A0088427U
+ * 
+ */
 public class EditHandler extends CommandHandler {
+	private static final String ERROR_INDEX_INVALID = "Edit command need an integer index number to procees. Please check your command.";
 	private static final String ERROR_START_BEFORE_END = "Your start time is before end time!";
 	private static final String MESSAGE_NOTHING_UPDATED = "The task is still the same!";
 	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change the task to a timed task, you need to specify both the start time and the end time.";
@@ -22,11 +32,23 @@ public class EditHandler extends CommandHandler {
 	private Task copy;
 	private int toBeEditedSerial;
 
+	/**
+	 * Constructor of EditHandler class.
+	 * 
+	 * @param arguments
+	 *            : argument string of edit command.
+	 */
 	public EditHandler(String arguments) {
 		super(arguments);
 		parser = new EditParser(arguments);
 	}
 
+	/**
+	 * This method overrides execute method in commandhandler class
+	 * 
+	 * This method extracts information out of the parser and use it to update
+	 * the task accordingly.
+	 */
 	@Override
 	public LogicToUi execute() {
 		try {
@@ -34,22 +56,24 @@ public class EditHandler extends CommandHandler {
 			toBeEditedSerial = parser.getToBeEditedSerial();
 			toBeEdited = dataBase.locateATask(toBeEditedSerial);
 			copy = new Task(toBeEdited); // Create a copy to modify.
-			if (parser.getWillChangeDeadline()) {
+			if (parser.willChangeDeadline()) {
 				changeDeadline();
 			}
-			if (parser.getWillChangeName()) {
+			if (parser.willChangeName()) {
 				changename();
 			}
-			if (parser.getWillChangeStartTime()) {
+			if (parser.willChangeStartTime()) {
 				changeStartTime();
 			}
-			if (parser.getWillChangeEndTime()) {
+			if (parser.willChangeEndTime()) {
 				changeEndTime();
 			}
-			if (parser.getWillChangeToFloat()) {
+			if (parser.willChangeToFloat()) {
 				changeToFloat();
 			}
-			if (copy.isEqualTo(toBeEdited)) {
+			if (copy.isEqualTo(toBeEdited)) // check if the command actually
+											// changed anything
+			{
 				feedback = new LogicToUi(MESSAGE_NOTHING_UPDATED,
 						toBeEditedSerial);
 			} else {
@@ -72,20 +96,35 @@ public class EditHandler extends CommandHandler {
 			feedback = new LogicToUi(ERROR_MUST_CHANGE_BOTH_TIME);
 		} catch (STimeBeforeETimeException e) {
 			feedback = new LogicToUi(ERROR_START_BEFORE_END, toBeEditedSerial);
+		} catch (NumberFormatException e){
+			feedback = new LogicToUi(ERROR_INDEX_INVALID);
 		}
 		return feedback;
 	}
 
+	/**
+	 * This method change the task to floating task. assert if the parser does
+	 * not detect change to floating syntax
+	 */
 	private void changeToFloat() {
-		assert (parser.getWillChangeToFloat());
+		assert (parser.willChangeToFloat());
 		copy.changetoFloating();
 	}
 
+	/**
+	 * This method change end time of the task.
+	 * 
+	 * @throws DoNotChangeBothSTimeAndETimeException
+	 *             : if the command does not change both start time and end time
+	 *             in the case originally the task is not a timed task.
+	 * @throws STimeBeforeETimeException
+	 *             : if the start time is before end time
+	 */
 	private void changeEndTime() throws DoNotChangeBothSTimeAndETimeException,
 			STimeBeforeETimeException {
-		assert (parser.getWillChangeEndTime());
+		assert (parser.willChangeEndTime());
 		if (copy.getType() != TaskType.TIMED) {
-			if (!parser.getWillChangeStartTime()) {
+			if (!parser.willChangeStartTime()) {
 				throw new DoNotChangeBothSTimeAndETimeException();
 			}
 			if (parser.getNewStartTime().isAfter(parser.getNewEndTime())) {
@@ -101,12 +140,21 @@ public class EditHandler extends CommandHandler {
 		}
 	}
 
+	/**
+	 * Change Start time of the task.
+	 * 
+	 * @throws DoNotChangeBothSTimeAndETimeException
+	 *             : if the command does not change both start time and end time
+	 *             in the case originally the task is not a timed task.
+	 * @throws STimeBeforeETimeException
+	 *             : if the start time is before end time
+	 */
 	private void changeStartTime()
 			throws DoNotChangeBothSTimeAndETimeException,
 			STimeBeforeETimeException {
-		assert (parser.getWillChangeStartTime());
+		assert (parser.willChangeStartTime());
 		if (copy.getType() != TaskType.TIMED) {
-			if (!parser.getWillChangeEndTime()) {
+			if (!parser.willChangeEndTime()) {
 				throw new DoNotChangeBothSTimeAndETimeException();
 			}
 			if (parser.getNewStartTime().isAfter(parser.getNewEndTime())) {
@@ -123,11 +171,17 @@ public class EditHandler extends CommandHandler {
 
 	}
 
+	/**
+	 * Change name of the task.
+	 */
 	private void changename() {
 		copy.changeName(parser.getNewName());
 
 	}
 
+	/**
+	 * Change deadline of the task.
+	 */
 	private void changeDeadline() {
 		if (copy.getType() != TaskType.DEADLINE) {
 			copy.changeToDeadline(parser.getNewDeadline());
@@ -137,6 +191,10 @@ public class EditHandler extends CommandHandler {
 
 	}
 
+	/**
+	 * Update the database with new task and push the message with current
+	 * database to undostack.
+	 */
 	@Override
 	protected void updateDatabaseNSendToUndoStack()
 			throws NoSuchElementException, IOException,

@@ -77,7 +77,6 @@ public class Cli extends UI{
 			
 			System.out.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + LINE_BREAK);
 			System.out.println(consoleOut);
-			System.out.println("Current Date/Time is: "+ super.currentTimeInLongerForm() + LINE_BREAK);
 			System.out.print(MESSAGE_NEXT_COMMAND);
 		}
 
@@ -215,11 +214,14 @@ public class Cli extends UI{
 		StringBuffer returnEntry = new StringBuffer();
 		int linesRequired =  (int) Math.ceil(((float) description.length()) / TABLE_DESCRIPTION_ALLOWANCE);
 
+		//We have to break the description string into multiple lines to fit into the description column
+		
+		//The first line contains the date and hence has to be process differently
 		String firstLine = String.format(TABLE_ENTRY_FORMAT, index, done, start, end, description.substring(0, TABLE_DESCRIPTION_ALLOWANCE));
 
 		returnEntry.append(firstLine);
 
-		//Start processing from second line
+		//Start processing from the second line
 		for(int lineNumber = 2; lineNumber < linesRequired; lineNumber++ ) {
 			String substringForThisLine = description.substring((lineNumber - 1) * TABLE_DESCRIPTION_ALLOWANCE, TABLE_DESCRIPTION_ALLOWANCE * lineNumber);
 			String nextLine = String.format(LINE_BREAK + TABLE_ENTRY_OVERFLOW_FORMAT, substringForThisLine );
