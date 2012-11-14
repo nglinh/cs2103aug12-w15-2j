@@ -40,7 +40,7 @@ public class SortParser extends CommandParser {
 	 */
 	@Override
 	public void parse() {
-		if (parsed.length == 0) {
+		if (arguments.length() == 0) {
 			start = true;
 			return;
 		}
