@@ -23,9 +23,9 @@ import main.storage.WillNotWriteToCorruptFileException;
  * 
  */
 public class EditHandler extends CommandHandler {
-	private static final String ERROR_INDEX_INVALID = "Edit command need an integer index number to procees. Please check your command.";
-	private static final String ERROR_START_BEFORE_END = "Your start time is before end time!";
-	private static final String MESSAGE_NOTHING_UPDATED = "The task is still the same!";
+	private static final String ERROR_INDEX_INVALID = "You have entered an invalid index number.";
+	private static final String ERROR_START_BEFORE_END = "The start time must be before the end time!";
+	private static final String MESSAGE_NOTHING_UPDATED = "The task has not been changed.";
 	private static final String ERROR_MUST_CHANGE_BOTH_TIME = "In order to change the task to a timed task, you need to specify both the start time and the end time.";
 	private EditParser parser;
 	private Task toBeEdited;
