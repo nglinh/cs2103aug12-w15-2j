@@ -13,7 +13,9 @@ public class LogHandler {
 	private static FileHandler fh;
 	private static Logger theOneLogger = null;
 
-
+	public static boolean logOn = false;
+	
+	
 	public static Logger getLogInstance(){
 		if(theOneLogger == null){
 			try {
@@ -21,13 +23,19 @@ public class LogHandler {
 
 				// Log everything! (while we're still debugging)...
 				// this should be able to be changed via a command-line argument
-				theOneLogger.setLevel(Level.INFO);
+				
+				if(logOn) {
+					theOneLogger.setLevel(Level.INFO);
+					theOneLogger.addHandler(getFileHandler());
+				} else {
+					theOneLogger.setLevel(Level.OFF);
+				}
 				
 				//To disable logging to Standard Error
 				theOneLogger.setUseParentHandlers(false);
 				
 				
-				theOneLogger.addHandler(getFileHandler());
+				
 	
 				// Commented away as may be needed for debugging in future.
 				//theOneLogger.addHandler(new SocketHandler("127.0.0.1", 8888));
