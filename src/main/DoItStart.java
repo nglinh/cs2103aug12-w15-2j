@@ -24,31 +24,73 @@ import main.ui.UI;
 
 public class DoItStart {
 	
-	private static Logger log = LogHandler.getLogInstance();
+	private static Logger log;
+	
 	public static void main(String[] args){
 		
+		//Logging has been disabled by default for this version onwards. To enable provide "-log" argument
+		
+		boolean defaultNoParams = true;
+		boolean toLog = false;
+		boolean tray = false;
+		boolean cli = false;
+		boolean clisafe = false;
+		
+
+		for(String params : args){
+			if(params.equals("-log")){
+				toLog = true;
+			}
+			
+			if(params.equals("-tray")){
+				tray = true;
+				defaultNoParams = false;
+			}
+			
+			if(params.equals("-cli")){
+				cli = true;
+				defaultNoParams = false;
+			}
+			
+			if(params.equals("-clisafe")){
+				clisafe = true;
+				defaultNoParams = false;
+			}
+		}
+		
+		
+		if(toLog){
+			LogHandler.logOn = true;
+		}
+		
+		log = LogHandler.getLogInstance();
+		
+		
 		log.info("Program start");
+	
+		
+		
 		
 		UI doITUi;
 		
-		if (args.length == 0) {
+		if (defaultNoParams) {
 			log.info("Start tray icon");
 			UI trayIcon = GuiTrayIcon.getInstance();
 			trayIcon.runUI();	
 			UI mainWindow = GuiMain.getInstance();
 			mainWindow.runUI();	
 			
-		} else if (args[0].equals("-tray")) {
+		} else if (tray) {
 			log.info("Start tray icon only");
 			doITUi = GuiTrayIcon.getInstance();
 			doITUi.runUI();	
 		
-		} else if (args[0].equals("-cli") && isConsoleAttached()) {
+		} else if (cli && isConsoleAttached()) {
 			log.info("Start CliWithJline");
 			doITUi = new CliWithJline();
 			doITUi.runUI();	
 		
-		} else if (args[0].equals("-clisafe")) {
+		} else if (clisafe) {
 			log.info("Start Cli safe mode");
 			doITUi = new Cli();
 			doITUi.runUI();	
