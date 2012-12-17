@@ -49,34 +49,31 @@ public class FileManagement {
 	private final String LINE_EMPTY_DATE = "----------------------";
 
 	private final String LINE_DATE_TIME_FORMAT = "dd-MMM-yyyy HHmm Z";
-	private final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat
-			.forPattern(LINE_DATE_TIME_FORMAT);
+	private final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormat.forPattern(LINE_DATE_TIME_FORMAT);
 
 	private final String FILE_LINE_FORMAT = 
 			"%1$3d"
 			+ LINE_PARAM_DELIMITER_WRITE + "%2$s" + LINE_PARAM_DELIMITER_WRITE
 			+ "%3$s" + LINE_PARAM_DELIMITER_WRITE + "%4$s"
-			+ LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE
-			+ "%6$s" + LINE_PARAM_DELIMITER_WRITE + "%7$s";
+			+ LINE_PARAM_DELIMITER_WRITE + "%5$s" + LINE_PARAM_DELIMITER_WRITE + "%6$s";
 
 	// private final int LINE_POSITION_TASKINDEX = 0; //To indicate that position 0 is task index
 	private final int LINE_POSITION_TASKTYPE = 1;
 	private final int LINE_POSITION_DONE = 2;
-	private final int LINE_POSITION_DEADLINE_DATE = 3;
-	private final int LINE_POSITION_START_DATE = 4;
-	private final int LINE_POSITION_END_DATE = 5;
-	private final int LINE_POSITION_TASKNAME = 6;
+	private final int LINE_POSITION_START_DEADLINE_DATE = 3;
+	private final int LINE_POSITION_END_DATE = 4;
+	private final int LINE_POSITION_TASKNAME = 5;
 
-	private final int LINE_NUM_FIELDS = 7;
+	private final int LINE_NUM_FIELDS = 8;
 
 	private final String[] filehelp = {
-			"################################################################################################################################################################",
-			"# Ref| Type | Done |        Deadline        |          Start         |          End           |                                  Task                          #",
-			"#  1 |  D   |   *  | 01-Jan-2012 0600 +0800 | ---------------------- | ---------------------- | A done deadline task by 0600 1st Jan 2012                      #",
-			"#  2 |  T   |   -  | ---------------------- | 31-Dec-2012 2359 +0800 | 28-Feb-2013 2248 +0800 | An undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #",
-			"#  3 |  F   |   *  | ---------------------- | ---------------------- | ---------------------- | A done floating task                                           #",
-			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                                         #",
-			"################################################################################################################################################################" };
+			"#######################################################################################################################################",
+			"# Ref| Type | Done |     Start/Deadline     |          End           |                                  Task                          #",
+			"#  1 |  D   |   *  | 01-Jan-2012 0600 +0800 | ---------------------- | A done deadline task by 0600 1st Jan 2012                      #",
+			"#  2 |  T   |   -  | 31-Dec-2012 2359 +0800 | 28-Feb-2013 2248 +0800 | An undone timed task from 2359 31 Dec 2012 to 2248 28 Feb 2013 #",
+			"#  3 |  F   |   *  | ---------------------- | ---------------------- | A done floating task                                           #",
+			"#The reference number is not used in the parsing process. DoIt will ignore non-consecutive or wrong reference numbers.                #",
+			"#######################################################################################################################################" };
 
 	private final String LINE_FLOATING = "F";
 	private final String LINE_DEADLINE = "D";
@@ -310,7 +307,7 @@ public class FileManagement {
 			}
 			parsed = lineFromInput.split(LINE_PARAM_DELIMITER_READ,	LINE_NUM_FIELDS);
 
-			Task toBeAdded = TaskParser(parsed);
+			Task toBeAdded = taskParser(parsed);
 			log.fine("Parsed line " + toBeAdded.showInfo());
 
 			storeInHere.add(toBeAdded);
@@ -322,7 +319,7 @@ public class FileManagement {
 
 	}
 
-	private Task TaskParser(String[] parsed) throws DataFormatException {
+	private Task taskParser(String[] parsed) throws DataFormatException {
 		assert (parsed != null);
 
 		Task parsedTask;
@@ -351,7 +348,7 @@ public class FileManagement {
 
 		String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);
 		boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
-		DateTime startDate = parseDate(parsed[LINE_POSITION_START_DATE]);
+		DateTime startDate = parseDate(parsed[LINE_POSITION_START_DEADLINE_DATE]);
 		DateTime endDate = parseDate(parsed[LINE_POSITION_END_DATE]);
 
 		if (startDate.isAfter(endDate)) {
@@ -376,7 +373,7 @@ public class FileManagement {
 
 		String taskName = parseTaskName(parsed[LINE_POSITION_TASKNAME]);
 		boolean done = retrieveTaskDoneStatus(parsed[LINE_POSITION_DONE]);
-		DateTime deadline = parseDate(parsed[LINE_POSITION_DEADLINE_DATE]);
+		DateTime deadline = parseDate(parsed[LINE_POSITION_START_DEADLINE_DATE]);
 
 		return new Task(taskName, deadline, done);
 	}
@@ -426,16 +423,24 @@ public class FileManagement {
 		assert (toBeConverted != null);
 
 		String typeString;
+		DateTime startOrDeadlineDate = Task.INVALID_DATE_FIELD;
+		DateTime endDate = Task.INVALID_DATE_FIELD;
 
 		TaskType typeOfIncomingTask = toBeConverted.getType();
 
 		if (typeOfIncomingTask.equals(TaskType.TIMED)) {
 			typeString = LINE_TIMED;
+			startOrDeadlineDate = toBeConverted.getStartDate();
+			endDate = toBeConverted.getEndDate();
 		} else if (typeOfIncomingTask.equals(TaskType.DEADLINE)) {
 			typeString = LINE_DEADLINE;
+			startOrDeadlineDate = toBeConverted.getDeadline();
 		} else {
 			typeString = LINE_FLOATING;
 		}
+		
+		String startOrDeadLIneString = getTimeFileFormat(startOrDeadlineDate);
+		String endString = getTimeFileFormat(endDate);
 
 		String doneString;
 		boolean isIncomingTaskComplete = toBeConverted.isDone();
@@ -446,14 +451,11 @@ public class FileManagement {
 			doneString = LINE_UNDONE;
 		}
 
-		String deadline = getTimeFileFormat(toBeConverted.getDeadline());
-		String start = getTimeFileFormat(toBeConverted.getStartDate());
-		String end = getTimeFileFormat(toBeConverted.getEndDate());
+
 
 		String task = toBeConverted.getTaskName();
 
-		String taskString = String.format(FILE_LINE_FORMAT, index, typeString,
-				doneString, deadline, start, end, task);
+		String taskString = String.format(FILE_LINE_FORMAT, index, typeString, doneString, startOrDeadLIneString, endString, task);
 
 		log.info("Task string generated " + taskString);
 		return taskString;
