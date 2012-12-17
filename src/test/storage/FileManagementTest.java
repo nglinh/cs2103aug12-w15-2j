@@ -49,19 +49,20 @@ public class FileManagementTest {
 	private static final DateTime TIMED_DONE_FALSE_END = TIMED_DONE_FALSE_START.plusDays(1).withTimeAtStartOfDay();
 
 
-	private static final String FILE_CORRUPT_DATE = 		"  1 | D | - | 21-O12 1729 +0800 | ---------------------- | ---------------------- | event";
-	private static final String FILE_MISSING_EVENT = 		"  2 | D | - | 21-Oct-2012 1729 +0800 | ---------------------- | ---------------------- | ";
-	private static final String FILE_WRONG_TYPE = 			"  3 | C | - | 21-Oct-2012 1729 +0800 | ---------------------- | ---------------------- | event";
-	private static final String FILE_NOT_DONE_OR_UNDONE = 	"  4 | D | X | ---------------- | 21-Oct-2012 1729 +0800 | 21-Oct-2012 1729 +0800 | event";
-	private static final String FILE_MISSING_DELIMITER = 		"  5 | * | U | 21-Oct-2012 1729 +0800  ---------------------- | ---------------------- | event";
-	private static final String FILE_MISSING_FIELD = 		"  6 | D | * | 21-Oct-2012 1729 +0800 | ----------------------  | event";
-	private static final String FILE_START_DATE_AFTER_END = "  7 | T | - | ---------------------- | 22-Oct-2012 1729 +0800 | 21-Oct-2012 1729 +0800 | event";
-	private static final String FILE_MISSING_TIMEZONE =   "8 | D | * | 24-Oct-2012 2248 | ---------------------- | ---------------------- | Test deadline";
-	private static final String FILE_NO_SIGN_TIMEZONE =   "9 | D | * | 24-Oct-2012 2248 0600 | ---------------------- | ---------------------- | Test deadline";
-	private static final String FILE_WRONG_SIGN_TIMEZONE =   "10 | D | * | 24-Oct-2012 2248 A0600 | ---------------------- | ---------------------- | Test deadline";
-	private static final String FILE_WRONG_TIMEZONE =   "11 | D | * | 24-Oct-2012 2248 89 | ---------------------- | ---------------------- | Test deadline";
+	private static final String FILE_CORRUPT_DATE = 		"  1 | D | - | 21-O12 1729 +0800 | ---------------------- | event";
+	private static final String FILE_MISSING_EVENT = 		"  2 | D | - | 21-Oct-2012 1729 +0800 | ---------------------- | ";
+	private static final String FILE_WRONG_TYPE = 			"  3 | C | - | 21-Oct-2012 1729 +0800 | ---------------------- | event";
+	private static final String FILE_NOT_DONE_OR_UNDONE = 	"  4 | D | X | 21-Oct-2012 1729 +0800 | 21-Oct-2012 1729 +0800 | event";
+	private static final String FILE_MISSING_DELIMITER = 	"  5 | * | U | 21-Oct-2012 1729 +0800 ---------------------- | event";
+	private static final String FILE_MISSING_FIELD = 		"  6 | D | * | 21-Oct-2012 1729 +0800 | event";
+	private static final String FILE_START_DATE_AFTER_END = "  7 | T | - | 22-Oct-2012 1729 +0800 | 21-Oct-2012 1729 +0800 | event";
+	private static final String FILE_MISSING_TIMEZONE =   	"  8 | D | * | 24-Oct-2012 2248 | ---------------------- | Test deadline";
+	private static final String FILE_NO_SIGN_TIMEZONE =   	"  9 | D | * | 24-Oct-2012 2248 0600 | ---------------------- | Test deadline";
+	private static final String FILE_WRONG_SIGN_TIMEZONE =  " 10 | D | * | 24-Oct-2012 2248 A0600 | ---------------------- | Test deadline";
+	private static final String FILE_WRONG_TIMEZONE =   	" 11 | D | * | 24-Oct-2012 2248 89 | ---------------------- | Test deadline";
 	
-	private static final String FILE_GOOD_STRING = "0 | T | * | ---------------- | 22-Oct-2012 1729 -1100 | 23-Oct-2013 1800 +1100 | event";
+	//
+	//	private static final String FILE_GOOD_STRING = "0 | T | * | 22-Oct-2012 1729 -1100 | 23-Oct-2013 1800 +1100 | event";
 
 	private static final String[] corruptStrings = 
 		{ 
@@ -239,39 +240,6 @@ public class FileManagementTest {
 		fileMgmt.closeFile();
 
 	}
-
-
-	@Test
-	public void writeDbaseIllegalArgumenttExceptionTest() {
-
-		BufferedWriter writeFile;
-
-		try {
-			writeFile = new BufferedWriter(new FileWriter(fileMgmt.filename));
-			writeFile.write(FILE_GOOD_STRING);
-			writeFile.close();
-
-			fileMgmt.prepareDatabaseFile();
-
-			//Ensure the file is ok
-			assertEquals(FileManagement.FileStatus.FILE_ALL_OK, fileMgmt.getFileAttributes());
-
-			//Put a null value in
-			fileMgmt.writeDataBaseToFile(null);
-			fail();
-
-
-		} catch (IOException e) {
-		} catch (AssertionError e) {
-			fileMgmt.closeFile();
-		} catch (WillNotWriteToCorruptFileException e) {
-			fileMgmt.closeFile();
-		} 
-
-
-
-	}
-
 
 
 	@Test
