@@ -194,6 +194,33 @@ public class SortTest {
 		assertFalse(fail);
 		
 		
+		//Empty sort argument, must default to sort start
+		results = commandTester("sort");
+		
+		previous = new DateTime(Long.MIN_VALUE);
+		fail = false;
+		
+		for(Task comp : results){
+			DateTime currentComp;
+			
+			if(comp.isDeadlineTask()) {
+				currentComp = comp.getDeadline();
+			} else if( comp.isTimedTask()) {
+				currentComp = comp.getStartDate();
+			} else {
+				currentComp = Task.INVALID_DATE_FIELD;
+			}
+			
+			if(previous.isAfter(currentComp)) {
+				fail = true;
+			}
+			
+			previous = currentComp;
+		}
+		
+		assertFalse(fail);
+		
+		
 		
 		//Sort by type
 		
